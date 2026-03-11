@@ -15,8 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "CB Business - 跨境电商AI助手",
-  description: "AI驱动的跨境电商市场洞察平台",
+  title: "ZenConsult - 跨境电商AI智能助手 | 市场洞察与机会发现",
+  description: "AI驱动的跨境电商市场洞察平台。智能聚合东南亚、欧美、拉美市场资讯，提供政策解读、机会发现、风险预警和实操指南。AI智能评估帮你发现最适合的市场和产品。",
 };
 
 export default function RootLayout({

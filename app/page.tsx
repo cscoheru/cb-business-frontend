@@ -3,25 +3,9 @@ import { HeroSearch } from '@/components/home/hero-search';
 import { FunModules } from '@/components/home/fun-modules';
 import { RegionNews } from '@/components/home/region-news';
 import { ThemePortals } from '@/components/home/theme-portals';
-import { articlesApi, Article } from '@/lib/api';
+import { HomeContent } from '@/components/home/home-content';
 
-// 强制动态渲染，确保每次请求都获取最新数据
-export const dynamic = 'force-dynamic';
-
-async function getLatestArticles(): Promise<Article[]> {
-  try {
-    const response = await articlesApi.getArticles({ per_page: 50 });
-    return response.articles;
-  } catch (error) {
-    console.error('Failed to fetch articles:', error);
-    return [];
-  }
-}
-
-export default async function HomePage() {
-  // 从后端API获取最新文章（服务器端数据获取）
-  const latestArticles = await getLatestArticles();
-
+export default function HomePage() {
   return (
     <div className="bg-gray-100 min-h-screen">
       {/* 全局导航栏 */}
@@ -58,14 +42,8 @@ export default async function HomePage() {
       {/* Hero搜索区域 */}
       <HeroSearch />
 
-      {/* 三大区域资讯流 */}
-      <RegionNews initialArticles={latestArticles} />
-
-      {/* 有趣的功能模块 */}
-      <FunModules />
-
-      {/* 专业信息门户 */}
-      <ThemePortals articles={latestArticles} />
+      {/* 主内容区域（客户端数据获取） */}
+      <HomeContent />
 
       {/* CTA */}
       <section className="max-w-7xl mx-auto px-4 py-8">
