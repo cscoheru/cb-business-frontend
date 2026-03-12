@@ -4,10 +4,11 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { authApi } from '@/lib/api';
+import { useAuth } from '@/lib/auth-context';
 
 export default function RegisterPage() {
   const router = useRouter();
+  const { register } = useAuth();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -33,15 +34,8 @@ export default function RegisterPage() {
     setLoading(true);
 
     try {
-      const response = await authApi.register(email, password, name);
-
-      // 保存用户信息
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('user', JSON.stringify(response.user));
-      }
-
-      // 跳转到仪表盘
-      router.push('/dashboard');
+      await register(email, password, name);
+      // register函数会自动跳转到dashboard
     } catch (err: any) {
       setError(err.message || '注册失败，请稍后重试');
     } finally {

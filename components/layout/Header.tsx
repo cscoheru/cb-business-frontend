@@ -1,7 +1,12 @@
+'use client';
+
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { useAuth } from '@/lib/auth-context';
 
 export function Header() {
+  const { user, isAuthenticated, logout, isLoading } = useAuth();
+
   return (
     <header className="border-b">
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
@@ -10,17 +15,30 @@ export function Header() {
         </Link>
         <nav className="flex items-center gap-6">
           <Link href="/pricing" className="hover:text-primary">定价</Link>
-          <Link href="/dashboard" className="hover:text-primary">Dashboard</Link>
-          <Link href="/login">
-            <Button variant="outline" size="sm">
-              登录
-            </Button>
-          </Link>
-          <Link href="/register">
-            <Button size="sm">
-              免费注册
-            </Button>
-          </Link>
+          {isAuthenticated ? (
+            <>
+              <Link href="/dashboard" className="hover:text-primary">Dashboard</Link>
+              <span className="text-sm text-muted-foreground">
+                {user?.name || user?.email}
+              </span>
+              <Button variant="outline" size="sm" onClick={logout}>
+                退出
+              </Button>
+            </>
+          ) : (
+            <>
+              <Link href="/login">
+                <Button variant="outline" size="sm">
+                  登录
+                </Button>
+              </Link>
+              <Link href="/register">
+                <Button size="sm">
+                  免费注册
+                </Button>
+              </Link>
+            </>
+          )}
         </nav>
       </div>
     </header>

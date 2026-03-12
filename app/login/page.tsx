@@ -4,10 +4,11 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { authApi } from '@/lib/api';
+import { useAuth } from '@/lib/auth-context';
 
 export default function LoginPage() {
   const router = useRouter();
+  const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -19,15 +20,8 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const response = await authApi.login(email, password);
-
-      // 保存用户信息
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('user', JSON.stringify(response.user));
-      }
-
-      // 跳转到仪表盘
-      router.push('/dashboard');
+      await login(email, password);
+      // login函数会自动跳转到dashboard
     } catch (err: any) {
       setError(err.message || '登录失败，请检查邮箱和密码');
     } finally {

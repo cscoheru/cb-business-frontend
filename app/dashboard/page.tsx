@@ -1,10 +1,18 @@
+'use client';
+
 import { Card } from '@/components/ui/card';
 import { JourneyTracker } from '@/components/dashboard/JourneyTracker';
 import { QuickActionCard } from '@/components/dashboard/QuickActionCard';
 import { OpportunityCard, mockOpportunityCard } from '@/components/dashboard/OpportunityCard';
+import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import { useAuth } from '@/lib/auth-context';
 import Link from 'next/link';
 
 export default function DashboardPage() {
+  const { user } = useAuth();
+
+  return (
+    <ProtectedRoute>
   return (
     <div className="container mx-auto px-4 py-8">
       {/* Welcome Section */}
@@ -93,5 +101,6 @@ export default function DashboardPage() {
         </div>
       </section>
     </div>
+    </ProtectedRoute>
   );
 }

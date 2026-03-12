@@ -1,7 +1,10 @@
+'use client';
+
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Check } from 'lucide-react';
 import Link from 'next/link';
+import { useAuth } from '@/lib/auth-context';
 
 const plans = [
   {
@@ -68,7 +71,17 @@ function PricingCard({ plan }: { plan: typeof plans[0] }) {
           </li>
         ))}
       </ul>
-      <Link href={plan.price === "¥0" ? "/register" : "/dashboard"} className="block">
+      <PricingCTA plan={plan} />
+    </Card>
+  );
+}
+
+function PricingCTA({ plan }: { plan: typeof plans[0] }) {
+  const { isAuthenticated } = useAuth();
+
+  if (plan.price === "¥0") {
+    return (
+      <Link href="/register" className="block">
         <Button
           className="w-full"
           variant={plan.highlighted ? 'default' : 'outline'}
@@ -76,7 +89,32 @@ function PricingCard({ plan }: { plan: typeof plans[0] }) {
           {plan.cta}
         </Button>
       </Link>
-    </Card>
+    );
+  }
+
+  // 专业版按钮逻辑
+  if (isAuthenticated) {
+    return (
+      <Link href="/dashboard/settings/subscription" className="block">
+        <Button
+          className="w-full"
+          variant={plan.highlighted ? 'default' : 'outline'}
+        >
+          开始试用
+        </Button>
+      </Link>
+    );
+  }
+
+  return (
+    <Link href="/register?plan=pro" className="block">
+      <Button
+        className="w-full"
+        variant={plan.highlighted ? 'default' : 'outline'}
+      >
+        {plan.cta}
+      </Button>
+    </Link>
   );
 }
 
