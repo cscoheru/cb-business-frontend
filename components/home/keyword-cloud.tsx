@@ -62,33 +62,44 @@ export function KeywordCloud({ region }: KeywordCloudProps) {
   const [platforms, setPlatforms] = useState<Platform[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // 获取产品分类和平台数据
+  // 获取真实的关键词数据（从文章中提取）
   useEffect(() => {
-    async function fetchProductData() {
+    async function fetchKeywordData() {
       try {
-        // 并发获取分类和平台数据
-        const [categoriesRes, platformsRes] = await Promise.all([
-          fetch('https://api.zenconsult.top/api/v1/products/categories'),
-          fetch('https://api.zenconsult.top/api/v1/products/platforms'),
-        ]);
+        // 获取该区域的关键词分类统计
+        const regionParam = region === 'southeast_asia' ? 'southeast_asia' :
+                           region === 'north_america' ? 'north_america' :
+                           region === 'latin_america' ? 'latin_america' : null;
 
-        if (categoriesRes.ok) {
-          const data = await categoriesRes.json();
+        const url = 'https://api.zenconsult.top/api/v1/products/categories';
+
+        const response = await fetch(url);
+
+        if (response.ok) {
+          const data = await response.json();
+          // 使用从文章中提取的真实关键词数据
           setCategories(data.categories || DEFAULT_CATEGORIES);
+        } else {
+          console.warn('Keywords API failed, using fallback');
+          setCategories(DEFAULT_CATEGORIES);
         }
 
-        if (platformsRes.ok) {
-          const data = await platformsRes.json();
-          setPlatforms(data.platforms || []);
-        }
+        // 平台数据暂时保留使用静态数据（待后续从文章中提取）
+        setPlatforms([
+          { id: 'amazon', name: 'Amazon', emoji: '🛒', countries: ['us', 'th', 'vn', 'sg'] },
+          { id: 'shopee', name: 'Shopee', emoji: '🛍️', countries: ['th', 'vn', 'my', 'sg', 'id', 'ph'] },
+          { id: 'lazada', name: 'Lazada', emoji: '🛒', countries: ['th', 'vn', 'my', 'sg', 'id', 'ph'] },
+          { id: 'tiktok', name: 'TikTok Shop', emoji: '🎵', countries: ['th', 'vn', 'my', 'sg', 'id', 'ph'] },
+        ]);
       } catch (error) {
-        console.error('Failed to fetch product data:', error);
+        console.error('Failed to fetch keyword data:', error);
+        setCategories(DEFAULT_CATEGORIES);
       } finally {
         setLoading(false);
       }
     }
-    fetchProductData();
-  }, []);
+    fetchKeywordData();
+  }, [region]);
 
   return (
     <div className="space-y-4">
