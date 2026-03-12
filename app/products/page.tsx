@@ -48,7 +48,7 @@ export default function ProductsPage() {
     async function fetchProducts() {
       try {
         setLoading(true);
-        const response = await fetch(\`https://api.zenconsult.top/api/v1/products/categories/\${category}/trending?limit=24\`);
+        const response = await fetch(`https://api.zenconsult.top/api/v1/products/categories/${category}/trending?limit=24`);
 
         if (response.ok) {
           const result = await response.json();
