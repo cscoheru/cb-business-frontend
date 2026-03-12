@@ -173,7 +173,7 @@ export function KeywordCloud({ region }: KeywordCloudProps) {
                   relative
                 `}
                 onClick={() => {
-                  window.location.href = `/search?q=${encodeURIComponent(cat.name)}`;
+                  window.location.href = `/products?category=${encodeURIComponent(cat.id)}`;
                 }}
               >
                 <span className="mr-1">{cat.emoji}</span>
