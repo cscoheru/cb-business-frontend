@@ -41,10 +41,23 @@ export default async function CountryPage({ params, searchParams }: PageProps) {
   }
 
   // 获取该国家的文章（优先按国家筛选，如果没有则按地区筛选）
-  const { articles, total } = await articlesApi.getArticles({
-    country: country.slug,  // 使用国家代码筛选
-    per_page: 50,  // 增加每页文章数量
-  });
+  // 注意：由于爬虫 API 暂时不可用，我们使用空数据或产品数据作为 fallback
+  let articles: Article[] = [];
+  let total = 0;
+
+  try {
+    const result = await articlesApi.getArticles({
+      country: country.slug,  // 使用国家代码筛选
+      per_page: 50,  // 增加每页文章数量
+    });
+    articles = result.articles;
+    total = result.total;
+  } catch (error) {
+    // API 失败时使用空数据（frontend 会显示 "整理中..."）
+    console.warn(`Failed to fetch articles for ${country.slug}:`, error);
+    articles = [];
+    total = 0;
+  }
 
   // 获取同一区域的其他国家
   const regionCountries = getCountriesByRegion(country.region);

@@ -25,7 +25,7 @@ function SearchPageContent() {
     const fetchArticles = async () => {
       setLoading(true);
       try {
-        const { articles: allArticles } = await articlesApi.getArticles({ per_page: 200 });
+        const { articles: allArticles } = await articlesApi.getArticles({ per_page: 100 });
         setArticles(allArticles);
       } catch (error) {
         console.error('Failed to fetch articles:', error);
