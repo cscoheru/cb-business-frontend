@@ -52,11 +52,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const response = await authApi.login(email, password);
 
     // 保存token和用户信息
-    setToken(response.token);
+    setToken(response.access_token);
     setUser(response.user);
 
     if (typeof window !== 'undefined') {
-      localStorage.setItem('token', response.token);
+      localStorage.setItem('token', response.access_token);
       localStorage.setItem('user', JSON.stringify(response.user));
     }
 
@@ -68,11 +68,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const response = await authApi.register(email, password, name);
 
     // 保存token和用户信息
-    setToken(response.token);
+    setToken(response.access_token);
     setUser(response.user);
 
     if (typeof window !== 'undefined') {
-      localStorage.setItem('token', response.token);
+      localStorage.setItem('token', response.access_token);
       localStorage.setItem('user', JSON.stringify(response.user));
     }
 
