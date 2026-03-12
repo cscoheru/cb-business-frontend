@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { countriesByRegion } from '@/config/countries';
 import type { CountryConfig } from '@/config/countries';
@@ -46,34 +47,110 @@ const REGION_COLORS: Record<string, { bg: string; text: string; border: string }
   },
 };
 
+// 信息源名称映射
+const SOURCE_NAMES: Record<string, string> = {
+  'retail_dive': 'Retail Dive',
+  'tech_in_asia': 'Tech in Asia',
+  'e27': 'e27',
+  'cifnews': '雨果网',
+  'techcrunch': 'TechCrunch',
+  'digital_commerce_360': 'Digital Commerce 360',
+  'ecommerce_bytes': 'EcommerceBytes',
+  'pymnts': 'PYMNTS',
+  'amazon_seller_news': 'Amazon Seller News',
+  'ebay_seller_news': 'eBay Seller News',
+  'paypal_blog': 'PayPal Blog',
+  'stripe_blog': 'Stripe Blog',
+  'emarketer': 'eMarketer',
+  'ennews': '亿恩网',
+  'mercopress': 'Mercopress',
+};
+
 export function KeywordCloud({ region }: KeywordCloudProps) {
   const countries = countriesByRegion[region] || [];
   const platforms = PLATFORMS_BY_REGION[region] || [];
   const colors = REGION_COLORS[region] || REGION_COLORS.southeast_asia;
 
+  const [sourcesByCountry, setSourcesByCountry] = useState<Record<string, string[]>>({});
+  const [loading, setLoading] = useState(true);
+
+  // 获取每个国家的信息来源
+  useEffect(() => {
+    async function fetchSources() {
+      try {
+        const response = await fetch('https://api.zenconsult.top/api/v1/crawler/sources/by-country');
+        if (response.ok) {
+          const data = await response.json();
+          // 提取每个国家的来源列表
+          const sourcesMap: Record<string, string[]> = {};
+          for (const [country, sources] of Object.entries(data.country_sources || {})) {
+            sourcesMap[country] = Object.keys(sources).map((s) => SOURCE_NAMES[s] || s);
+          }
+          setSourcesByCountry(sourcesMap);
+        }
+      } catch (error) {
+        console.error('Failed to fetch sources:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchSources();
+  }, []);
+
   return (
     <div className="space-y-4">
-      {/* 国家标签 */}
+      {/* 国家标签 + 信息来源 */}
       <div>
         <div className="text-xs text-gray-500 mb-2 flex items-center gap-1">
           <span>🌍</span>
           <span>国家/地区</span>
         </div>
-        <div className="flex flex-wrap gap-1.5">
-          {countries.map((country: CountryConfig) => (
-            <Link
-              key={country.slug}
-              href={`/${country.slug}`}
-              className={`
-                px-3 py-1.5 rounded-lg text-sm font-medium border
-                ${colors.bg} ${colors.text} ${colors.border}
-                transition-all duration-200 hover:shadow-sm hover:-translate-y-0.5
-              `}
-            >
-              <span className="mr-1">{country.flag}</span>
-              {country.name}
-            </Link>
-          ))}
+        <div className="space-y-2">
+          {countries.map((country: CountryConfig) => {
+            const sources = sourcesByCountry[country.slug] || [];
+            return (
+              <div
+                key={country.slug}
+                className={`
+                  p-3 rounded-lg border
+                  ${colors.bg} ${colors.border}
+                `}
+              >
+                <Link
+                  href={`/${country.slug}`}
+                  className={`
+                    text-sm font-medium ${colors.text} hover:underline
+                    flex items-center gap-2 mb-1
+                  `}
+                >
+                  <span>{country.flag}</span>
+                  <span>{country.name}</span>
+                  {sources.length > 0 && (
+                    <span className="text-xs opacity-70">
+                      ({sources.length} 个信息源)
+                    </span>
+                  )}
+                </Link>
+                {!loading && sources.length > 0 && (
+                  <div className="flex flex-wrap gap-1 mt-2">
+                    {sources.slice(0, 4).map((source) => (
+                      <span
+                        key={source}
+                        className="text-xs bg-white/70 px-2 py-0.5 rounded text-gray-600"
+                      >
+                        {source}
+                      </span>
+                    ))}
+                    {sources.length > 4 && (
+                      <span className="text-xs text-gray-500 px-2 py-0.5">
+                        +{sources.length - 4}
+                      </span>
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
 
