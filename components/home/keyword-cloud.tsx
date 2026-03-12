@@ -84,7 +84,7 @@ export function KeywordCloud({ region }: KeywordCloudProps) {
           // 提取每个国家的来源列表
           const sourcesMap: Record<string, string[]> = {};
           for (const [country, sources] of Object.entries(data.country_sources || {})) {
-            sourcesMap[country] = Object.keys(sources).map((s) => SOURCE_NAMES[s] || s);
+            sourcesMap[country] = Object.keys(sources as Record<string, unknown>).map((s) => SOURCE_NAMES[s] || s);
           }
           setSourcesByCountry(sourcesMap);
         }
