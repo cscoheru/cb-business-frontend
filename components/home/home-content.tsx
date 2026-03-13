@@ -17,7 +17,7 @@ export function HomeContent() {
 
       // 首先尝试从爬虫 API 获取文章
       try {
-        const response = await fetch('https://api.zenconsult.top/api/v1/crawler/articles?per_page=50');
+        const response = await fetch('https://api.zenconsult.top/api/v1/crawler-sync/articles?per_page=50');
 
         if (response.ok) {
           const data = await response.json();
