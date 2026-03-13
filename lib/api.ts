@@ -413,3 +413,173 @@ export const articlesApi = {
     return apiClient.get(`/api/v1/crawler/articles/${id}`, false);  // ✅ public endpoint
   },
 };
+
+// ============ Cards API ============
+export interface Card {
+  id: string;
+  title: string;
+  category: 'wireless_earbuds' | 'smart_plugs' | 'fitness_trackers';
+  content: {
+    summary: {
+      title: string;
+      opportunity_score: number;
+      market_size: number;
+      sweet_spot: {
+        min: number;
+        max: number;
+        best: number;
+      };
+      reliability: number;
+    };
+    market_data: {
+      price: {
+        min: number;
+        max: number;
+        avg: number;
+        count: number;
+      };
+      rating: {
+        min: number;
+        max: number;
+        avg: number;
+        count: number;
+      };
+    };
+    insights: {
+      price_sweet_spot: {
+        min: number;
+        max: number;
+        best: number;
+      };
+      top_products: Array<{
+        asin: string;
+        title: string;
+        price: number;
+        rating: number;
+        reviews_count: number;
+      }>;
+      market_saturation: 'low' | 'medium' | 'high';
+    };
+    recommendations: string[];
+    data_sources: string[];
+    generated_at: string;
+  };
+  analysis: {
+    category: string;
+    category_name: string;
+    market_data: {
+      total_products: number;
+      price_analysis: {
+        min: number;
+        max: number;
+        avg: number;
+        count: number;
+      };
+      rating_analysis: {
+        min: number;
+        max: number;
+        avg: number;
+        count: number;
+      };
+      data_source: string;
+      reliability: number;
+      fetch_time: string;
+    };
+    insights: any;
+    opportunity_score: number;
+    recommendations: string[];
+  };
+  amazon_data: {
+    products?: Array<{
+      asin: string;
+      title: string;
+      price: number;
+      rating: number;
+      reviews_count: number;
+      url: string;
+      image_url?: string;
+    }>;
+  };
+  created_at: string;
+  published_at: string | null;
+  views: number;
+  likes: number;
+  is_published: boolean;
+}
+
+export interface DailyCardsResponse {
+  success: boolean;
+  date: string;
+  count: number;
+  cards: Card[];
+}
+
+export interface LatestCardsResponse {
+  success: boolean;
+  count: number;
+  cards: Card[];
+}
+
+export interface CardHistoryResponse {
+  success: boolean;
+  total: number;
+  skip: number;
+  limit: number;
+  cards: Card[];
+}
+
+export interface CardStatsResponse {
+  success: boolean;
+  overview: {
+    total_cards: number;
+    published_cards: number;
+    today_cards: number;
+    total_views: number;
+    total_likes: number;
+    category_breakdown: {
+      wireless_earbuds: number;
+      smart_plugs: number;
+      fitness_trackers: number;
+    };
+  };
+}
+
+export const cardsApi = {
+  async getDailyCards(date?: string): Promise<DailyCardsResponse> {
+    const url = date
+      ? `/api/v1/cards/daily?date=${date}`
+      : '/api/v1/cards/daily';
+    return apiClient.get(url, false);
+  },
+
+  async getLatestCards(limit: number = 3): Promise<LatestCardsResponse> {
+    return apiClient.get(`/api/v1/cards/latest?limit=${limit}`, false);
+  },
+
+  async getCard(id: string): Promise<{ success: boolean; card: Card }> {
+    return apiClient.get(`/api/v1/cards/${id}`, false);
+  },
+
+  async likeCard(id: string): Promise<{ success: boolean; card_id: string; likes: number }> {
+    return apiClient.post(`/api/v1/cards/${id}/like`, {}, false);
+  },
+
+  async getCardHistory(params?: {
+    skip?: number;
+    limit?: number;
+    category?: string;
+  }): Promise<CardHistoryResponse> {
+    const searchParams = new URLSearchParams();
+    if (params?.skip) searchParams.set('skip', params.skip.toString());
+    if (params?.limit) searchParams.set('limit', params.limit.toString());
+    if (params?.category) searchParams.set('category', params.category);
+
+    const queryString = searchParams.toString();
+    const url = `/api/v1/cards/history${queryString ? `?${queryString}` : ''}`;
+    return apiClient.get(url, false);
+  },
+
+  async getCardStats(): Promise<CardStatsResponse> {
+    return apiClient.get('/api/v1/cards/stats/overview', false);
+  },
+};
