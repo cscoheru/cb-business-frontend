@@ -292,13 +292,13 @@ function PricingCard({
       <ul className="space-y-3 mb-8 flex-grow">
         {plan.tier === 'free' && (
           <>
-            <Feature name="10次/天 API调用" included />
-            <Feature name="3张卡片/天" included />
-            <Feature name="7天历史数据" included />
-            <Feature name="基础成本计算器" included />
-            <Feature name="社区支持" included />
-            <Feature name="AI分析" excluded />
-            <Feature name="数据导出" excluded />
+            <Feature name="10次/天 API调用" included={true} />
+            <Feature name="3张卡片/天" included={true} />
+            <Feature name="7天历史数据" included={true} />
+            <Feature name="基础成本计算器" included={true} />
+            <Feature name="社区支持" included={true} />
+            <Feature name="AI分析" included={false} />
+            <Feature name="数据导出" included={false} />
           </>
         )}
         {plan.tier === 'trial' && (
@@ -342,9 +342,9 @@ function Feature({ name, included, highlight }: { name: string; included: boolea
       {included ? (
         <Check className={`h-5 w-5 flex-shrink-0 ${highlight ? 'text-green-500' : 'text-primary'}`} />
       ) : (
-        <span className="h-5 w-4 flex-shrink-0" />
+        <span className="h-5 w-4 flex-shrink-0 opacity-20" />
       )}
-      <span className={included ? '' : 'text-muted-foreground'}>{name}</span>
+      <span className={!included ? 'text-muted-foreground' : ''}>{name}</span>
     </li>
   );
 }
