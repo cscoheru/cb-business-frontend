@@ -37,7 +37,7 @@ export function DailyCardsHero() {
           <div className="flex items-center justify-center gap-2 mb-3">
             <Sparkles className="h-6 w-6 text-yellow-500" />
             <span className="text-sm font-semibold text-blue-600 bg-blue-50 px-3 py-1 rounded-full">
-              每日更新 · 早上8点
+              实时生成 · 30分钟缓存
             </span>
           </div>
           <h1 className="text-4xl font-bold text-gray-900 mb-3">
