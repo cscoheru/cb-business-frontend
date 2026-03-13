@@ -84,6 +84,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const register = async (email: string, password: string, name: string) => {
+    // 检查是否已登录
+    if (user) {
+      throw new Error('您已登录，请先退出当前账户后再注册新账户');
+    }
+
     const { authApi } = await import('@/lib/api');
     const response = await authApi.register(email, password, name);
 
@@ -96,10 +101,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.setItem('user', JSON.stringify(response.user));
     }
 
-    // 注册后停留在当前页面，但如果当前是login/register页，则跳转到cards
-    if (pathname === '/login' || pathname === '/register') {
-      router.push('/cards');
-    }
+    // 注册后跳转到 dashboard
+    router.push('/dashboard');
   };
 
   const logout = () => {

@@ -360,8 +360,15 @@ function PricingCTA({
 }) {
   const { isAuthenticated } = useAuth();
 
-  // Free plan - always show register
+  // Free plan - 已登录用户显示"当前使用"，未登录显示注册
   if (plan.tier === 'free') {
+    if (isAuthenticated) {
+      return (
+        <Button className="w-full" variant="outline" disabled>
+          当前版本
+        </Button>
+      );
+    }
     return (
       <Link href="/register" className="block">
         <Button className="w-full" variant="outline">
@@ -371,16 +378,17 @@ function PricingCTA({
     );
   }
 
-  // Trial plan - show register for new users
+  // Trial plan - 新用户注册，已登录显示查看订阅
   if (plan.tier === 'trial') {
-    if (isAuthenticated && isCurrentPlan) {
-      return (
-        <Button className="w-full" disabled>
-          当前计划
-        </Button>
-      );
-    }
     if (isAuthenticated) {
+      if (isCurrentPlan) {
+        return (
+          <Button className="w-full bg-green-500" disabled>
+            当前计划
+          </Button>
+        );
+      }
+      // Free用户可以升级到Trial（实际上应该是直接升级到Pro）
       return (
         <Link href="/dashboard/settings/subscription" className="block">
           <Button className="w-full" variant="outline">
@@ -398,7 +406,7 @@ function PricingCTA({
     );
   }
 
-  // Pro plan - show upgrade flow
+  // Pro plan - 升级流程
   if (isAuthenticated) {
     if (isCurrentPlan) {
       return (
@@ -410,7 +418,7 @@ function PricingCTA({
     return (
       <Link href="/checkout?plan=pro" className="block">
         <Button className="w-full">
-          {cta}
+          立即升级
         </Button>
       </Link>
     );

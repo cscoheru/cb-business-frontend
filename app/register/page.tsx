@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -8,7 +8,7 @@ import { useAuth } from '@/lib/auth-context';
 
 export default function RegisterPage() {
   const router = useRouter();
-  const { register } = useAuth();
+  const { register, user } = useAuth();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -16,9 +16,22 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  // 如果已登录，重定向到 dashboard
+  useEffect(() => {
+    if (user) {
+      router.push('/dashboard');
+    }
+  }, [user, router]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+
+    // 再次检查是否已登录
+    if (user) {
+      setError('您已登录，无需注册新账户');
+      return;
+    }
 
     // 验证密码
     if (password !== confirmPassword) {
@@ -51,7 +64,7 @@ export default function RegisterPage() {
             创建您的账户
           </h2>
           <p className="mt-2 text-center text-sm text-muted-foreground">
-            开始您的跨境电商之旅
+            新用户自动获得14天试用版，体验完整功能
           </p>
         </div>
 
@@ -148,7 +161,7 @@ export default function RegisterPage() {
             size="lg"
             disabled={loading}
           >
-            {loading ? '注册中...' : '注册'}
+            {loading ? '注册中...' : '开始试用'}
           </Button>
 
           <div className="text-center text-sm text-muted-foreground">
