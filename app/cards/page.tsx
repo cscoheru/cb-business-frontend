@@ -13,6 +13,15 @@ const CATEGORY_OPTIONS = [
   { value: 'wireless_earbuds', label: '无线耳机' },
   { value: 'smart_plugs', label: '智能插座' },
   { value: 'fitness_trackers', label: '健身追踪器' },
+  { value: 'phone_chargers', label: '手机充电器' },
+  { value: 'desk_lamps', label: 'LED台灯' },
+  { value: 'phone_cases', label: '手机壳' },
+  { value: 'yoga_mats', label: '瑜伽垫' },
+  { value: 'coffee_makers', label: '咖啡机' },
+  { value: 'bluetooth_speakers', label: '蓝牙音箱' },
+  { value: 'webcams', label: '网络摄像头' },
+  { value: 'keyboards', label: '机械键盘' },
+  { value: 'mouse', label: '无线鼠标' },
 ];
 
 export default function CardsPage() {
@@ -20,7 +29,7 @@ export default function CardsPage() {
   const [latestCards, setLatestCards] = useState<Card[]>([]);
   const [historyCards, setHistoryCards] = useState<Card[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('daily');
+  const [activeTab, setActiveTab] = useState('history');
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [currentPage, setCurrentPage] = useState(0);
   const [totalCards, setTotalCards] = useState(0);
@@ -29,6 +38,7 @@ export default function CardsPage() {
   useEffect(() => {
     loadDailyCards();
     loadLatestCards();
+    loadHistoryCards(); // Load history cards on mount since it's the default tab
   }, []);
 
   useEffect(() => {
