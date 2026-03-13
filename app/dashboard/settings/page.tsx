@@ -8,9 +8,10 @@ import { Label } from '@/components/ui/label';
 import { Avatar } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { User, Bell, Globe, Shield, CreditCard, HelpCircle, Moon, Sun } from 'lucide-react';
+import { User, Bell, Globe, Shield, CreditCard, HelpCircle, Moon, Sun, ArrowRight } from 'lucide-react';
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 
 function SettingsContent() {
   const router = useRouter();
@@ -305,7 +306,9 @@ function SettingsContent() {
                   <h3 className="text-lg font-semibold">免费版</h3>
                   <p className="text-sm text-muted-foreground">¥0/月</p>
                 </div>
-                <Button size="sm">升级到专业版</Button>
+                <Link href="/checkout?plan=pro&cycle=monthly">
+                  <Button size="sm">升级到专业版</Button>
+                </Link>
               </div>
               <div className="space-y-2 text-sm">
                 <div className="flex items-center gap-2">
@@ -327,9 +330,52 @@ function SettingsContent() {
               </div>
             </div>
 
-            <div className="flex gap-4">
-              <Button variant="outline">查看专业版功能</Button>
-              <Button>立即升级</Button>
+            {/* Pricing Plans */}
+            <div className="grid md:grid-cols-2 gap-4 mb-6">
+              {/* Pro Plan - Monthly */}
+              <Card className="p-5 border-2 hover:border-primary transition-colors">
+                <div className="mb-4">
+                  <Badge className="mb-2">专业版</Badge>
+                  <h3 className="text-xl font-bold">月付订阅</h3>
+                  <p className="text-3xl font-bold mt-2">¥99<span className="text-sm font-normal text-muted-foreground">/月</span></p>
+                </div>
+                <ul className="space-y-2 text-sm mb-4">
+                  <li className="flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-green-500" />完整市场数据</li>
+                  <li className="flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-green-500" />AI机会分析</li>
+                  <li className="flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-green-500" />风险预警</li>
+                  <li className="flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-green-500" />无限API调用</li>
+                </ul>
+                <Link href="/checkout?plan=pro&cycle=monthly" className="block">
+                  <Button className="w-full">立即订阅</Button>
+                </Link>
+              </Card>
+
+              {/* Pro Plan - Yearly */}
+              <Card className="p-5 border-2 border-primary relative">
+                <Badge className="absolute -top-2 -right-2 bg-green-500">推荐</Badge>
+                <div className="mb-4">
+                  <Badge className="mb-2">专业版</Badge>
+                  <h3 className="text-xl font-bold">年付订阅</h3>
+                  <p className="text-3xl font-bold mt-2">¥990<span className="text-sm font-normal text-muted-foreground">/年</span></p>
+                  <p className="text-sm text-green-600">节省 ¥198</p>
+                </div>
+                <ul className="space-y-2 text-sm mb-4">
+                  <li className="flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-green-500" />完整市场数据</li>
+                  <li className="flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-green-500" />AI机会分析</li>
+                  <li className="flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-green-500" />风险预警</li>
+                  <li className="flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-green-500" />无限API调用</li>
+                </ul>
+                <Link href="/checkout?plan=pro&cycle=yearly" className="block">
+                  <Button className="w-full">立即订阅</Button>
+                </Link>
+              </Card>
+            </div>
+
+            <div className="flex items-center justify-between text-sm text-muted-foreground bg-muted p-4 rounded-lg">
+              <span>需要企业版？</span>
+              <Link href="/checkout?plan=enterprise&cycle=yearly" className="flex items-center gap-1 hover:underline">
+                查看企业方案 <ArrowRight className="h-4 w-4" />
+              </Link>
             </div>
           </Card>
 

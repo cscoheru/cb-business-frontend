@@ -633,3 +633,48 @@ export const favoritesApi = {
     return apiClient.get(`/api/v1/favorites/check/${cardId}`, true);
   },
 };
+
+// ============ Payment API ============
+export interface PaymentOrderRequest {
+  plan_tier: 'free' | 'pro' | 'enterprise';
+  billing_cycle: 'monthly' | 'yearly';
+  payment_method: 'wechat' | 'alipay' | 'airwallex';
+}
+
+export interface PaymentOrderResponse {
+  order_no: string;
+  amount: number;
+  currency: string;
+  payment_method: string;
+  code_url?: string;
+  qrcode_url?: string;
+  client_token?: string;
+  payment_intent_id?: string;
+  expires_at: string;
+}
+
+export const paymentsApi = {
+  async createOrder(
+    planTier: 'pro' | 'enterprise',
+    billingCycle: 'monthly' | 'yearly',
+    paymentMethod: 'airwallex' | 'wechat' = 'airwallex'
+  ): Promise<PaymentOrderResponse> {
+    return apiClient.post('/api/v1/payments/create', {
+      plan_tier: planTier,
+      billing_cycle: billingCycle,
+      payment_method: paymentMethod,
+    }, true);
+  },
+
+  async queryOrder(orderNo: string): Promise<{
+    order_no: string;
+    amount: number;
+    status: 'pending' | 'completed' | 'failed';
+    payment_method: string;
+    created_at: string;
+    completed_at?: string;
+    transaction_id?: string;
+  }> {
+    return apiClient.get(`/api/v1/payments/${orderNo}`, true);
+  },
+};
