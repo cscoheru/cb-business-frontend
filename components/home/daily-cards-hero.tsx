@@ -20,16 +20,12 @@ export function DailyCardsHero() {
 
   const loadDailyCards = async () => {
     try {
-      console.log('[DailyCardsHero] 开始获取每日卡片...');
       const response = await cardsApi.getDailyCards();
-      console.log('[DailyCardsHero] API响应:', response);
-      console.log('[DailyCardsHero] 卡片数量:', response?.cards?.length || 0);
       setCards(response.cards);
     } catch (error) {
-      console.error('[DailyCardsHero] 获取每日卡片失败:', error);
+      console.error('Failed to load daily cards:', error);
     } finally {
       setLoading(false);
-      console.log('[DailyCardsHero] Loading状态设置为false');
     }
   };
 
