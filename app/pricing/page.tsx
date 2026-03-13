@@ -358,77 +358,87 @@ function PricingCTA({
   cta: string;
   isCurrentPlan: boolean;
 }) {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
 
-  // Free plan - 已登录用户显示"当前使用"，未登录显示注册
-  if (plan.tier === 'free') {
-    if (isAuthenticated) {
+  // 未登录用户 - 显示注册按钮
+  if (!isAuthenticated) {
+    if (plan.tier === 'trial') {
       return (
-        <Button className="w-full" variant="outline" disabled>
-          当前版本
-        </Button>
+        <Link href="/register" className="block">
+          <Button className="w-full bg-green-500 hover:bg-green-600">
+            开始试用
+          </Button>
+        </Link>
       );
     }
+    if (plan.tier === 'pro') {
+      return (
+        <Link href="/register?plan=pro" className="block">
+          <Button className="w-full">
+            立即订阅
+          </Button>
+        </Link>
+      );
+    }
+    // Free plan for non-authenticated users
     return (
       <Link href="/register" className="block">
         <Button className="w-full" variant="outline">
-          {cta}
+          免费注册
         </Button>
       </Link>
     );
   }
 
-  // Trial plan - 新用户注册，已登录显示查看订阅
-  if (plan.tier === 'trial') {
-    if (isAuthenticated) {
-      if (isCurrentPlan) {
-        return (
-          <Button className="w-full bg-green-500" disabled>
-            当前计划
-          </Button>
-        );
-      }
-      // Free用户可以升级到Trial（实际上应该是直接升级到Pro）
+  // 已登录用户的逻辑
+  // Free plan - 根据用户当前计划显示不同按钮
+  if (plan.tier === 'free') {
+    if (user?.plan_tier === 'free') {
       return (
-        <Link href="/dashboard/settings/subscription" className="block">
-          <Button className="w-full" variant="outline">
-            查看订阅
-          </Button>
-        </Link>
+        <Button className="w-full" variant="outline" disabled>
+          当前计划
+        </Button>
       );
     }
+    // Trial 或 Pro 用户看到 Free 版时显示"已包含"
     return (
-      <Link href="/register" className="block">
-        <Button className="w-full bg-green-500 hover:bg-green-600">
-          {cta}
+      <Button className="w-full" variant="outline" disabled>
+        已包含在当前计划
+      </Button>
+    );
+  }
+
+  // Trial plan
+  if (plan.tier === 'trial') {
+    if (isCurrentPlan) {
+      return (
+        <Button className="w-full bg-green-500" disabled>
+          当前计划
+        </Button>
+      );
+    }
+    // Free 用户可以升级
+    return (
+      <Link href="/dashboard/settings/subscription" className="block">
+        <Button className="w-full" variant="outline">
+          查看订阅
         </Button>
       </Link>
     );
   }
 
   // Pro plan - 升级流程
-  if (isAuthenticated) {
-    if (isCurrentPlan) {
-      return (
-        <Button className="w-full" disabled>
-          当前计划
-        </Button>
-      );
-    }
+  if (isCurrentPlan) {
     return (
-      <Link href="/checkout?plan=pro" className="block">
-        <Button className="w-full">
-          立即升级
-        </Button>
-      </Link>
+      <Button className="w-full" disabled>
+        当前计划
+      </Button>
     );
   }
-
-  // Not authenticated
   return (
-    <Link href="/register?plan=pro" className="block">
+    <Link href="/checkout?plan=pro" className="block">
       <Button className="w-full">
-        {cta}
+        立即升级
       </Button>
     </Link>
   );
