@@ -1,8 +1,10 @@
 'use client';
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import type { User } from '@/lib/api';
+
+const TOKEN_KEY = 'auth_token';
 
 interface AuthContextType {
   user: User | null;
@@ -21,25 +23,45 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
+  const pathname = usePathname();
 
-  // 从localStorage恢复登录状态
+  // 应用启动时验证token有效性
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const savedUser = localStorage.getItem('user');
-      const savedToken = localStorage.getItem('token');
-
-      if (savedUser && savedToken) {
-        try {
-          setUser(JSON.parse(savedUser));
-          setToken(savedToken);
-        } catch (e) {
-          // 清除无效数据
-          localStorage.removeItem('user');
-          localStorage.removeItem('token');
-        }
+    const verifyToken = async () => {
+      if (typeof window === 'undefined') {
+        setIsLoading(false);
+        return;
       }
-      setIsLoading(false);
-    }
+
+      const savedToken = localStorage.getItem(TOKEN_KEY);
+      const savedUser = localStorage.getItem('user');
+
+      if (!savedToken) {
+        setIsLoading(false);
+        return;
+      }
+
+      // 有token，尝试验证
+      try {
+        const { usersApi } = await import('@/lib/api');
+        const userData = await usersApi.getMe();
+
+        // Token有效，设置用户状态
+        setUser(userData);
+        setToken(savedToken);
+      } catch (error) {
+        // Token无效或过期，清除本地存储
+        console.error('Token验证失败:', error);
+        localStorage.removeItem(TOKEN_KEY);
+        localStorage.removeItem('user');
+        setUser(null);
+        setToken(null);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    verifyToken();
   }, []);
 
   const login = async (email: string, password: string) => {
@@ -51,11 +73,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(response.user);
 
     if (typeof window !== 'undefined') {
-      localStorage.setItem('token', response.access_token);
+      localStorage.setItem(TOKEN_KEY, response.access_token);
       localStorage.setItem('user', JSON.stringify(response.user));
     }
 
-    router.push('/dashboard');
+    // 登录后停留在当前页面，但如果当前是login/register页，则跳转到cards
+    if (pathname === '/login' || pathname === '/register') {
+      router.push('/cards');
+    }
   };
 
   const register = async (email: string, password: string, name: string) => {
@@ -67,11 +92,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(response.user);
 
     if (typeof window !== 'undefined') {
-      localStorage.setItem('token', response.access_token);
+      localStorage.setItem(TOKEN_KEY, response.access_token);
       localStorage.setItem('user', JSON.stringify(response.user));
     }
 
-    router.push('/dashboard');
+    // 注册后停留在当前页面，但如果当前是login/register页，则跳转到cards
+    if (pathname === '/login' || pathname === '/register') {
+      router.push('/cards');
+    }
   };
 
   const logout = () => {
@@ -79,11 +107,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setToken(null);
 
     if (typeof window !== 'undefined') {
+      localStorage.removeItem(TOKEN_KEY);
       localStorage.removeItem('user');
-      localStorage.removeItem('token');
     }
 
-    router.push('/');
+    // 登出后停留在当前页面
   };
 
   const value: AuthContextType = {

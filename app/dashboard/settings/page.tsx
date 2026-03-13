@@ -9,15 +9,36 @@ import { Avatar } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { User, Bell, Globe, Shield, CreditCard, HelpCircle, Moon, Sun } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 
-export default function SettingsPage() {
+function SettingsContent() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [darkMode, setDarkMode] = useState(false);
   const [notifications, setNotifications] = useState({
     email: true,
     push: false,
     sms: false,
   });
+
+  // Get tab from URL query param, default to 'profile'
+  const activeTab = searchParams.get('tab') || 'profile';
+
+  // Update URL when tab changes
+  const handleTabChange = (value: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('tab', value);
+    router.push(`/dashboard/settings?${params.toString()}`, { scroll: false });
+  };
+
+  // Validate tab on mount (redirect to profile if invalid)
+  useEffect(() => {
+    const validTabs = ['profile', 'preferences', 'notifications', 'subscription', 'billing'];
+    if (!validTabs.includes(activeTab)) {
+      router.replace('/dashboard/settings?tab=profile');
+    }
+  }, [activeTab, router]);
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -29,7 +50,7 @@ export default function SettingsPage() {
         </p>
       </div>
 
-      <Tabs defaultValue="profile" className="space-y-6">
+      <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-6">
         <TabsList className="grid w-full max-w-lg grid-cols-5">
           <TabsTrigger value="profile">个人资料</TabsTrigger>
           <TabsTrigger value="preferences">偏好设置</TabsTrigger>
@@ -339,5 +360,19 @@ export default function SettingsPage() {
         </TabsContent>
       </Tabs>
     </div>
+  );
+}
+
+export default function SettingsPage() {
+  return (
+    <Suspense fallback={
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex items-center justify-center h-64">
+          <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" />
+        </div>
+      </div>
+    }>
+      <SettingsContent />
+    </Suspense>
   );
 }

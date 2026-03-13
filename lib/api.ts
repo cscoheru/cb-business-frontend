@@ -592,3 +592,44 @@ export const cardsApi = {
     return apiClient.get('/api/v1/cards/stats/overview', false);
   },
 };
+
+// ============ Favorites API ============
+
+export interface FavoriteItem {
+  id: string;
+  card_id: string;
+  created_at: string;
+  card: Card;
+}
+
+export interface FavoriteCheckResponse {
+  is_favorite: boolean;
+  favorite_id: string | null;
+}
+
+export const favoritesApi = {
+  async getFavorites(): Promise<FavoriteItem[]> {
+    return apiClient.get('/api/v1/favorites', true);
+  },
+
+  async addFavorite(cardId: string): Promise<{
+    id: string;
+    user_id: string;
+    card_id: string;
+    created_at: string;
+  }> {
+    return apiClient.post('/api/v1/favorites', { card_id: cardId }, true);
+  },
+
+  async removeFavorite(favoriteId: string): Promise<void> {
+    return apiClient.delete(`/api/v1/favorites/${favoriteId}`, true);
+  },
+
+  async removeFavoriteByCard(cardId: string): Promise<void> {
+    return apiClient.delete(`/api/v1/favorites/card/${cardId}`, true);
+  },
+
+  async checkFavorite(cardId: string): Promise<FavoriteCheckResponse> {
+    return apiClient.get(`/api/v1/favorites/check/${cardId}`, true);
+  },
+};

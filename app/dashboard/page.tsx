@@ -13,12 +13,11 @@ export default function DashboardPage() {
 
   return (
     <ProtectedRoute>
-  return (
-    <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8">
       {/* Welcome Section */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2">
-          早上好，创业者！
+          早上好，{user?.name || user?.email || '创业者'}！
         </h1>
         <p className="text-muted-foreground">
           今天有 <span className="text-primary font-bold">3个</span> 新机会等待您
@@ -100,7 +99,7 @@ export default function DashboardPage() {
           </Card>
         </div>
       </section>
-    </div>
+      </div>
     </ProtectedRoute>
   );
 }
