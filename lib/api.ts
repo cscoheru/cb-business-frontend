@@ -418,7 +418,7 @@ export const articlesApi = {
 export interface Card {
   id: string;
   title: string;
-  category: 'wireless_earbuds' | 'smart_plugs' | 'fitness_trackers';
+  category: 'wireless_earbuds' | 'smart_plugs' | 'fitness_trackers' | 'phone_chargers' | 'desk_lamps' | 'phone_cases' | 'yoga_mats' | 'coffee_makers' | 'bluetooth_speakers' | 'webcams' | 'keyboards' | 'mouse';
   content: {
     summary: {
       title: string;
@@ -540,6 +540,15 @@ export interface CardStatsResponse {
       wireless_earbuds: number;
       smart_plugs: number;
       fitness_trackers: number;
+      phone_chargers: number;
+      desk_lamps: number;
+      phone_cases: number;
+      yoga_mats: number;
+      coffee_makers: number;
+      bluetooth_speakers: number;
+      webcams: number;
+      keyboards: number;
+      mouse: number;
     };
   };
 }

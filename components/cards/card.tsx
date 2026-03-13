@@ -18,12 +18,30 @@ const CATEGORY_NAMES: Record<string, string> = {
   wireless_earbuds: '无线耳机',
   smart_plugs: '智能插座',
   fitness_trackers: '健身追踪器',
+  phone_chargers: '手机充电器',
+  desk_lamps: 'LED台灯',
+  phone_cases: '手机壳',
+  yoga_mats: '瑜伽垫',
+  coffee_makers: '咖啡机',
+  bluetooth_speakers: '蓝牙音箱',
+  webcams: '网络摄像头',
+  keyboards: '机械键盘',
+  mouse: '无线鼠标',
 };
 
 const CATEGORY_COLORS: Record<string, string> = {
   wireless_earbuds: 'bg-blue-100 text-blue-800',
   smart_plugs: 'bg-green-100 text-green-800',
   fitness_trackers: 'bg-purple-100 text-purple-800',
+  phone_chargers: 'bg-orange-100 text-orange-800',
+  desk_lamps: 'bg-yellow-100 text-yellow-800',
+  phone_cases: 'bg-pink-100 text-pink-800',
+  yoga_mats: 'bg-teal-100 text-teal-800',
+  coffee_makers: 'bg-amber-100 text-amber-800',
+  bluetooth_speakers: 'bg-indigo-100 text-indigo-800',
+  webcams: 'bg-cyan-100 text-cyan-800',
+  keyboards: 'bg-red-100 text-red-800',
+  mouse: 'bg-lime-100 text-lime-800',
 };
 
 function getScoreColor(score: number): string {
