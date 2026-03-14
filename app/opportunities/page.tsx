@@ -5,39 +5,6 @@ import Link from 'next/link';
 import { useAuth } from '@/lib/auth-context';
 import { SubscriptionPrompt } from '@/components/opportunities/permission-badge';
 
-// Intercept ALL network requests ASAP - before any component renders
-if (typeof window !== 'undefined') {
-  // Intercept fetch
-  const originalFetch = window.fetch;
-  window.fetch = function(url: RequestInfo | URL, options?: RequestInit): Promise<Response> {
-    const urlStr = url.toString();
-    console.log('🔍 Intercepted fetch:', urlStr);
-
-    if (urlStr.includes('http://api.zenconsult.top')) {
-      const httpsUrl = urlStr.replace('http://api.zenconsult.top', 'https://api.zenconsult.top');
-      console.log('🔧 FORCED fetch:', urlStr, '→', httpsUrl);
-      return originalFetch(httpsUrl, options);
-    }
-    return originalFetch(url, options);
-  };
-
-  // Intercept XMLHttpRequest
-  const originalXHROpen = XMLHttpRequest.prototype.open;
-  XMLHttpRequest.prototype.open = function(method: string, url: string | URL, ...rest: any[]) {
-    const urlStr = url.toString();
-    console.log('🔍 Intercepted XHR:', method, urlStr);
-
-    if (urlStr.includes('http://api.zenconsult.top')) {
-      const httpsUrl = urlStr.replace('http://api.zenconsult.top', 'https://api.zenconsult.top');
-      console.log('🔧 FORCED XHR:', urlStr, '→', httpsUrl);
-      arguments[1] = httpsUrl;
-    }
-    return originalXHROpen.apply(this, arguments as any);
-  };
-
-  console.log('✅ Opportunities page network interceptor installed (fetch + XHR)');
-}
-
 interface Opportunity {
   id: string;
   title: string;
@@ -80,9 +47,7 @@ export default function OpportunitiesPage() {
     const url = process.env.NEXT_PUBLIC_API_URL || 'https://api.zenconsult.top';
     // Force HTTPS in client-side
     if (typeof window !== 'undefined' && url.startsWith('http://')) {
-      const httpsUrl = url.replace('http://', 'https://');
-      console.warn('Forced API URL from HTTP to HTTPS:', url, '→', httpsUrl);
-      return httpsUrl;
+      return url.replace('http://', 'https://');
     }
     return url;
   };
@@ -115,8 +80,6 @@ export default function OpportunitiesPage() {
       }
 
       const API_BASE_URL = getApiUrl();
-      console.log('Fetching opportunities from:', API_BASE_URL);
-
       const response = await fetch(`${API_BASE_URL}/api/v1/opportunities?${params}`, {
         headers
       });
@@ -137,8 +100,6 @@ export default function OpportunitiesPage() {
       }
 
       const API_BASE_URL = getApiUrl();
-      console.log('Fetching funnel from:', API_BASE_URL);
-
       const response = await fetch(`${API_BASE_URL}/api/v1/opportunities/funnel`, {
         headers
       });

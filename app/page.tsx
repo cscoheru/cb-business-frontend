@@ -5,35 +5,13 @@ import { SEOBanner } from '@/components/home/seo-banner';
 import { OpportunityFunnelLoader } from '@/components/home/opportunity-funnel-loader';
 
 export default function HomePage() {
-  // Get current API URL
-  const currentApiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.zenconsult.top';
-
   return (
     <div className="bg-gray-100 min-h-screen">
-      {/* DEBUG横幅 - 临时显示API URL */}
-      <div style={{
-        position: 'fixed',
-        top: '0',
-        left: '0',
-        right: '0',
-        background: currentApiUrl.startsWith('https://') ? '#10b981' : '#ef4444',
-        color: 'white',
-        padding: '8px',
-        textAlign: 'center',
-        zIndex: 9999,
-        fontSize: '14px',
-        fontWeight: 'bold'
-      }}>
-        🔍 DEBUG: API URL = {currentApiUrl} {currentApiUrl.startsWith('https://') ? '✅ HTTPS' : '❌ HTTP'}
-      </div>
-
       {/* SEO横幅 - 营销和价值主张 */}
-      <div style={{ marginTop: '40px' }}>
-        <SEOBanner />
-      </div>
+      <SEOBanner />
 
       {/* 全局导航栏 */}
-      <nav className="bg-white border-b sticky top-0 z-50 shadow-sm" style={{ top: '40px' }}>
+      <nav className="bg-white border-b sticky top-0 z-50 shadow-sm">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex items-center justify-between h-14">
             <div className="flex items-center gap-8">
