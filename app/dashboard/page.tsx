@@ -5,6 +5,7 @@ import { JourneyTracker } from '@/components/dashboard/JourneyTracker';
 import { QuickActionCard } from '@/components/dashboard/QuickActionCard';
 import { OpportunityCard, mockOpportunityCard } from '@/components/dashboard/OpportunityCard';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import { TrialReminderBanner } from '@/components/trial/trial-reminder-banner';
 import { useAuth } from '@/lib/auth-context';
 import Link from 'next/link';
 
@@ -13,6 +14,9 @@ export default function DashboardPage() {
 
   return (
     <ProtectedRoute>
+      {/* Trial Reminder Banner - Full mode */}
+      <TrialReminderBanner />
+
       <div className="container mx-auto px-4 py-8">
       {/* Welcome Section */}
       <div className="mb-8">
