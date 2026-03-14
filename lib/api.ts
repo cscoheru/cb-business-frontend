@@ -26,13 +26,14 @@ export interface User {
   name: string | null;
   phone: string | null;
   avatar_url: string | null;
-  plan_tier: 'free' | 'pro' | 'enterprise';
+  plan_tier: 'trial' | 'free' | 'pro' | 'enterprise';  // ✅ Added 'trial'
   plan_status: 'active' | 'canceled' | 'expired';  // ✅ Fixed: was 'cancelled'
   region_preference: string | null;
   currency_preference: string;
   created_at: string;
   last_login_at: string | null;  // ✅ Fixed: was 'last_active_at'
   is_admin: boolean;  // ✅ Added
+  trial_ends_at: string | null;  // ✅ Added trial_ends_at
 }
 
 export interface AuthResponse {
