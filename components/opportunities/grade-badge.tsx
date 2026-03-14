@@ -1,7 +1,6 @@
 'use client';
 
 import { Badge } from '@/components/ui/badge';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Info } from 'lucide-react';
 
 /**
@@ -85,36 +84,17 @@ export function OpportunityGradeBadge({
   };
 
   return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Badge
-            variant="outline"
-            className={`${config.color} ${config.bgColor} ${config.textColor} ${sizeClasses[size]} border-2 font-medium`}
-          >
-            <span className="mr-1">{config.icon}</span>
-            <span>{config.label}</span>
-            {showScore && score !== null && score !== undefined && (
-              <span className="ml-1 opacity-75">({Math.round(score)}分)</span>
-            )}
-          </Badge>
-        </TooltipTrigger>
-        <TooltipContent className="max-w-xs">
-          <div className="space-y-1">
-            <p className="font-medium">{config.label}</p>
-            <p className="text-sm text-muted-foreground">{config.description}</p>
-            {score !== null && score !== undefined && (
-              <div className="mt-2 pt-2 border-t">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">C-P-I总分:</span>
-                  <span className="font-medium">{Math.round(score)}分</span>
-                </div>
-              </div>
-            )}
-          </div>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+    <Badge
+      variant="outline"
+      className={`${config.color} ${config.bgColor} ${config.textColor} ${sizeClasses[size]} border-2 font-medium`}
+      title={config.description}
+    >
+      <span className="mr-1">{config.icon}</span>
+      <span>{config.label}</span>
+      {showScore && score !== null && score !== undefined && (
+        <span className="ml-1 opacity-75">({Math.round(score)}分)</span>
+      )}
+    </Badge>
   );
 }
 
