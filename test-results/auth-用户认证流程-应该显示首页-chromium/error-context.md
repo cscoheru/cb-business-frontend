@@ -4,47 +4,488 @@
 - generic [active] [ref=e1]:
   - banner [ref=e2]:
     - generic [ref=e3]:
-      - link "CB Business" [ref=e4] [cursor=pointer]:
+      - link "🎯 ZenConsult" [ref=e4] [cursor=pointer]:
         - /url: /
-      - navigation [ref=e5]:
-        - link "定价" [ref=e6] [cursor=pointer]:
+        - generic [ref=e5]: 🎯
+        - generic [ref=e6]: ZenConsult
+      - navigation [ref=e7]:
+        - link "商机卡片" [ref=e8] [cursor=pointer]:
+          - /url: /
+        - link "历史卡片" [ref=e9] [cursor=pointer]:
+          - /url: /cards
+        - link "收藏" [ref=e10] [cursor=pointer]:
+          - /url: /favorites
+          - img [ref=e11]
+          - text: 收藏
+        - link "定价" [ref=e13] [cursor=pointer]:
           - /url: /pricing
-        - link "Dashboard" [ref=e7] [cursor=pointer]:
-          - /url: /dashboard
-        - button "登录" [ref=e8]
-        - button "免费注册" [ref=e9]
-  - main [ref=e10]:
-    - generic [ref=e12]:
-      - heading "发现跨境电商新机会" [level=1] [ref=e13]
-      - paragraph [ref=e14]: AI驱动的市场洞察，帮你在东南亚、欧美、拉美市场找到蓝海
-      - generic [ref=e15]:
-        - button "免费开始" [ref=e16]
-        - button "查看演示" [ref=e17]
+        - link "登录" [ref=e14] [cursor=pointer]:
+          - /url: /login
+          - button "登录" [ref=e15]
+        - link "免费注册" [ref=e16] [cursor=pointer]:
+          - /url: /register
+          - button "免费注册" [ref=e17]
+  - main [ref=e18]:
     - generic [ref=e19]:
-      - heading "为什么选择我们" [level=2] [ref=e20]
-      - generic [ref=e21]:
-        - generic [ref=e22]:
-          - generic [ref=e23]: 🔍
-          - heading "机会发现" [level=3] [ref=e24]
-          - paragraph [ref=e25]: AI分析市场趋势
-        - generic [ref=e26]:
-          - generic [ref=e27]: ⚠️
-          - heading "风险预警" [level=3] [ref=e28]
-          - paragraph [ref=e29]: 实时政策监控
-        - generic [ref=e30]:
-          - generic [ref=e31]: 📋
-          - heading "实操指南" [level=3] [ref=e32]
-          - paragraph [ref=e33]: 详细操作手册
-        - generic [ref=e34]:
-          - generic [ref=e35]: 💰
-          - heading "成本计算" [level=3] [ref=e36]
-          - paragraph [ref=e37]: 精确利润分析
-    - generic [ref=e39]:
-      - heading "开始你的跨境电商之旅" [level=2] [ref=e40]
-      - button "免费注册" [ref=e41]
-  - contentinfo [ref=e42]:
-    - paragraph [ref=e44]: © 2025 Cross-Border Business. All rights reserved.
-  - button "Open Next.js Dev Tools" [ref=e50] [cursor=pointer]:
-    - img [ref=e51]
-  - alert [ref=e54]
+      - generic [ref=e22]:
+        - generic [ref=e23]:
+          - generic [ref=e24]: 🎯
+          - generic [ref=e25]:
+            - heading "AI驱动的跨境电商智能选品平台" [level=1] [ref=e26]
+            - paragraph [ref=e27]: 14天免费试用 • 无限商机查看 • 智能数据分析 • 市场趋势预测
+        - generic [ref=e28]:
+          - link "立即体验" [ref=e29] [cursor=pointer]:
+            - /url: /register
+          - generic [ref=e30]:
+            - button "显示横幅 1" [ref=e31]
+            - button "显示横幅 2" [ref=e32]
+            - button "显示横幅 3" [ref=e33]
+          - button "关闭横幅" [ref=e34]:
+            - img [ref=e35]
+      - navigation [ref=e37]:
+        - generic [ref=e39]:
+          - generic [ref=e40]:
+            - link "💎 ZenConsult" [ref=e41] [cursor=pointer]:
+              - /url: /
+              - generic [ref=e42]: 💎
+              - text: ZenConsult
+            - generic [ref=e43]:
+              - link "商机卡片" [ref=e44] [cursor=pointer]:
+                - /url: /cards
+              - link "智能商机" [ref=e45] [cursor=pointer]:
+                - /url: /opportunities
+              - link "我的收藏" [ref=e46] [cursor=pointer]:
+                - /url: /favorites
+          - generic [ref=e47]:
+            - link "登录" [ref=e48] [cursor=pointer]:
+              - /url: /login
+            - link "注册" [ref=e49] [cursor=pointer]:
+              - /url: /register
+      - generic [ref=e51]:
+        - generic [ref=e52]:
+          - generic [ref=e53]:
+            - img [ref=e54]
+            - generic [ref=e57]: 💾 缓存模式 · 30分钟智能缓存
+          - heading "今日线索精选" [level=1] [ref=e58]
+          - paragraph [ref=e59]: AI分析Amazon市场数据，发现高潜力线索。收藏感兴趣的线索， 我们会用算法评估其商机价值并跟踪变化。
+          - paragraph [ref=e60]: 💡 线索 → 算法评估 → 数据验证 → 商机决策
+        - generic [ref=e75]:
+          - generic [ref=e78]: "数据来源: Oxylabs Amazon API"
+          - generic [ref=e81]: "可靠性: 95%"
+          - generic [ref=e84]: "更新频率: 每日 8:00 AM"
+        - link "查看所有卡片" [ref=e86] [cursor=pointer]:
+          - /url: /cards
+          - button "查看所有卡片" [ref=e87]:
+            - text: 查看所有卡片
+            - img
+      - generic [ref=e89]:
+        - generic [ref=e90]:
+          - generic [ref=e91]:
+            - heading "🎯 AI智能商机跟踪" [level=2] [ref=e92]
+            - paragraph [ref=e93]: 线索发现 → 算法评估 → 数据验证 → 商机决策
+          - link "查看商机" [ref=e94] [cursor=pointer]:
+            - /url: /opportunities
+            - text: 查看商机
+            - img [ref=e95]
+        - generic [ref=e97]:
+          - generic [ref=e98]:
+            - generic [ref=e99]: "32"
+            - generic [ref=e100]: 发现期
+            - generic [ref=e101]: AI分析中
+          - generic [ref=e102]:
+            - generic [ref=e103]: "0"
+            - generic [ref=e104]: 验证期
+            - generic [ref=e105]: 待验证
+          - generic [ref=e106]:
+            - generic [ref=e107]: "0"
+            - generic [ref=e108]: 评估期
+            - generic [ref=e109]: 待评估
+          - generic [ref=e110]:
+            - generic [ref=e111]: "0"
+            - generic [ref=e112]: 执行期
+            - generic [ref=e113]: 待执行
+        - generic [ref=e114]:
+          - link "发现期 AI可信度 40% 南非2025年第四季度经济微增0.4%，全年增速1.1%创三年新高 简介：南非经济在2025年第四季度环比增长0.4%，略高于Trading Economics和路透社分析师预测的0.3%。修正数据显示，第三季度GDP增幅从最初公布的0.5%下调至0.3%。10-12月期间，该国十大行业中有五个实现增长，其中金融业增长1.4%、贸易业增长0.9%，但制造业下降0.6%。消费支出增长1.2%，政府支出增0.5%，商业投资上升1.3%。出口下降0.6%，进口增长0.5%。相较于2024年同期的0.8%增幅，此次增速放缓，未达专家预期的1.8%。2025年全年经济增长1.1%，创三年最佳纪录，但仍低于央行（1.3%）和财政部（1.4%）的预期。2024年GDP仅增长0.5%。南非经济在2025年第四季度环比增长0.4%，略高于Trading Economics和路透社分析师预测的0.3%。修正数据显示，第三季度GDP增幅从最初公布的0.5%下调至0.3%。10-12月期间，该国十大行业中有五个实现增长，其中金融业增长1.4%、贸易业增长0.9%，但制造业下降0.6%。消费支出增长1.2%，政府支出增0.5%，商业投资上升1.3%。出口下降0.6%，进口增长0" [ref=e115] [cursor=pointer]:
+            - /url: /opportunities/710470e1-a391-4007-81fb-824076e4f120
+            - generic [ref=e116]:
+              - generic [ref=e117]: 发现期
+              - generic [ref=e118]: AI可信度 40%
+            - heading "南非2025年第四季度经济微增0.4%，全年增速1.1%创三年新高" [level=3] [ref=e119]
+            - paragraph [ref=e120]: 简介：南非经济在2025年第四季度环比增长0.4%，略高于Trading Economics和路透社分析师预测的0.3%。修正数据显示，第三季度GDP增幅从最初公布的0.5%下调至0.3%。10-12月期间，该国十大行业中有五个实现增长，其中金融业增长1.4%、贸易业增长0.9%，但制造业下降0.6%。消费支出增长1.2%，政府支出增0.5%，商业投资上升1.3%。出口下降0.6%，进口增长0.5%。相较于2024年同期的0.8%增幅，此次增速放缓，未达专家预期的1.8%。2025年全年经济增长1.1%，创三年最佳纪录，但仍低于央行（1.3%）和财政部（1.4%）的预期。2024年GDP仅增长0.5%。南非经济在2025年第四季度环比增长0.4%，略高于Trading Economics和路透社分析师预测的0.3%。修正数据显示，第三季度GDP增幅从最初公布的0.5%下调至0.3%。10-12月期间，该国十大行业中有五个实现增长，其中金融业增长1.4%、贸易业增长0.9%，但制造业下降0.6%。消费支出增长1.2%，政府支出增0.5%，商业投资上升1.3%。出口下降0.6%，进口增长0
+          - link "发现期 AI可信度 40% Could off-price retailers start grabbing market share from each other? So far, department stores and other mainstream retailers have the most to fear as TJX, Ross and Burlington open hundreds of stores each year. An article from Could off-price retailers start grabbing market share from each other? So far, department stores and other mainstream retailers have the most to fear as TJX, Ross and Burlington open hundreds of stores each year. Published March 11, 2026 Daphne Howland Senior Reporter Share Copy link Email LinkedIn X/Twitter Facebook Print License Add us o" [ref=e121] [cursor=pointer]:
+            - /url: /opportunities/a542c1a9-9b8f-4f8c-bf76-e4d04ec1ccb2
+            - generic [ref=e122]:
+              - generic [ref=e123]: 发现期
+              - generic [ref=e124]: AI可信度 40%
+            - heading "Could off-price retailers start grabbing market share from each other?" [level=3] [ref=e125]
+            - paragraph [ref=e126]: So far, department stores and other mainstream retailers have the most to fear as TJX, Ross and Burlington open hundreds of stores each year. An article from Could off-price retailers start grabbing market share from each other? So far, department stores and other mainstream retailers have the most to fear as TJX, Ross and Burlington open hundreds of stores each year. Published March 11, 2026 Daphne Howland Senior Reporter Share Copy link Email LinkedIn X/Twitter Facebook Print License Add us o
+          - link "发现期 AI可信度 40% 法国1月外贸逆差大幅收窄至18亿欧元，创近15年新低 简介：法国1月外贸逆差缩减至18亿欧元，较此前修正后的43亿欧元显著下降，创2009年7月以来最低水平。进口额环比减少3.6%至553亿欧元，其中运输设备采购下降9.6%，能源产品进口下滑10.6%。对亚洲和非洲的进口分别减少6.7%和17%。出口微增0.7%达534亿欧元，能源产品出口增长16.2%，但对亚洲和中东地区的出口分别下降5.8%和36.9%。欧盟内部贸易表现强劲，对欧共体国家出口增长3.8%。法国1月外贸逆差缩减至18亿欧元，较此前修正后的43亿欧元显著下降，创2009年7月以来最低水平。进口额环比减少3.6%至553亿欧元，其中运输设备采购下降9.6%，能源产品进口下滑10.6%。对亚洲和非洲的进口分别减少6.7%和17%。出口微增0.7%达534亿欧元，能源产品出口增长16.2%，但对亚洲和中东地区的出口分别下降5.8%和36.9%。欧盟内部贸易表现强劲，对欧共体国家出口增长3.8%。" [ref=e127] [cursor=pointer]:
+            - /url: /opportunities/a492e454-a9ea-461a-ac73-9c0e0bea42c6
+            - generic [ref=e128]:
+              - generic [ref=e129]: 发现期
+              - generic [ref=e130]: AI可信度 40%
+            - heading "法国1月外贸逆差大幅收窄至18亿欧元，创近15年新低" [level=3] [ref=e131]
+            - paragraph [ref=e132]: 简介：法国1月外贸逆差缩减至18亿欧元，较此前修正后的43亿欧元显著下降，创2009年7月以来最低水平。进口额环比减少3.6%至553亿欧元，其中运输设备采购下降9.6%，能源产品进口下滑10.6%。对亚洲和非洲的进口分别减少6.7%和17%。出口微增0.7%达534亿欧元，能源产品出口增长16.2%，但对亚洲和中东地区的出口分别下降5.8%和36.9%。欧盟内部贸易表现强劲，对欧共体国家出口增长3.8%。法国1月外贸逆差缩减至18亿欧元，较此前修正后的43亿欧元显著下降，创2009年7月以来最低水平。进口额环比减少3.6%至553亿欧元，其中运输设备采购下降9.6%，能源产品进口下滑10.6%。对亚洲和非洲的进口分别减少6.7%和17%。出口微增0.7%达534亿欧元，能源产品出口增长16.2%，但对亚洲和中东地区的出口分别下降5.8%和36.9%。欧盟内部贸易表现强劲，对欧共体国家出口增长3.8%。
+      - generic [ref=e134]:
+        - generic [ref=e135]:
+          - heading "深度数据探索" [level=2] [ref=e136]
+          - paragraph [ref=e137]: 按地区、主题浏览完整的市场资讯库
+        - generic [ref=e138]:
+          - link "🌏 东南亚市场 泰国、越南、马来西亚... 查看 →" [ref=e139] [cursor=pointer]:
+            - /url: /th
+            - generic [ref=e140]: 🌏
+            - heading "东南亚市场" [level=3] [ref=e141]
+            - paragraph [ref=e142]: 泰国、越南、马来西亚...
+            - generic [ref=e143]: 查看 →
+          - link "🇺🇸 欧美市场 美国、加拿大、欧洲... 查看 →" [ref=e144] [cursor=pointer]:
+            - /url: /us
+            - generic [ref=e145]: 🇺🇸
+            - heading "欧美市场" [level=3] [ref=e146]
+            - paragraph [ref=e147]: 美国、加拿大、欧洲...
+            - generic [ref=e148]: 查看 →
+          - link "🇧🇷 拉美市场 巴西、墨西哥、哥伦比亚... 查看 →" [ref=e149] [cursor=pointer]:
+            - /url: /br
+            - generic [ref=e150]: 🇧🇷
+            - heading "拉美市场" [level=3] [ref=e151]
+            - paragraph [ref=e152]: 巴西、墨西哥、哥伦比亚...
+            - generic [ref=e153]: 查看 →
+      - generic [ref=e155]:
+        - generic [ref=e156]:
+          - generic [ref=e158]:
+            - generic [ref=e159]:
+              - generic [ref=e160]: 🌏
+              - generic [ref=e161]: 东南亚
+            - generic [ref=e162]: 4 篇资讯
+          - generic [ref=e164]:
+            - generic [ref=e165]:
+              - generic [ref=e166]:
+                - generic [ref=e167]: 🌍
+                - generic [ref=e168]: 国家/地区
+              - generic [ref=e169]:
+                - link "🇹🇭泰国" [ref=e170] [cursor=pointer]:
+                  - /url: /th
+                - link "🇻🇳越南" [ref=e171] [cursor=pointer]:
+                  - /url: /vn
+                - link "🇲🇾马来西亚" [ref=e172] [cursor=pointer]:
+                  - /url: /my
+            - generic [ref=e173]:
+              - generic [ref=e174]:
+                - generic [ref=e175]: 🛒
+                - generic [ref=e176]: 热门平台
+              - generic [ref=e177]:
+                - button "🛒Amazon" [ref=e178]
+                - button "🛍️Shopee" [ref=e179]
+                - button "🛒Lazada" [ref=e180]
+                - button "🎵TikTok Shop" [ref=e181]
+            - generic [ref=e182]:
+              - generic [ref=e183]:
+                - generic [ref=e184]: 📂
+                - generic [ref=e185]: 热门品类
+              - generic [ref=e186]:
+                - button "📱电子" [ref=e187]
+                - button "💄美妆" [ref=e188]
+                - button "🏠家居" [ref=e189]
+                - button "👗服饰" [ref=e190]
+                - button "🍜食品" [ref=e191]
+                - button "👶母婴" [ref=e192]
+                - button "⚽运动" [ref=e193]
+                - button "🐕宠物" [ref=e194]
+            - link "探索更多 →" [ref=e196] [cursor=pointer]:
+              - /url: /th
+              - generic [ref=e197]: 探索更多
+              - generic [ref=e198]: →
+          - generic [ref=e199]:
+            - generic [ref=e200]: 最新资讯
+            - generic [ref=e201]:
+              - link "未知时间 Chat commerce gains ground" [ref=e202] [cursor=pointer]:
+                - /url: /articles/8004d5b6-b6bd-440e-acfe-0c76138141f8
+                - generic [ref=e203]: 未知时间
+                - generic [ref=e204]: Chat commerce gains ground
+              - link "未知时间 Indonesia lawmakers to grill candidates for top regulator jobs after market turmoil" [ref=e205] [cursor=pointer]:
+                - /url: /articles/f03e1add-dede-4c43-a5ef-7649d6ea4b9a
+                - generic [ref=e206]: 未知时间
+                - generic [ref=e207]: Indonesia lawmakers to grill candidates for top regulator jobs after market turmoil
+              - link "未知时间 New anti-laundering rules concern digital asset firms" [ref=e208] [cursor=pointer]:
+                - /url: /articles/98e03154-ced3-45ba-b3d2-607d3c7eae5f
+                - generic [ref=e209]: 未知时间
+                - generic [ref=e210]: New anti-laundering rules concern digital asset firms
+        - generic [ref=e211]:
+          - generic [ref=e213]:
+            - generic [ref=e214]:
+              - generic [ref=e215]: 🇺🇸
+              - generic [ref=e216]: 欧美
+            - generic [ref=e217]: 38 篇资讯
+          - generic [ref=e219]:
+            - generic [ref=e220]:
+              - generic [ref=e221]:
+                - generic [ref=e222]: 🌍
+                - generic [ref=e223]: 国家/地区
+              - link "🇺🇸美国" [ref=e225] [cursor=pointer]:
+                - /url: /us
+            - generic [ref=e226]:
+              - generic [ref=e227]:
+                - generic [ref=e228]: 🛒
+                - generic [ref=e229]: 热门平台
+              - generic [ref=e230]:
+                - button "🛒Amazon" [ref=e231]
+                - button "🛍️Shopee" [ref=e232]
+                - button "🛒Lazada" [ref=e233]
+                - button "🎵TikTok Shop" [ref=e234]
+            - generic [ref=e235]:
+              - generic [ref=e236]:
+                - generic [ref=e237]: 📂
+                - generic [ref=e238]: 热门品类
+              - generic [ref=e239]:
+                - button "📱电子" [ref=e240]
+                - button "💄美妆" [ref=e241]
+                - button "🏠家居" [ref=e242]
+                - button "👗服饰" [ref=e243]
+                - button "🍜食品" [ref=e244]
+                - button "👶母婴" [ref=e245]
+                - button "⚽运动" [ref=e246]
+                - button "🐕宠物" [ref=e247]
+            - link "探索更多 →" [ref=e249] [cursor=pointer]:
+              - /url: /us
+              - generic [ref=e250]: 探索更多
+              - generic [ref=e251]: →
+          - generic [ref=e252]:
+            - generic [ref=e253]: 最新资讯
+            - generic [ref=e254]:
+              - link "未知时间 印度妇女节电商销售增长21.11%，女性消费力增强" [ref=e255] [cursor=pointer]:
+                - /url: /articles/ca167db0-5245-4d0a-8a11-a7bff88952ce
+                - generic [ref=e256]: 未知时间
+                - generic [ref=e257]: 印度妇女节电商销售增长21.11%，女性消费力增强
+              - link "未知时间 Z世代对TikTok信任与忠诚度下滑，商业化引发用户不满" [ref=e258] [cursor=pointer]:
+                - /url: /articles/f3a1b9af-0a9e-45b8-aa34-6de0ca74c752
+                - generic [ref=e259]: 未知时间
+                - generic [ref=e260]: Z世代对TikTok信任与忠诚度下滑，商业化引发用户不满
+              - link "未知时间 Amazon Big Spring Sale 2026 Is Fast Approaching" [ref=e261] [cursor=pointer]:
+                - /url: /articles/c0e7a413-726d-46dd-95d2-23bc5a98d144
+                - generic [ref=e262]: 未知时间
+                - generic [ref=e263]: Amazon Big Spring Sale 2026 Is Fast Approaching
+        - generic [ref=e264]:
+          - generic [ref=e266]:
+            - generic [ref=e267]:
+              - generic [ref=e268]: 🇧🇷
+              - generic [ref=e269]: 拉美
+            - generic [ref=e270]: 3 篇资讯
+          - generic [ref=e272]:
+            - generic [ref=e273]:
+              - generic [ref=e274]:
+                - generic [ref=e275]: 🌍
+                - generic [ref=e276]: 国家/地区
+              - generic [ref=e277]:
+                - link "🇧🇷巴西" [ref=e278] [cursor=pointer]:
+                  - /url: /br
+                - link "🇲🇽墨西哥" [ref=e279] [cursor=pointer]:
+                  - /url: /mx
+            - generic [ref=e280]:
+              - generic [ref=e281]:
+                - generic [ref=e282]: 🛒
+                - generic [ref=e283]: 热门平台
+              - generic [ref=e284]:
+                - button "🛒Amazon" [ref=e285]
+                - button "🛍️Shopee" [ref=e286]
+                - button "🛒Lazada" [ref=e287]
+                - button "🎵TikTok Shop" [ref=e288]
+            - generic [ref=e289]:
+              - generic [ref=e290]:
+                - generic [ref=e291]: 📂
+                - generic [ref=e292]: 热门品类
+              - generic [ref=e293]:
+                - button "📱电子" [ref=e294]
+                - button "💄美妆" [ref=e295]
+                - button "🏠家居" [ref=e296]
+                - button "👗服饰" [ref=e297]
+                - button "🍜食品" [ref=e298]
+                - button "👶母婴" [ref=e299]
+                - button "⚽运动" [ref=e300]
+                - button "🐕宠物" [ref=e301]
+            - link "探索更多 →" [ref=e303] [cursor=pointer]:
+              - /url: /br
+              - generic [ref=e304]: 探索更多
+              - generic [ref=e305]: →
+          - generic [ref=e306]:
+            - generic [ref=e307]: 最新资讯
+            - generic [ref=e308]:
+              - link "未知时间 Brazil’s Supreme Court authorizes Trump adviser to visit Bolsonaro in prison" [ref=e309] [cursor=pointer]:
+                - /url: /articles/ab77c5d5-4c32-4f47-a207-acd9fb52bb68
+                - generic [ref=e310]: 未知时间
+                - generic [ref=e311]: Brazil’s Supreme Court authorizes Trump adviser to visit Bolsonaro in prison
+              - 'link "未知时间 Milei: “I am the most Zionist president in the world”" [ref=e312] [cursor=pointer]':
+                - /url: /articles/f63db1d4-b6c1-430a-922e-f2ce2e79bde2
+                - generic [ref=e313]: 未知时间
+                - generic [ref=e314]: "Milei: “I am the most Zionist president in the world”"
+              - link "未知时间 Budget disbursement to be expedited" [ref=e315] [cursor=pointer]:
+                - /url: /articles/ef01a2b6-83a0-48d1-bde9-b85340d9d2cc
+                - generic [ref=e316]: 未知时间
+                - generic [ref=e317]: Budget disbursement to be expedited
+      - generic [ref=e319]:
+        - link "🪞 个人能力照妖镜 测测你的跨境电商潜力 5分钟快速评估，发现你的优势与短板 免费 1.2万人已测" [ref=e320] [cursor=pointer]:
+          - /url: /assessment
+          - generic [ref=e321]:
+            - generic [ref=e322]: 🪞
+            - generic [ref=e323]:
+              - heading "个人能力照妖镜" [level=3] [ref=e324]
+              - paragraph [ref=e325]: 测测你的跨境电商潜力
+          - paragraph [ref=e326]: 5分钟快速评估，发现你的优势与短板
+          - generic [ref=e327]:
+            - generic [ref=e328]: 免费
+            - generic [ref=e329]: 1.2万人已测
+        - link "📦 资源盘点 清点你的创业弹药库 资金、时间、技能...你手里有什么牌？ 工具 10分钟搞定" [ref=e330] [cursor=pointer]:
+          - /url: /inventory
+          - generic [ref=e331]:
+            - generic [ref=e332]: 📦
+            - generic [ref=e333]:
+              - heading "资源盘点" [level=3] [ref=e334]
+              - paragraph [ref=e335]: 清点你的创业弹药库
+          - paragraph [ref=e336]: 资金、时间、技能...你手里有什么牌？
+          - generic [ref=e337]:
+            - generic [ref=e338]: 工具
+            - generic [ref=e339]: 10分钟搞定
+        - link "🧭 喜欢到哪里去看看 跟着兴趣探索市场 喜欢美妆？宠物？还是户外装备？看看哪个市场适合你 趣味 发现兴趣市场" [ref=e340] [cursor=pointer]:
+          - /url: /interests
+          - generic [ref=e341]:
+            - generic [ref=e342]: 🧭
+            - generic [ref=e343]:
+              - heading "喜欢到哪里去看看" [level=3] [ref=e344]
+              - paragraph [ref=e345]: 跟着兴趣探索市场
+          - paragraph [ref=e346]: 喜欢美妆？宠物？还是户外装备？看看哪个市场适合你
+          - generic [ref=e347]:
+            - generic [ref=e348]: 趣味
+            - generic [ref=e349]: 发现兴趣市场
+        - link "📖 跨境电商业主养成记 从小白到卖家的成长地图 新手入门、进阶成长、突破瓶颈...你的创业路线图 系列 12个阶段" [ref=e350] [cursor=pointer]:
+          - /url: /growth-path
+          - generic [ref=e351]:
+            - generic [ref=e352]: 📖
+            - generic [ref=e353]:
+              - heading "跨境电商业主养成记" [level=3] [ref=e354]
+              - paragraph [ref=e355]: 从小白到卖家的成长地图
+          - paragraph [ref=e356]: 新手入门、进阶成长、突破瓶颈...你的创业路线图
+          - generic [ref=e357]:
+            - generic [ref=e358]: 系列
+            - generic [ref=e359]: 12个阶段
+      - generic [ref=e360]:
+        - generic [ref=e361]:
+          - heading "专业信息门户" [level=2] [ref=e362]
+          - paragraph [ref=e363]: 探索跨境电商的全方位知识体系
+        - generic [ref=e365]:
+          - tablist [ref=e367]:
+            - tab "📜 政策中心 3" [selected] [ref=e368]:
+              - generic [ref=e369]: 📜
+              - generic [ref=e370]: 政策中心
+              - generic [ref=e371]: "3"
+            - tab "💡 机会发现 1" [ref=e372]:
+              - generic [ref=e373]: 💡
+              - generic [ref=e374]: 机会发现
+              - generic [ref=e375]: "1"
+            - tab "⚠️ 风险预警 1" [ref=e376]:
+              - generic [ref=e377]: ⚠️
+              - generic [ref=e378]: 风险预警
+              - generic [ref=e379]: "1"
+            - tab "📊 实操指南 40" [ref=e380]:
+              - generic [ref=e381]: 📊
+              - generic [ref=e382]: 实操指南
+              - generic [ref=e383]: "40"
+            - tab "🛒 平台指南 4" [ref=e384]:
+              - generic [ref=e385]: 🛒
+              - generic [ref=e386]: 平台指南
+              - generic [ref=e387]: "4"
+            - tab "🚚 物流参考 1" [ref=e388]:
+              - generic [ref=e389]: 🚚
+              - generic [ref=e390]: 物流参考
+              - generic [ref=e391]: "1"
+          - tabpanel "📜 政策中心 3" [ref=e392]:
+            - generic [ref=e393]:
+              - generic [ref=e394]: 📜
+              - generic [ref=e395]:
+                - heading "政策中心" [level=3] [ref=e396]
+                - paragraph [ref=e397]: 各国电商政策法规解读
+            - generic [ref=e398]:
+              - link "🇧🇷 拉美 未知时间 Brazil’s Supreme Court authorizes Trump adviser to visit Bolsonaro in prison Brazil’s Supreme Court has authorized Darren Beattie, a Trump administration adviser focused on Brazil, to visit former President Jair Bolsonaro in prison on March 18, in another sign of how far Bolsonaro’s legal case has spilled into the international arena. The decision was issued by Justice Alexandre de Moraes, who oversees the cases related to the attempt to overturn the 2022 election and Bolsonaro’s conviction for plotting against the democratic order. apscheduler-Mercopress" [ref=e399] [cursor=pointer]:
+                - /url: /articles/ab77c5d5-4c32-4f47-a207-acd9fb52bb68
+                - generic [ref=e401]:
+                  - generic [ref=e402]: 🇧🇷
+                  - generic [ref=e403]:
+                    - generic [ref=e404]:
+                      - generic [ref=e405]: 拉美
+                      - generic [ref=e406]: 未知时间
+                    - heading "Brazil’s Supreme Court authorizes Trump adviser to visit Bolsonaro in prison" [level=4] [ref=e407]
+                    - paragraph [ref=e408]: Brazil’s Supreme Court has authorized Darren Beattie, a Trump administration adviser focused on Brazil, to visit former President Jair Bolsonaro in prison on March 18, in another sign of how far Bolsonaro’s legal case has spilled into the international arena. The decision was issued by Justice Alexandre de Moraes, who oversees the cases related to the attempt to overturn the 2022 election and Bolsonaro’s conviction for plotting against the democratic order.
+                    - generic [ref=e410]: apscheduler-Mercopress
+              - link "🇺🇸 欧美 未知时间 In the home sector, ‘the weak will get weaker’ this year Retailers in the category face a poor housing market, elevated interest rates, low consumer confidence and ever-changing tariff policies. apscheduler-retail_dive" [ref=e411] [cursor=pointer]:
+                - /url: /articles/c2dafc8e-b2e9-4a9f-8a69-a7dc231d0571
+                - generic [ref=e413]:
+                  - generic [ref=e414]: 🇺🇸
+                  - generic [ref=e415]:
+                    - generic [ref=e416]:
+                      - generic [ref=e417]: 欧美
+                      - generic [ref=e418]: 未知时间
+                    - heading "In the home sector, ‘the weak will get weaker’ this year" [level=4] [ref=e419]
+                    - paragraph [ref=e420]: Retailers in the category face a poor housing market, elevated interest rates, low consumer confidence and ever-changing tariff policies.
+                    - generic [ref=e422]: apscheduler-retail_dive
+              - link "🌏 东南亚 未知时间 Indonesia lawmakers to grill candidates for top regulator jobs after market turmoil The agency’s chair, deputy chair, and the chief supervisor and deputy chief supervisor of capital markets quit suddenly on Jan 30. apscheduler-Straits Times Business" [ref=e423] [cursor=pointer]:
+                - /url: /articles/f03e1add-dede-4c43-a5ef-7649d6ea4b9a
+                - generic [ref=e425]:
+                  - generic [ref=e426]: 🌏
+                  - generic [ref=e427]:
+                    - generic [ref=e428]:
+                      - generic [ref=e429]: 东南亚
+                      - generic [ref=e430]: 未知时间
+                    - heading "Indonesia lawmakers to grill candidates for top regulator jobs after market turmoil" [level=4] [ref=e431]
+                    - paragraph [ref=e432]: The agency’s chair, deputy chair, and the chief supervisor and deputy chief supervisor of capital markets quit suddenly on Jan 30.
+                    - generic [ref=e434]: apscheduler-Straits Times Business
+        - generic [ref=e435]:
+          - generic [ref=e436]: 按主题快速筛选
+          - generic [ref=e437]:
+            - link "📜 政策中心 3" [ref=e438] [cursor=pointer]:
+              - /url: /theme/policy
+              - generic [ref=e439]: 📜
+              - generic [ref=e440]: 政策中心
+              - generic [ref=e441]: "3"
+            - link "💡 机会发现 1" [ref=e442] [cursor=pointer]:
+              - /url: /theme/opportunity
+              - generic [ref=e443]: 💡
+              - generic [ref=e444]: 机会发现
+              - generic [ref=e445]: "1"
+            - link "⚠️ 风险预警 1" [ref=e446] [cursor=pointer]:
+              - /url: /theme/risk
+              - generic [ref=e447]: ⚠️
+              - generic [ref=e448]: 风险预警
+              - generic [ref=e449]: "1"
+            - link "📊 实操指南 40" [ref=e450] [cursor=pointer]:
+              - /url: /theme/guide
+              - generic [ref=e451]: 📊
+              - generic [ref=e452]: 实操指南
+              - generic [ref=e453]: "40"
+            - link "🛒 平台指南 4" [ref=e454] [cursor=pointer]:
+              - /url: /theme/platform
+              - generic [ref=e455]: 🛒
+              - generic [ref=e456]: 平台指南
+              - generic [ref=e457]: "4"
+            - link "🚚 物流参考 1" [ref=e458] [cursor=pointer]:
+              - /url: /theme/logistics
+              - generic [ref=e459]: 🚚
+              - generic [ref=e460]: 物流参考
+              - generic [ref=e461]: "1"
+      - generic [ref=e463]:
+        - heading "想要更深入的数据分析？" [level=2] [ref=e464]
+        - paragraph [ref=e465]: 升级到专业版，获取AI选品分析、成本计算器等高级功能
+        - generic [ref=e466]:
+          - link "查看定价" [ref=e467] [cursor=pointer]:
+            - /url: /pricing
+          - link "免费注册" [ref=e468] [cursor=pointer]:
+            - /url: /register
+      - generic [ref=e471]:
+        - paragraph [ref=e472]: © 2024 ZenConsult. 跨境电商智能信息平台
+        - generic [ref=e473]:
+          - link "关于" [ref=e474] [cursor=pointer]:
+            - /url: "#"
+          - link "隐私" [ref=e475] [cursor=pointer]:
+            - /url: "#"
+          - link "条款" [ref=e476] [cursor=pointer]:
+            - /url: "#"
+  - contentinfo [ref=e477]:
+    - paragraph [ref=e479]: © 2025 Cross-Border Business. All rights reserved.
+  - alert [ref=e480]
 ```

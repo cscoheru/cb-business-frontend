@@ -1,0 +1,141 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e3]:
+      - link "🎯 ZenConsult" [ref=e4] [cursor=pointer]:
+        - /url: /
+        - generic [ref=e5]: 🎯
+        - generic [ref=e6]: ZenConsult
+      - navigation [ref=e7]:
+        - link "商机卡片" [ref=e8] [cursor=pointer]:
+          - /url: /
+        - link "历史卡片" [ref=e9] [cursor=pointer]:
+          - /url: /cards
+        - link "收藏" [ref=e10] [cursor=pointer]:
+          - /url: /favorites
+          - img [ref=e11]
+          - text: 收藏
+        - link "定价" [ref=e13] [cursor=pointer]:
+          - /url: /pricing
+        - link "登录" [ref=e14] [cursor=pointer]:
+          - /url: /login
+          - button "登录" [ref=e15]
+        - link "免费注册" [ref=e16] [cursor=pointer]:
+          - /url: /register
+          - button "免费注册" [ref=e17]
+  - main [ref=e18]:
+    - generic [ref=e19]:
+      - generic [ref=e22]:
+        - generic [ref=e23]:
+          - generic [ref=e24]: 🎯
+          - generic [ref=e25]:
+            - heading "AI驱动的跨境电商智能选品平台" [level=1] [ref=e26]
+            - paragraph [ref=e27]: 14天免费试用 • 无限商机查看 • 智能数据分析 • 市场趋势预测
+        - generic [ref=e28]:
+          - generic [ref=e29]:
+            - button "显示横幅 1" [ref=e30]
+            - button "显示横幅 2" [ref=e31]
+            - button "显示横幅 3" [ref=e32]
+          - button "关闭横幅" [ref=e33]:
+            - img [ref=e34]
+      - navigation [ref=e36]:
+        - generic [ref=e38]:
+          - link "💎 ZenConsult" [ref=e40] [cursor=pointer]:
+            - /url: /
+            - generic [ref=e41]: 💎
+            - text: ZenConsult
+          - generic [ref=e42]:
+            - link "登录" [ref=e43] [cursor=pointer]:
+              - /url: /login
+            - link "注册" [ref=e44] [cursor=pointer]:
+              - /url: /register
+      - generic [ref=e46]:
+        - generic [ref=e47]:
+          - generic [ref=e48]:
+            - img [ref=e49]
+            - generic [ref=e52]: 💾 缓存模式 · 30分钟智能缓存
+          - heading "今日线索精选" [level=1] [ref=e53]
+          - paragraph [ref=e54]: AI分析Amazon市场数据，发现高潜力线索。收藏感兴趣的线索， 我们会用算法评估其商机价值并跟踪变化。
+          - paragraph [ref=e55]: 💡 线索 → 算法评估 → 数据验证 → 商机决策
+        - generic [ref=e70]:
+          - generic [ref=e73]: "数据来源: Oxylabs Amazon API"
+          - generic [ref=e76]: "可靠性: 95%"
+          - generic [ref=e79]: "更新频率: 每日 8:00 AM"
+        - link "查看所有卡片" [ref=e81] [cursor=pointer]:
+          - /url: /cards
+          - button "查看所有卡片" [ref=e82]:
+            - text: 查看所有卡片
+            - img
+      - generic [ref=e84]:
+        - generic [ref=e85]:
+          - generic [ref=e86]:
+            - heading "🎯 AI智能商机跟踪" [level=2] [ref=e87]
+            - paragraph [ref=e88]: 线索发现 → 算法评估 → 数据验证 → 商机决策
+          - link "查看商机" [ref=e89] [cursor=pointer]:
+            - /url: /opportunities
+            - text: 查看商机
+            - img [ref=e90]
+        - generic [ref=e92]:
+          - generic [ref=e93]:
+            - generic [ref=e94]: "-"
+            - generic [ref=e95]: 发现期
+            - generic [ref=e96]: 加载中
+          - generic [ref=e97]:
+            - generic [ref=e98]: "-"
+            - generic [ref=e99]: 验证期
+            - generic [ref=e100]: 加载中
+          - generic [ref=e101]:
+            - generic [ref=e102]: "-"
+            - generic [ref=e103]: 评估期
+            - generic [ref=e104]: 加载中
+          - generic [ref=e105]:
+            - generic [ref=e106]: "-"
+            - generic [ref=e107]: 执行期
+            - generic [ref=e108]: 加载中
+      - generic [ref=e123]:
+        - generic [ref=e124]:
+          - heading "深度数据探索" [level=2] [ref=e125]
+          - paragraph [ref=e126]: 按地区、主题浏览完整的市场资讯库
+        - generic [ref=e127]:
+          - link "🌏 东南亚市场 泰国、越南、马来西亚... 查看 →" [ref=e128] [cursor=pointer]:
+            - /url: /th
+            - generic [ref=e129]: 🌏
+            - heading "东南亚市场" [level=3] [ref=e130]
+            - paragraph [ref=e131]: 泰国、越南、马来西亚...
+            - generic [ref=e132]: 查看 →
+          - link "🇺🇸 欧美市场 美国、加拿大、欧洲... 查看 →" [ref=e133] [cursor=pointer]:
+            - /url: /us
+            - generic [ref=e134]: 🇺🇸
+            - heading "欧美市场" [level=3] [ref=e135]
+            - paragraph [ref=e136]: 美国、加拿大、欧洲...
+            - generic [ref=e137]: 查看 →
+          - link "🇧🇷 拉美市场 巴西、墨西哥、哥伦比亚... 查看 →" [ref=e138] [cursor=pointer]:
+            - /url: /br
+            - generic [ref=e139]: 🇧🇷
+            - heading "拉美市场" [level=3] [ref=e140]
+            - paragraph [ref=e141]: 巴西、墨西哥、哥伦比亚...
+            - generic [ref=e142]: 查看 →
+      - generic [ref=e144]: 加载中...
+      - generic [ref=e146]:
+        - heading "想要更深入的数据分析？" [level=2] [ref=e147]
+        - paragraph [ref=e148]: 升级到专业版，获取AI选品分析、成本计算器等高级功能
+        - generic [ref=e149]:
+          - link "查看定价" [ref=e150] [cursor=pointer]:
+            - /url: /pricing
+          - link "免费注册" [ref=e151] [cursor=pointer]:
+            - /url: /register
+      - generic [ref=e154]:
+        - paragraph [ref=e155]: © 2024 ZenConsult. 跨境电商智能信息平台
+        - generic [ref=e156]:
+          - link "关于" [ref=e157] [cursor=pointer]:
+            - /url: "#"
+          - link "隐私" [ref=e158] [cursor=pointer]:
+            - /url: "#"
+          - link "条款" [ref=e159] [cursor=pointer]:
+            - /url: "#"
+  - contentinfo [ref=e160]:
+    - paragraph [ref=e162]: © 2025 Cross-Border Business. All rights reserved.
+  - alert [ref=e163]
+```

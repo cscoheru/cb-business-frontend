@@ -8,7 +8,7 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: 'html',
   use: {
-    baseURL: 'http://localhost:3002',
+    baseURL: process.env.BASE_URL || 'https://www.zenconsult.top',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
   },
@@ -20,11 +20,12 @@ export default defineConfig({
     },
   ],
 
-  // Run your local dev server before starting the tests
-  webServer: {
-    command: 'PORT=3002 npm run dev',
-    url: 'http://localhost:3002',
-    reuseExistingServer: !process.env.CI,
-    timeout: 120000,
-  },
+  // Run your local dev server before starting the tests (optional)
+  // Comment out to use production URL
+  // webServer: {
+  //   command: 'PORT=3002 npm run dev',
+  //   url: 'http://localhost:3002',
+  //   reuseExistingServer: !process.env.CI,
+  //   timeout: 120000,
+  // },
 });

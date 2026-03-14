@@ -1,0 +1,108 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e3]:
+      - link "🎯 ZenConsult" [ref=e4] [cursor=pointer]:
+        - /url: /
+        - generic [ref=e5]: 🎯
+        - generic [ref=e6]: ZenConsult
+      - navigation [ref=e7]:
+        - link "商机卡片" [ref=e8] [cursor=pointer]:
+          - /url: /
+        - link "历史卡片" [ref=e9] [cursor=pointer]:
+          - /url: /cards
+        - link "收藏" [ref=e10] [cursor=pointer]:
+          - /url: /favorites
+          - img [ref=e11]
+          - text: 收藏
+        - link "定价" [ref=e13] [cursor=pointer]:
+          - /url: /pricing
+        - link "登录" [ref=e14] [cursor=pointer]:
+          - /url: /login
+          - button "登录" [ref=e15]
+        - link "免费注册" [ref=e16] [cursor=pointer]:
+          - /url: /register
+          - button "免费注册" [ref=e17]
+  - main [ref=e18]:
+    - generic [ref=e20]:
+      - generic [ref=e21]:
+        - generic [ref=e22]:
+          - heading "创建您的账户" [level=1] [ref=e23]
+          - paragraph [ref=e24]: 选择适合您的计划，开始跨境电商智能之旅
+        - generic [ref=e25]:
+          - heading "选择您的计划" [level=2] [ref=e26]
+          - generic [ref=e27]:
+            - generic [ref=e28] [cursor=pointer]:
+              - generic [ref=e29]: 推荐
+              - generic [ref=e30]:
+                - img [ref=e32]
+                - heading "14天试用版" [level=3] [ref=e34]
+              - paragraph [ref=e35]: 完整体验所有功能
+              - list [ref=e36]:
+                - listitem [ref=e37]: ✅ 无限查看所有商机
+                - listitem [ref=e38]: ✅ AI智能分析
+                - listitem [ref=e39]: ✅ 数据采集验证
+                - listitem [ref=e40]: ✅ 14天完整体验
+            - generic [ref=e41] [cursor=pointer]:
+              - heading "永久免费版" [level=3] [ref=e44]
+              - paragraph [ref=e45]: 基础功能体验
+              - list [ref=e46]:
+                - listitem [ref=e47]: ✅ 查看潜在商机
+                - listitem [ref=e48]: ❌ 有限功能访问
+                - listitem [ref=e49]: ❌ 无AI分析
+                - listitem [ref=e50]: ❌ 基础使用
+        - generic [ref=e51]:
+          - generic [ref=e52]:
+            - generic [ref=e53]:
+              - generic [ref=e54]: 姓名 *
+              - textbox "姓名 *" [ref=e55]:
+                - /placeholder: 您的姓名
+                - text: 测试用户
+            - generic [ref=e56]:
+              - generic [ref=e57]: 邮箱地址 *
+              - textbox "邮箱地址 *" [ref=e58]:
+                - /placeholder: your@email.com
+                - text: test@example.com
+            - generic [ref=e59]:
+              - generic [ref=e60]:
+                - generic [ref=e61]: 密码 *
+                - textbox "密码 *" [ref=e62]:
+                  - /placeholder: 至少6位密码
+                  - text: "123"
+              - generic [ref=e63]:
+                - generic [ref=e64]: 确认密码 *
+                - textbox "确认密码 *" [active] [ref=e65]:
+                  - /placeholder: 再次输入密码
+            - generic [ref=e67]:
+              - generic [ref=e68]:
+                - generic [ref=e69]: 已选择计划
+                - generic [ref=e70]: 14天试用版
+              - button "切换" [ref=e71]
+          - generic [ref=e72]:
+            - text: 注册即表示您同意我们的
+            - link "服务条款" [ref=e73] [cursor=pointer]:
+              - /url: /terms
+            - text: 和
+            - link "隐私政策" [ref=e74] [cursor=pointer]:
+              - /url: /privacy
+          - button "开始试用" [ref=e75]
+          - generic [ref=e76]:
+            - text: 已有账户？
+            - link "立即登录" [ref=e77] [cursor=pointer]:
+              - /url: /login
+          - link "查看完整计划对比" [ref=e79] [cursor=pointer]:
+            - /url: /pricing
+            - text: 查看完整计划对比
+            - img [ref=e80]
+      - generic [ref=e82]:
+        - paragraph [ref=e83]:
+          - text: 💡
+          - strong [ref=e84]: 提示：
+          - text: 试用版用户可完整体验所有功能
+        - paragraph [ref=e85]: 试用期结束后可升级到Pro版或继续使用免费版
+  - contentinfo [ref=e86]:
+    - paragraph [ref=e88]: © 2025 Cross-Border Business. All rights reserved.
+  - alert [ref=e89]
+```

@@ -26,10 +26,8 @@
           - /url: /register
           - button "免费注册" [ref=e17]
   - main [ref=e18]:
-    - generic [ref=e20]:
-      - heading "404" [level=1] [ref=e21]
-      - heading "This page could not be found." [level=2] [ref=e23]
-  - contentinfo [ref=e24]:
-    - paragraph [ref=e26]: © 2025 Cross-Border Business. All rights reserved.
-  - alert [ref=e27]
+    - paragraph [ref=e22]: 加载中...
+  - contentinfo [ref=e23]:
+    - paragraph [ref=e25]: © 2025 Cross-Border Business. All rights reserved.
+  - alert [ref=e26]
 ```

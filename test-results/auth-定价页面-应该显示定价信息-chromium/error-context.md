@@ -4,123 +4,205 @@
 - generic [active] [ref=e1]:
   - banner [ref=e2]:
     - generic [ref=e3]:
-      - link "CB Business" [ref=e4] [cursor=pointer]:
+      - link "🎯 ZenConsult" [ref=e4] [cursor=pointer]:
         - /url: /
-      - navigation [ref=e5]:
-        - link "定价" [ref=e6] [cursor=pointer]:
+        - generic [ref=e5]: 🎯
+        - generic [ref=e6]: ZenConsult
+      - navigation [ref=e7]:
+        - link "商机卡片" [ref=e8] [cursor=pointer]:
+          - /url: /
+        - link "历史卡片" [ref=e9] [cursor=pointer]:
+          - /url: /cards
+        - link "收藏" [ref=e10] [cursor=pointer]:
+          - /url: /favorites
+          - img [ref=e11]
+          - text: 收藏
+        - link "定价" [ref=e13] [cursor=pointer]:
           - /url: /pricing
-        - link "Dashboard" [ref=e7] [cursor=pointer]:
-          - /url: /dashboard
-        - button "登录" [ref=e8]
-        - button "免费注册" [ref=e9]
-  - main [ref=e10]:
-    - generic [ref=e11]:
-      - generic [ref=e12]:
-        - heading "选择适合您的计划" [level=1] [ref=e13]
-        - paragraph [ref=e14]: 随时升级，随时取消，无隐藏费用
-        - paragraph [ref=e15]: 开始您的跨境电商之旅
-      - generic [ref=e16]:
-        - generic [ref=e17]:
-          - heading "免费版" [level=3] [ref=e18]
-          - generic [ref=e19]: ¥0/月
-          - list [ref=e20]:
-            - listitem [ref=e21]:
-              - img [ref=e22]
-              - generic [ref=e24]: 基础市场数据
-            - listitem [ref=e25]:
-              - img [ref=e26]
-              - generic [ref=e28]: 每日5次API调用
-            - listitem [ref=e29]:
-              - img [ref=e30]
-              - generic [ref=e32]: 社区支持
+        - link "登录" [ref=e14] [cursor=pointer]:
+          - /url: /login
+          - button "登录" [ref=e15]
+        - link "免费注册" [ref=e16] [cursor=pointer]:
+          - /url: /register
+          - button "免费注册" [ref=e17]
+  - main [ref=e18]:
+    - generic [ref=e19]:
+      - generic [ref=e20]:
+        - heading "选择适合您的计划" [level=1] [ref=e21]
+        - paragraph [ref=e22]: 新用户自动获得14天试用，体验完整功能
+        - paragraph [ref=e23]: 随时升级，随时取消，无隐藏费用
+      - generic [ref=e24]:
+        - button "按月付费" [ref=e25]
+        - button "按年付费 省2个月" [ref=e26]
+      - generic [ref=e27]:
+        - generic [ref=e28]:
+          - heading "免费版" [level=3] [ref=e29]
+          - paragraph [ref=e30]: 基础功能，体验平台核心能力
+          - generic [ref=e31]: ¥0/永久
+          - list [ref=e32]:
             - listitem [ref=e33]:
-              - generic [ref=e35]: AI机会分析
-            - listitem [ref=e36]:
-              - generic [ref=e38]: 风险预警
-            - listitem [ref=e39]:
-              - generic [ref=e41]: 成本计算器
-            - listitem [ref=e42]:
-              - generic [ref=e44]: 数据导出
-          - link "免费注册" [ref=e45] [cursor=pointer]:
-            - /url: /register
-            - button "免费注册" [ref=e46]
-        - generic [ref=e47]:
-          - generic [ref=e48]: 最受欢迎
-          - heading "专业版" [level=3] [ref=e49]
-          - generic [ref=e50]: ¥99/月
-          - list [ref=e51]:
-            - listitem [ref=e52]:
-              - img [ref=e53]
-              - generic [ref=e55]: 全部市场数据
+              - img [ref=e34]
+              - generic [ref=e36]: 10次/天 API调用
+            - listitem [ref=e37]:
+              - img [ref=e38]
+              - generic [ref=e40]: 3张卡片/天
+            - listitem [ref=e41]:
+              - img [ref=e42]
+              - generic [ref=e44]: 7天历史数据
+            - listitem [ref=e45]:
+              - img [ref=e46]
+              - generic [ref=e48]: 基础成本计算器
+            - listitem [ref=e49]:
+              - img [ref=e50]
+              - generic [ref=e52]: 社区支持
+            - listitem [ref=e53]:
+              - generic [ref=e55]: AI分析
             - listitem [ref=e56]:
-              - img [ref=e57]
-              - generic [ref=e59]: 无限API调用
-            - listitem [ref=e60]:
-              - img [ref=e61]
-              - generic [ref=e63]: AI机会分析
-            - listitem [ref=e64]:
-              - img [ref=e65]
-              - generic [ref=e67]: 风险预警
-            - listitem [ref=e68]:
-              - img [ref=e69]
-              - generic [ref=e71]: 成本计算器
-            - listitem [ref=e72]:
-              - img [ref=e73]
-              - generic [ref=e75]: Excel导出
-            - listitem [ref=e76]:
-              - img [ref=e77]
-              - generic [ref=e79]: 邮件支持
-          - link "开始试用" [ref=e80] [cursor=pointer]:
-            - /url: /dashboard
-            - button "开始试用" [ref=e81]
-      - generic [ref=e82]:
-        - heading "功能对比" [level=2] [ref=e83]
-        - table [ref=e86]:
-          - rowgroup [ref=e87]:
-            - row "功能 免费版 专业版" [ref=e88]:
-              - columnheader "功能" [ref=e89]
-              - columnheader "免费版" [ref=e90]
-              - columnheader "专业版" [ref=e91]
-          - rowgroup [ref=e92]:
-            - row "市场数据 基础数据 全部市场" [ref=e93]:
-              - cell "市场数据" [ref=e94]
-              - cell "基础数据" [ref=e95]
-              - cell "全部市场" [ref=e96]
-            - row "API调用 5次/天 无限次" [ref=e97]:
-              - cell "API调用" [ref=e98]
-              - cell "5次/天" [ref=e99]
-              - cell "无限次" [ref=e100]
-            - row "AI分析 — ✓" [ref=e101]:
-              - cell "AI分析" [ref=e102]
-              - cell "—" [ref=e103]
-              - cell "✓" [ref=e104]
-            - row "成本计算器 — ✓" [ref=e105]:
-              - cell "成本计算器" [ref=e106]
-              - cell "—" [ref=e107]
-              - cell "✓" [ref=e108]
-            - row "风险预警 — ✓" [ref=e109]:
-              - cell "风险预警" [ref=e110]
-              - cell "—" [ref=e111]
-              - cell "✓" [ref=e112]
-            - row "数据导出 — ✓ Excel" [ref=e113]:
-              - cell "数据导出" [ref=e114]
-              - cell "—" [ref=e115]
-              - cell "✓ Excel" [ref=e116]
-      - generic [ref=e117]:
-        - heading "常见问题" [level=2] [ref=e118]
-        - generic [ref=e119]:
-          - generic [ref=e120]:
-            - heading "我可以随时取消吗？" [level=3] [ref=e121]
-            - paragraph [ref=e122]: 是的，您可以随时取消订阅，无需任何理由。
-          - generic [ref=e123]:
-            - heading "专业版支持多少个市场？" [level=3] [ref=e124]
-            - paragraph [ref=e125]: 支持所有市场数据，包括东南亚、欧美、拉美、中东等主要市场。
-          - generic [ref=e126]:
-            - heading "如何开始试用？" [level=3] [ref=e127]
-            - paragraph [ref=e128]: 点击"开始试用"按钮，注册后即可享受7天免费试用。
-  - contentinfo [ref=e129]:
-    - paragraph [ref=e131]: © 2025 Cross-Border Business. All rights reserved.
-  - button "Open Next.js Dev Tools" [ref=e137] [cursor=pointer]:
-    - img [ref=e138]
-  - alert [ref=e141]
+              - generic [ref=e58]: 数据导出
+          - link "免费注册" [ref=e59] [cursor=pointer]:
+            - /url: /register
+            - button "免费注册" [ref=e60]
+        - generic [ref=e61]:
+          - generic [ref=e62]: 新用户专享
+          - heading "试用版" [level=3] [ref=e63]
+          - paragraph [ref=e64]: 14天完整体验，了解全部功能
+          - generic [ref=e65]: ¥0/14天
+          - list [ref=e66]:
+            - listitem [ref=e67]:
+              - img [ref=e68]
+              - generic [ref=e70]: 50次/天 API调用
+            - listitem [ref=e71]:
+              - img [ref=e72]
+              - generic [ref=e74]: 12张卡片/天
+            - listitem [ref=e75]:
+              - img [ref=e76]
+              - generic [ref=e78]: 30天历史数据
+            - listitem [ref=e79]:
+              - img [ref=e80]
+              - generic [ref=e82]: AI机会分析
+            - listitem [ref=e83]:
+              - img [ref=e84]
+              - generic [ref=e86]: 数据导出
+            - listitem [ref=e87]:
+              - img [ref=e88]
+              - generic [ref=e90]: 供应商数据库
+            - listitem [ref=e91]:
+              - img [ref=e92]
+              - generic [ref=e94]: 市场洞察
+            - listitem [ref=e95]:
+              - img [ref=e96]
+              - generic [ref=e98]: 邮件支持
+            - generic [ref=e99]: 14天完整体验
+          - link "开始试用" [ref=e100] [cursor=pointer]:
+            - /url: /register
+            - button "开始试用" [ref=e101]
+        - generic [ref=e102]:
+          - generic [ref=e103]: 最受欢迎
+          - heading "专业版" [level=3] [ref=e104]
+          - paragraph [ref=e105]: 完整功能，助力跨境业务增长
+          - generic [ref=e106]: ¥99/月
+          - list [ref=e107]:
+            - listitem [ref=e108]:
+              - img [ref=e109]
+              - generic [ref=e111]: 无限API调用
+            - listitem [ref=e112]:
+              - img [ref=e113]
+              - generic [ref=e115]: 无限卡片浏览
+            - listitem [ref=e116]:
+              - img [ref=e117]
+              - generic [ref=e119]: 全部历史数据
+            - listitem [ref=e120]:
+              - img [ref=e121]
+              - generic [ref=e123]: AI机会分析
+            - listitem [ref=e124]:
+              - img [ref=e125]
+              - generic [ref=e127]: 数据导出
+            - listitem [ref=e128]:
+              - img [ref=e129]
+              - generic [ref=e131]: 供应商数据库
+            - listitem [ref=e132]:
+              - img [ref=e133]
+              - generic [ref=e135]: 市场洞察
+            - listitem [ref=e136]:
+              - img [ref=e137]
+              - generic [ref=e139]: API访问
+            - listitem [ref=e140]:
+              - img [ref=e141]
+              - generic [ref=e143]: 优先支持
+          - link "立即订阅" [ref=e144] [cursor=pointer]:
+            - /url: /register?plan=pro
+            - button "立即订阅" [ref=e145]
+      - generic [ref=e146]:
+        - heading "功能对比" [level=2] [ref=e147]
+        - table [ref=e150]:
+          - rowgroup [ref=e151]:
+            - row "功能 免费版 试用版 专业版" [ref=e152]:
+              - columnheader "功能" [ref=e153]
+              - columnheader "免费版" [ref=e154]
+              - columnheader "试用版" [ref=e155]
+              - columnheader "专业版" [ref=e156]
+          - rowgroup [ref=e157]:
+            - row "价格 ¥0 ¥0 (14天) ¥99/月" [ref=e158]:
+              - cell "价格" [ref=e159]
+              - cell "¥0" [ref=e160]
+              - cell "¥0 (14天)" [ref=e161]
+              - cell "¥99/月" [ref=e162]
+            - row "市场数据 7天历史 30天历史 全部历史" [ref=e163]:
+              - cell "市场数据" [ref=e164]
+              - cell "7天历史" [ref=e165]
+              - cell "30天历史" [ref=e166]
+              - cell "全部历史" [ref=e167]
+            - row "卡片浏览 10次/天 50次/天 无限次" [ref=e168]:
+              - cell "卡片浏览" [ref=e169]
+              - cell "10次/天" [ref=e170]
+              - cell "50次/天" [ref=e171]
+              - cell "无限次" [ref=e172]
+            - row "API调用 10次/天 50次/天 无限次" [ref=e173]:
+              - cell "API调用" [ref=e174]
+              - cell "10次/天" [ref=e175]
+              - cell "50次/天" [ref=e176]
+              - cell "无限次" [ref=e177]
+            - row "AI分析 — ✓ ✓" [ref=e178]:
+              - cell "AI分析" [ref=e179]
+              - cell "—" [ref=e180]
+              - cell "✓" [ref=e181]
+              - cell "✓" [ref=e182]
+            - row "数据导出 — ✓ ✓" [ref=e183]:
+              - cell "数据导出" [ref=e184]
+              - cell "—" [ref=e185]
+              - cell "✓" [ref=e186]
+              - cell "✓" [ref=e187]
+            - row "供应商数据库 — ✓ ✓" [ref=e188]:
+              - cell "供应商数据库" [ref=e189]
+              - cell "—" [ref=e190]
+              - cell "✓" [ref=e191]
+              - cell "✓" [ref=e192]
+            - row "市场洞察 — ✓ ✓" [ref=e193]:
+              - cell "市场洞察" [ref=e194]
+              - cell "—" [ref=e195]
+              - cell "✓" [ref=e196]
+              - cell "✓" [ref=e197]
+            - row "API访问 — — ✓" [ref=e198]:
+              - cell "API访问" [ref=e199]
+              - cell "—" [ref=e200]
+              - cell "—" [ref=e201]
+              - cell "✓" [ref=e202]
+      - generic [ref=e203]:
+        - heading "常见问题" [level=2] [ref=e204]
+        - generic [ref=e205]:
+          - generic [ref=e206]:
+            - heading "新用户如何开始？" [level=3] [ref=e207]
+            - paragraph [ref=e208]: 注册后自动获得14天试用版，包含完整的专业版功能，无需支付任何费用。
+          - generic [ref=e209]:
+            - heading "试用结束后会发生什么？" [level=3] [ref=e210]
+            - paragraph [ref=e211]: 试用结束后自动降级为免费版，您可以随时升级到专业版继续使用。
+          - generic [ref=e212]:
+            - heading "我可以随时取消吗？" [level=3] [ref=e213]
+            - paragraph [ref=e214]: 是的，您可以随时取消订阅，无需任何理由。
+          - generic [ref=e215]:
+            - heading "专业版支持多少个市场？" [level=3] [ref=e216]
+            - paragraph [ref=e217]: 支持所有市场数据，包括东南亚、欧美、拉美、中东等主要市场。
+  - contentinfo [ref=e218]:
+    - paragraph [ref=e220]: © 2025 Cross-Border Business. All rights reserved.
+  - alert [ref=e221]
 ```

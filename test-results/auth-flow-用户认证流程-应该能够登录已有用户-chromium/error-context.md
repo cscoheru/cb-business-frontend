@@ -34,27 +34,30 @@
           - link "创建一个新账户" [ref=e24] [cursor=pointer]:
             - /url: /register
       - generic [ref=e25]:
-        - generic [ref=e26]:
-          - generic [ref=e27]:
-            - generic [ref=e28]: 邮箱地址
-            - textbox "邮箱地址" [ref=e29]:
+        - generic [ref=e26]: 邮箱或密码错误
+        - generic [ref=e27]:
+          - generic [ref=e28]:
+            - generic [ref=e29]: 邮箱地址
+            - textbox "邮箱地址" [ref=e30]:
               - /placeholder: your@email.com
-          - generic [ref=e30]:
-            - generic [ref=e31]: 密码
-            - textbox "密码" [ref=e32]:
+              - text: e2e-test-1773504359723@example.com
+          - generic [ref=e31]:
+            - generic [ref=e32]: 密码
+            - textbox "密码" [ref=e33]:
               - /placeholder: ••••••••
-        - generic [ref=e33]:
-          - generic [ref=e34]:
-            - checkbox "记住我" [ref=e35]
-            - generic [ref=e36]: 记住我
-          - link "忘记密码？" [ref=e38] [cursor=pointer]:
+              - text: Test123456!
+        - generic [ref=e34]:
+          - generic [ref=e35]:
+            - checkbox "记住我" [ref=e36]
+            - generic [ref=e37]: 记住我
+          - link "忘记密码？" [ref=e39] [cursor=pointer]:
             - /url: /forgot-password
-        - button "登录" [ref=e39]
-        - generic [ref=e40]:
+        - button "登录" [ref=e40]
+        - generic [ref=e41]:
           - text: 还没有账户？
-          - link "立即注册" [ref=e41] [cursor=pointer]:
+          - link "立即注册" [ref=e42] [cursor=pointer]:
             - /url: /register
-  - contentinfo [ref=e42]:
-    - paragraph [ref=e44]: © 2025 Cross-Border Business. All rights reserved.
-  - alert [ref=e45]
+  - contentinfo [ref=e43]:
+    - paragraph [ref=e45]: © 2025 Cross-Border Business. All rights reserved.
+  - alert [ref=e46]
 ```
