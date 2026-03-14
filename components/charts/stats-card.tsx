@@ -25,7 +25,7 @@ export function StatsCard({
   className = '',
 }: StatsCardProps) {
   // Determine trend based on change if not explicitly provided
-  const effectiveTrend = trend || (change === 0 ? 'neutral' : change > 0 ? 'up' : 'down');
+  const effectiveTrend = trend || (change === undefined ? 'neutral' : change === 0 ? 'neutral' : change > 0 ? 'up' : 'down');
 
   const getTrendIcon = () => {
     switch (effectiveTrend) {
