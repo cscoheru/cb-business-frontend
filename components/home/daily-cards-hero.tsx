@@ -12,6 +12,7 @@ import { useFavorites } from '@/lib/contexts/favorites-context';
 export function DailyCardsHero() {
   const [cards, setCards] = useState<Card[]>([]);
   const [loading, setLoading] = useState(true);
+  const [cacheInfo, setCacheInfo] = useState<any>(null);
   const { favoriteCount } = useFavorites();
 
   useEffect(() => {
@@ -22,6 +23,7 @@ export function DailyCardsHero() {
     try {
       const response = await cardsApi.getDailyCards();
       setCards(response.cards);
+      setCacheInfo(response.cache_info || null);
     } catch (error) {
       console.error('Failed to load daily cards:', error);
     } finally {
@@ -37,7 +39,7 @@ export function DailyCardsHero() {
           <div className="flex items-center justify-center gap-2 mb-3">
             <Sparkles className="h-6 w-6 text-yellow-500" />
             <span className="text-sm font-semibold text-blue-600 bg-blue-50 px-3 py-1 rounded-full">
-              实时生成 · 30分钟缓存
+              {cacheInfo?.mode === '实时生成' ? '🔥 实时生成' : '💾 缓存模式'} · 30分钟智能缓存
             </span>
           </div>
           <h1 className="text-4xl font-bold text-gray-900 mb-3">
@@ -48,6 +50,11 @@ export function DailyCardsHero() {
             <span className="font-semibold text-gray-900">收藏感兴趣的商机</span>，
             我们会持续跟踪价格、评分和竞争变化。
           </p>
+          {cacheInfo?.generated_at && (
+            <p className="text-sm text-gray-500 mt-2">
+              数据更新于: {new Date(cacheInfo.generated_at).toLocaleString('zh-CN')}
+            </p>
+          )}
         </div>
 
         {/* 今日卡片 */}
