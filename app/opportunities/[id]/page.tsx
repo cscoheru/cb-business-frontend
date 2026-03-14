@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
+import { favoritesApi } from '@/lib/api';
+import { Heart } from 'lucide-react';
 
 interface Opportunity {
   id: string;
@@ -33,6 +35,7 @@ export default function OpportunityDetailPage() {
   const [opportunity, setOpportunity] = useState<Opportunity | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false);
 
   useEffect(() => {
     if (params.id) {
@@ -45,6 +48,17 @@ export default function OpportunityDetailPage() {
       const response = await fetch(`https://api.zenconsult.top/api/v1/opportunities/${id}`);
       const data = await response.json();
       setOpportunity(data.opportunity);
+
+      // 检查收藏状态
+      const token = localStorage.getItem('auth_token');
+      if (token) {
+        try {
+          const favoriteData = await favoritesApi.checkOpportunityFavorite(id);
+          setIsFavorite(favoriteData.is_favorite);
+        } catch (err) {
+          console.error('Failed to check favorite status:', err);
+        }
+      }
     } catch (error) {
       console.error('Failed to fetch opportunity:', error);
     } finally {
@@ -57,19 +71,20 @@ export default function OpportunityDetailPage() {
 
     setSaving(true);
     try {
-      const response = await fetch(`https://api.zenconsult.top/api/v1/opportunities/${opportunity.id}/save`, {
-        method: 'POST'
-      });
-      const data = await response.json();
-
-      if (data.saved) {
-        // 更新本地状态
-        alert('已收藏');
-      } else {
+      if (isFavorite) {
+        // 取消收藏
+        await favoritesApi.removeFavoriteByOpportunity(opportunity.id);
+        setIsFavorite(false);
         alert('已取消收藏');
+      } else {
+        // 添加收藏
+        await favoritesApi.addOpportunityFavorite(opportunity.id);
+        setIsFavorite(true);
+        alert('已收藏');
       }
     } catch (error) {
-      console.error('Failed to save:', error);
+      console.error('Failed to toggle favorite:', error);
+      alert('操作失败，请稍后再试');
     } finally {
       setSaving(false);
     }
@@ -366,9 +381,14 @@ export default function OpportunityDetailPage() {
         <button
           onClick={handleSave}
           disabled={saving}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+          className={`px-4 py-2 rounded-lg flex items-center gap-2 transition-colors ${
+            isFavorite
+              ? 'bg-red-50 text-red-600 border border-red-200 hover:bg-red-100'
+              : 'bg-blue-600 text-white hover:bg-blue-700'
+          } disabled:opacity-50`}
         >
-          {saving ? '保存中...' : '收藏'}
+          <Heart className={`h-4 w-4 ${isFavorite ? 'fill-current' : ''}`} />
+          {saving ? '保存中...' : isFavorite ? '已收藏' : '收藏'}
         </button>
         <button
           onClick={handleArchive}

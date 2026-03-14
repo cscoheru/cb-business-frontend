@@ -599,9 +599,11 @@ export const cardsApi = {
 
 export interface FavoriteItem {
   id: string;
-  card_id: string;
+  card_id: string | null;
+  opportunity_id: string | null;
   created_at: string;
-  card: Card;
+  card?: Card;
+  opportunity?: any; // BusinessOpportunity data
 }
 
 export interface FavoriteCheckResponse {
@@ -618,9 +620,20 @@ export const favoritesApi = {
     id: string;
     user_id: string;
     card_id: string;
+    opportunity_id: string | null;
     created_at: string;
   }> {
-    return apiClient.post('/api/v1/favorites', { card_id: cardId }, true);
+    return apiClient.post('/api/v1/favorites', { card_id: cardId, opportunity_id: null }, true);
+  },
+
+  async addOpportunityFavorite(opportunityId: string): Promise<{
+    id: string;
+    user_id: string;
+    card_id: string | null;
+    opportunity_id: string;
+    created_at: string;
+  }> {
+    return apiClient.post('/api/v1/favorites', { card_id: null, opportunity_id: opportunityId }, true);
   },
 
   async removeFavorite(favoriteId: string): Promise<void> {
@@ -631,8 +644,16 @@ export const favoritesApi = {
     return apiClient.delete(`/api/v1/favorites/card/${cardId}`, true);
   },
 
+  async removeFavoriteByOpportunity(opportunityId: string): Promise<void> {
+    return apiClient.delete(`/api/v1/favorites/opportunity/${opportunityId}`, true);
+  },
+
   async checkFavorite(cardId: string): Promise<FavoriteCheckResponse> {
     return apiClient.get(`/api/v1/favorites/check/${cardId}`, true);
+  },
+
+  async checkOpportunityFavorite(opportunityId: string): Promise<FavoriteCheckResponse> {
+    return apiClient.get(`/api/v1/favorites/check/opportunity/${opportunityId}`, true);
   },
 };
 
