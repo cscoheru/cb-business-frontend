@@ -705,3 +705,108 @@ export const paymentsApi = {
     return apiClient.get(`/api/v1/payments/${orderNo}`, true);
   },
 };
+
+// ============ Opportunities API ============
+
+/** 商机等级 - 基于C-P-I分数的动态等级 */
+export type OpportunityGrade = 'lead' | 'normal' | 'priority' | 'landable';
+
+/** 商机状态 */
+export type OpportunityStatus = 'potential' | 'verifying' | 'assessing' | 'executing' | 'archived' | 'ignored' | 'failed';
+
+/** 商机类型 */
+export type OpportunityType = 'product' | 'policy' | 'platform' | 'brand' | 'industry' | 'region';
+
+export interface BusinessOpportunity {
+  id: string;
+  title: string;
+  description: string | null;
+  status: OpportunityStatus;
+  opportunity_type: OpportunityType;
+  grade: OpportunityGrade | null;
+
+  // C-P-I分数
+  cpi_total_score: number | null;
+  cpi_competition_score: number | null;
+  cpi_potential_score: number | null;
+  cpi_intelligence_gap_score: number | null;
+
+  // 置信度和其他
+  confidence_score: number;
+  elements: Record<string, any>;
+  ai_insights: Record<string, any>;
+  user_interactions: Record<string, any>;
+
+  // 时间戳
+  created_at: string;
+  last_verification_at: string | null;
+  last_grade_change_at: string | null;
+  last_cpi_recalc_at: string | null;
+
+  // 关联
+  card_id: string | null;
+  article_id: string | null;
+  user_id: string | null;
+}
+
+export interface OpportunityFunnelResponse {
+  success: boolean;
+  funnel: {
+    [key in OpportunityStatus]: {
+      count: number;
+      avg_confidence: number;
+      label: string;
+    };
+  };
+  total: number;
+  description: string;
+}
+
+export const opportunitiesApi = {
+  async getFunnel(): Promise<OpportunityFunnelResponse> {
+    return apiClient.get('/api/v1/opportunities/funnel', false);
+  },
+
+  async generateFromCards(cardIds?: string[], limit: number = 10): Promise<{
+    success: boolean;
+    generated: number;
+    opportunities: BusinessOpportunity[];
+  }> {
+    const params = new URLSearchParams();
+    if (limit) params.set('limit', limit.toString());
+    if (cardIds && cardIds.length > 0) {
+      cardIds.forEach(id => params.append('card_ids', id));
+    }
+
+    return apiClient.post(`/api/v1/opportunities/generate-from-cards?${params}`, {}, true);
+  },
+
+  async getOpportunity(id: string): Promise<{
+    success: boolean;
+    opportunity: BusinessOpportunity;
+  }> {
+    return apiClient.get(`/api/v1/opportunities/${id}`, true);
+  },
+
+  async listOpportunities(params?: {
+    status?: OpportunityStatus;
+    grade?: OpportunityGrade;
+    type?: OpportunityType;
+    limit?: number;
+    offset?: number;
+  }): Promise<{
+    success: boolean;
+    opportunities: BusinessOpportunity[];
+    total: number;
+  }> {
+    const searchParams = new URLSearchParams();
+    if (params?.status) searchParams.set('status', params.status);
+    if (params?.grade) searchParams.set('grade', params.grade);
+    if (params?.type) searchParams.set('type', params.type);
+    if (params?.limit) searchParams.set('limit', params.limit.toString());
+    if (params?.offset) searchParams.set('offset', params.offset.toString());
+
+    const queryString = searchParams.toString();
+    return apiClient.get(`/api/v1/opportunities${queryString ? `?${queryString}` : ''}`, true);
+  },
+};
