@@ -62,29 +62,6 @@ export default function HomePage() {
           </div>
 
           <OpportunityFunnelLoader />
-
-      {/* SOS智能商机 - 分阶段管理 */}
-      <section className="bg-gradient-to-r from-blue-50 to-purple-50 border-b py-10">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-1">
-                🎯 AI智能商机跟踪
-              </h2>
-              <p className="text-gray-600 text-sm">
-                实时发现 → 数据验证 → 市场评估 → 执行落地
-              </p>
-            </div>
-            <Link
-              href="/opportunities"
-              className="flex items-center gap-1 px-4 py-2 bg-white border border-gray-200 rounded-lg hover:shadow-md transition-all text-sm font-medium text-gray-700"
-            >
-              查看全部
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </Link>
-          </div>
         </div>
       </section>
 
