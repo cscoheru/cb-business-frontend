@@ -2,6 +2,9 @@
 
 import { useEffect, useState } from 'react';
 
+// Get API URL from environment variable
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.zenconsult.top';
+
 interface Opportunity {
   id: string;
   title: string;
@@ -33,7 +36,7 @@ export function OpportunityFunnelLoader() {
           const data = JSON.parse(cachedFunnel);
           setFunnel(data.funnel);
         } else {
-          const response = await fetch('https://api.zenconsult.top/api/v1/opportunities/funnel');
+          const response = await fetch(`${API_BASE_URL}/api/v1/opportunities/funnel`);
           const data = await response.json();
           if (data.success && data.funnel) {
             setFunnel(data.funnel);
@@ -50,7 +53,7 @@ export function OpportunityFunnelLoader() {
           const data = JSON.parse(cachedOpps);
           setOpportunities(data.opportunities || []);
         } else {
-          const response = await fetch('https://api.zenconsult.top/api/v1/opportunities?status=potential&limit=3');
+          const response = await fetch(`${API_BASE_URL}/api/v1/opportunities?status=potential&limit=3`);
           const data = await response.json();
           setOpportunities(data.opportunities || []);
           sessionStorage.setItem('sos_opps_cache', JSON.stringify(data));

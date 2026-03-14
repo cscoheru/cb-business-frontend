@@ -5,6 +5,9 @@ import Link from 'next/link';
 import { useAuth } from '@/lib/auth-context';
 import { SubscriptionPrompt } from '@/components/opportunities/permission-badge';
 
+// Get API URL from environment variable
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.zenconsult.top';
+
 interface Opportunity {
   id: string;
   title: string;
@@ -69,7 +72,7 @@ export default function OpportunitiesPage() {
         headers['Authorization'] = `Bearer ${token}`;
       }
 
-      const response = await fetch(`https://api.zenconsult.top/api/v1/opportunities?${params}`, {
+      const response = await fetch(`${API_BASE_URL}/api/v1/opportunities?${params}`, {
         headers
       });
       const data = await response.json();
@@ -88,7 +91,7 @@ export default function OpportunitiesPage() {
         headers['Authorization'] = `Bearer ${token}`;
       }
 
-      const response = await fetch('https://api.zenconsult.top/api/v1/opportunities/funnel', {
+      const response = await fetch(`${API_BASE_URL}/api/v1/opportunities/funnel`, {
         headers
       });
       const data = await response.json();
