@@ -1,10 +1,14 @@
 import Link from 'next/link';
 import { DailyCardsHero } from '@/components/home/daily-cards-hero';
 import { HomeContent } from '@/components/home/home-content';
+import { SEOBanner } from '@/components/home/seo-banner';
 
 export default function HomePage() {
   return (
     <div className="bg-gray-100 min-h-screen">
+      {/* SEO横幅 - 营销和价值主张 */}
+      <SEOBanner />
+
       {/* 全局导航栏 */}
       <nav className="bg-white border-b sticky top-0 z-50 shadow-sm">
         <div className="max-w-7xl mx-auto px-4">
