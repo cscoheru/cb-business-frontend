@@ -43,12 +43,15 @@ export function DailyCardsHero() {
             </span>
           </div>
           <h1 className="text-4xl font-bold text-gray-900 mb-3">
-            今日商机洞察
+            今日线索精选
           </h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            AI分析Amazon真实数据，发现高潜力市场机会。
-            <span className="font-semibold text-gray-900">收藏感兴趣的商机</span>，
-            我们会持续跟踪价格、评分和竞争变化。
+            AI分析Amazon市场数据，发现高潜力线索。
+            <span className="font-semibold text-gray-900">收藏感兴趣的线索</span>，
+            我们会用算法评估其商机价值并跟踪变化。
+          </p>
+          <p className="text-sm text-gray-500 mt-2">
+            💡 线索 → 算法评估 → 数据验证 → 商机决策
           </p>
           {cacheInfo?.generated_at && (
             <p className="text-sm text-gray-500 mt-2">
