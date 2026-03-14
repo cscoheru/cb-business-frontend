@@ -12,8 +12,10 @@ export default function FavoritesPage() {
   const { favoriteItems, isLoading, error, favoriteCount } = useFavorites();
   const { isAuthenticated } = useAuth();
 
-  // Extract cards from favoriteItems
-  const cards = favoriteItems.map(item => item.card);
+  // Extract cards from favoriteItems (filter out undefined and opportunity-only items)
+  const cards = favoriteItems
+    .map(item => item.card)
+    .filter((card): card is NonNullable<typeof card> => card !== undefined);
 
   return (
     <ProtectedRoute>
