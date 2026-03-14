@@ -38,7 +38,12 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
 
       try {
         const items = await favoritesApi.getFavorites();
-        const favIds = new Set(items.map(item => item.card_id));
+        // Extract both card IDs and opportunity IDs, filtering out null values
+        const favIds = new Set(
+          items
+            .map(item => item.card_id || item.opportunity_id)
+            .filter((id): id is string => id !== null)
+        );
         setFavorites(favIds);
         setFavoriteItems(items);
       } catch (err: any) {
@@ -83,8 +88,12 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
         // Fetch all favorites to get the complete item with card data
         const items = await favoritesApi.getFavorites();
         setFavoriteItems(items);
-        // Update favorites set with actual server state
-        setFavorites(new Set(items.map(item => item.card_id)));
+        // Update favorites set with actual server state (include both cards and opportunities)
+        setFavorites(new Set(
+          items
+            .map(item => item.card_id || item.opportunity_id)
+            .filter((id): id is string => id !== null)
+        ));
       }
     } catch (err: any) {
       console.error('Failed to toggle favorite:', err);
