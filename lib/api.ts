@@ -249,11 +249,12 @@ export const apiClient = {
 
 // ============ Auth API ============
 export const authApi = {
-  async register(email: string, password: string, name: string): Promise<AuthResponse> {
+  async register(email: string, password: string, name: string, plan_choice?: 'trial' | 'free'): Promise<AuthResponse> {
     const response = await apiClient.post('/api/v1/auth/register', {
       email,
       password,
       name,
+      plan_choice: plan_choice || 'trial',  // 默认trial
     }, false);  // ✅ requiresAuth = false for public endpoint
 
     // Store token

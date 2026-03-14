@@ -11,7 +11,7 @@ interface AuthContextType {
   token: string | null;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (email: string, password: string, name: string) => Promise<void>;
+  register: (email: string, password: string, name: string, plan_choice?: 'trial' | 'free') => Promise<void>;
   logout: () => void;
   isAuthenticated: boolean;
 }
@@ -83,14 +83,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const register = async (email: string, password: string, name: string) => {
+  const register = async (email: string, password: string, name: string, plan_choice: 'trial' | 'free' = 'trial') => {
     // 检查是否已登录
     if (user) {
       throw new Error('您已登录，请先退出当前账户后再注册新账户');
     }
 
     const { authApi } = await import('@/lib/api');
-    const response = await authApi.register(email, password, name);
+    const response = await authApi.register(email, password, name, plan_choice);
 
     // 保存token和用户信息
     setToken(response.access_token);
