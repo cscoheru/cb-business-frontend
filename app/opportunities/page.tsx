@@ -43,8 +43,16 @@ export default function OpportunitiesPage() {
   });
 
   useEffect(() => {
-    fetchOpportunities();
-    fetchFunnel();
+    const fetchData = async () => {
+      setLoading(true);
+      await Promise.all([
+        fetchOpportunities(),
+        fetchFunnel()
+      ]);
+      setLoading(false);
+    };
+
+    fetchData();
   }, []);
 
   const fetchOpportunities = async () => {
@@ -69,8 +77,6 @@ export default function OpportunitiesPage() {
       setUserAccess(data.user_access || null);
     } catch (error) {
       console.error('Failed to fetch opportunities:', error);
-    } finally {
-      setLoading(false);
     }
   };
 
