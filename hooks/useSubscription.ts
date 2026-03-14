@@ -34,11 +34,11 @@ export function useSubscription() {
 
       const data = await subscriptionsApi.getMySubscription();
 
-      if (data.subscription) {
-        setSubscription(data.subscription);
+      if (data) {
+        setSubscription(data);
 
         // Calculate derived status
-        const sub = data.subscription;
+        const sub = data;
         let daysUntilExpiry: number | null = null;
 
         if (sub.expires_at) {
@@ -54,7 +54,7 @@ export function useSubscription() {
           startedAt: sub.started_at,
           expiresAt: sub.expires_at,
           canceledAt: sub.canceled_at,
-          isTrialing: sub.status === 'active' && sub.expires_at && daysUntilExpiry !== null && daysUntilExpiry > 0,
+          isTrialing: sub.status === 'active' && !!sub.expires_at && daysUntilExpiry !== null && daysUntilExpiry > 0,
           daysUntilExpiry,
         });
       } else {
