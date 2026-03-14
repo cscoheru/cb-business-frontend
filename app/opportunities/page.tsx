@@ -5,8 +5,9 @@ import Link from 'next/link';
 import { useAuth } from '@/lib/auth-context';
 import { SubscriptionPrompt } from '@/components/opportunities/permission-badge';
 
-// Intercept fetch ASAP - before any component renders
+// Intercept ALL network requests ASAP - before any component renders
 if (typeof window !== 'undefined') {
+  // Intercept fetch
   const originalFetch = window.fetch;
   window.fetch = function(url: RequestInfo | URL, options?: RequestInit): Promise<Response> {
     const urlStr = url.toString();
@@ -14,12 +15,27 @@ if (typeof window !== 'undefined') {
 
     if (urlStr.includes('http://api.zenconsult.top')) {
       const httpsUrl = urlStr.replace('http://api.zenconsult.top', 'https://api.zenconsult.top');
-      console.log('🔧 FORCED:', urlStr, '→', httpsUrl);
+      console.log('🔧 FORCED fetch:', urlStr, '→', httpsUrl);
       return originalFetch(httpsUrl, options);
     }
     return originalFetch(url, options);
   };
-  console.log('✅ Opportunities page fetch interceptor installed');
+
+  // Intercept XMLHttpRequest
+  const originalXHROpen = XMLHttpRequest.prototype.open;
+  XMLHttpRequest.prototype.open = function(method: string, url: string | URL, ...rest: any[]) {
+    const urlStr = url.toString();
+    console.log('🔍 Intercepted XHR:', method, urlStr);
+
+    if (urlStr.includes('http://api.zenconsult.top')) {
+      const httpsUrl = urlStr.replace('http://api.zenconsult.top', 'https://api.zenconsult.top');
+      console.log('🔧 FORCED XHR:', urlStr, '→', httpsUrl);
+      arguments[1] = httpsUrl;
+    }
+    return originalXHROpen.apply(this, arguments as any);
+  };
+
+  console.log('✅ Opportunities page network interceptor installed (fetch + XHR)');
 }
 
 interface Opportunity {
