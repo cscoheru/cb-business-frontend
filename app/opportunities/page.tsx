@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useAuth } from '@/lib/auth-context';
+import { SubscriptionPrompt } from '@/components/opportunities/permission-badge';
 
 interface Opportunity {
   id: string;
@@ -20,9 +22,19 @@ interface FunnelData {
   };
 }
 
+interface UserAccess {
+  plan_tier: string;
+  plan_status: string;
+  trial_ends_at?: string;
+  is_trial_expired?: boolean;
+  accessible_statuses?: string[];
+}
+
 export default function OpportunitiesPage() {
+  const { user, isAuthenticated } = useAuth();
   const [opportunities, setOpportunities] = useState<Opportunity[]>([]);
   const [funnel, setFunnel] = useState<FunnelData>({});
+  const [userAccess, setUserAccess] = useState<UserAccess | null>(null);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState({
     status: '',
@@ -42,9 +54,19 @@ export default function OpportunitiesPage() {
       if (filter.type) params.append('type', filter.type);
       if (filter.minConfidence) params.append('min_confidence', filter.minConfidence);
 
-      const response = await fetch(`https://api.zenconsult.top/api/v1/opportunities?${params}`);
+      // 添加认证token
+      const headers: Record<string, string> = {};
+      const token = localStorage.getItem('auth_token');
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
+      const response = await fetch(`https://api.zenconsult.top/api/v1/opportunities?${params}`, {
+        headers
+      });
       const data = await response.json();
       setOpportunities(data.opportunities || []);
+      setUserAccess(data.user_access || null);
     } catch (error) {
       console.error('Failed to fetch opportunities:', error);
     } finally {
@@ -54,7 +76,15 @@ export default function OpportunitiesPage() {
 
   const fetchFunnel = async () => {
     try {
-      const response = await fetch('https://api.zenconsult.top/api/v1/opportunities/funnel');
+      const headers: Record<string, string> = {};
+      const token = localStorage.getItem('auth_token');
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
+      const response = await fetch('https://api.zenconsult.top/api/v1/opportunities/funnel', {
+        headers
+      });
       const data = await response.json();
       setFunnel(data.funnel || {});
     } catch (error) {
@@ -115,6 +145,41 @@ export default function OpportunitiesPage() {
           ))}
         </div>
       </div>
+
+      {/* 权限提示 - 对于Free/未登录用户显示 */}
+      {!isAuthenticated || user?.plan_tier === 'free' ? (
+        <div className="mb-8">
+          <SubscriptionPrompt
+            title="解锁完整商机跟踪功能"
+            description={
+              !isAuthenticated
+                ? "注册账户，免费体验AI智能商机发现与验证"
+                : "升级到Pro版，解锁所有商机跟踪功能"
+            }
+            features={[
+              '无限查看所有阶段商机',
+              'AI智能分析与评分',
+              '数据采集验证',
+              '市场趋势预测'
+            ]}
+            gradient={!isAuthenticated ? 'blue' : 'purple'}
+          />
+        </div>
+      ) : user?.plan_tier === 'trial' && userAccess?.is_trial_expired ? (
+        <div className="mb-8">
+          <SubscriptionPrompt
+            title="试用期已到期"
+            description="升级到Pro版，继续享受完整商机跟踪功能"
+            features={[
+              '无限查看所有阶段商机',
+              'AI智能分析与评分',
+              '数据采集验证',
+              '专属客服支持'
+            ]}
+            gradient="orange"
+          />
+        </div>
+      ) : null}
 
       {/* 筛选器 */}
       <div className="mb-6 bg-white rounded-lg shadow p-4">
