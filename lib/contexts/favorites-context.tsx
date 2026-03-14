@@ -3,6 +3,10 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { favoritesApi, FavoriteItem } from '@/lib/api';
 import { useAuth } from '@/lib/auth-context';
+import { useToast } from '@/components/ui/toast';
+
+// LocalStorage key for anonymous favorites
+const LOCAL_FAVORITES_KEY = 'zen_favorites';
 
 interface FavoritesContextType {
   favorites: Set<string>;
@@ -12,24 +16,55 @@ interface FavoritesContextType {
   favoriteCount: number;
   isLoading: boolean;
   error: string | null;
+  anonymousFavoriteCount: number;
 }
 
 const FavoritesContext = createContext<FavoritesContextType | undefined>(undefined);
+
+/**
+ * Load local favorites from localStorage
+ */
+const loadLocalFavorites = (): string[] => {
+  if (typeof window === 'undefined') return [];
+  try {
+    const stored = localStorage.getItem(LOCAL_FAVORITES_KEY);
+    return stored ? JSON.parse(stored) : [];
+  } catch (error) {
+    console.error('Failed to load local favorites:', error);
+    return [];
+  }
+};
+
+/**
+ * Save favorites to localStorage
+ */
+const saveLocalFavorites = (favorites: string[]) => {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem(LOCAL_FAVORITES_KEY, JSON.stringify(favorites));
+  } catch (error) {
+    console.error('Failed to save local favorites:', error);
+  }
+};
 
 export function FavoritesProvider({ children }: { children: ReactNode }) {
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
   const [favoriteItems, setFavoriteItems] = useState<FavoriteItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [anonymousFavoriteCount, setAnonymousFavoriteCount] = useState(0);
   const { isAuthenticated } = useAuth();
+  const toast = useToast();
 
-  // Load favorites from API when user is authenticated
+  // Load favorites from API when user is authenticated, or localStorage when not
   useEffect(() => {
     const loadFavorites = async () => {
       if (!isAuthenticated) {
-        // Not authenticated, clear favorites
-        setFavorites(new Set());
-        setFavoriteItems([]);
+        // Not authenticated, load from localStorage
+        const localFavorites = loadLocalFavorites();
+        setFavorites(new Set(localFavorites));
+        setAnonymousFavoriteCount(localFavorites.length);
+        setFavoriteItems([]); // Don't load items when not authenticated
         return;
       }
 
@@ -46,6 +81,7 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
         );
         setFavorites(favIds);
         setFavoriteItems(items);
+        setAnonymousFavoriteCount(0); // Reset local count after login
       } catch (err: any) {
         console.error('Failed to load favorites:', err);
         setError(err.message || '加载收藏失败');
@@ -60,12 +96,45 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
 
   const toggleFavorite = async (cardId: string) => {
     if (!isAuthenticated) {
-      const errorMsg = '请先登录后再收藏';
-      setError(errorMsg);
-      // Throw error so caller can handle it
-      throw new Error(errorMsg);
+      // Anonymous user: save to localStorage
+      const localFavorites = loadLocalFavorites();
+      const isCurrentlyFavorite = localFavorites.includes(cardId);
+
+      if (isCurrentlyFavorite) {
+        // Remove from local favorites
+        const index = localFavorites.indexOf(cardId);
+        localFavorites.splice(index, 1);
+        saveLocalFavorites(localFavorites);
+        setFavorites(new Set(localFavorites));
+        setAnonymousFavoriteCount(localFavorites.length);
+      } else {
+        // Add to local favorites
+        localFavorites.push(cardId);
+        saveLocalFavorites(localFavorites);
+        const newCount = localFavorites.length;
+        setFavorites(new Set(localFavorites));
+        setAnonymousFavoriteCount(newCount);
+
+        // Show appropriate feedback based on count
+        if (newCount === 1) {
+          toast.showInfo('💾 已保存到本地', '登录后可跨设备访问');
+        } else if (newCount === 3) {
+          // Smart registration prompt on 3rd favorite
+          setTimeout(() => {
+            toast.showInfo(
+              '💡 提示：注册账户，收藏永不丢失',
+              `已为您保存了${newCount}个收藏，注册后可随时随地访问`
+            );
+          }, 1000);
+        } else {
+          toast.showSuccess('💾 已保存到本地');
+        }
+      }
+
+      return;
     }
 
+    // Authenticated user: use API
     setError(null);
     const isCurrentlyFavorite = favorites.has(cardId);
 
@@ -87,6 +156,12 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
       } else {
         // Add to API
         await favoritesApi.addFavorite(cardId);
+        // Show AI monitoring message
+        toast.showAIAnalyzing(
+          '✅ 已加入AI智能监控',
+          '🤖 正在分析市场变化，预计5分钟完成'
+        );
+
         // Fetch all favorites to get the complete item with card data
         const items = await favoritesApi.getFavorites();
         setFavoriteItems(items);
@@ -117,6 +192,7 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
         favoriteCount: favorites.size,
         isLoading,
         error,
+        anonymousFavoriteCount,
       }}
     >
       {children}

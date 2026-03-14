@@ -59,12 +59,12 @@
               - generic [ref=e54]: 姓名 *
               - textbox "姓名 *" [active] [ref=e55]:
                 - /placeholder: 您的姓名
-                - text: E2E会员测试1773504389608
+                - text: E2E会员测试1773529098240
             - generic [ref=e56]:
               - generic [ref=e57]: 邮箱地址 *
               - textbox "邮箱地址 *" [ref=e58]:
                 - /placeholder: your@email.com
-                - text: e2e-membership-1773504389607@example.com
+                - text: e2e-membership-1773529098240@example.com
             - generic [ref=e59]:
               - generic [ref=e60]:
                 - generic [ref=e61]: 密码 *

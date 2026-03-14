@@ -76,29 +76,19 @@ export function InfoCard({ card }: InfoCardProps) {
 
     if (liking) return;
 
-    // Check if user is authenticated before allowing favorites
-    if (!isAuthenticated) {
-      // Redirect to login with return URL
-      router.push(`/login?redirect=${encodeURIComponent(window.location.pathname)}`);
-      return;
-    }
-
     setLiking(true);
 
     try {
-      // First, like the card (public API, no auth required)
-      await cardsApi.likeCard(card.id);
-      setLocalLikes((prev) => prev + 1);
-
-      // Then, add to favorites (requires auth)
+      // Toggle favorite (now supports anonymous users)
       await toggleFavorite(card.id);
+
+      // Only like the card if authenticated (increments like count)
+      if (isAuthenticated) {
+        await cardsApi.likeCard(card.id);
+        setLocalLikes((prev) => prev + 1);
+      }
     } catch (error: any) {
       console.error('Failed to like card:', error);
-
-      // If it's an auth error, redirect to login
-      if (error?.message === '请先登录后再收藏') {
-        router.push(`/login?redirect=${encodeURIComponent(window.location.pathname)}`);
-      }
     } finally {
       setLiking(false);
     }
@@ -207,17 +197,37 @@ export function InfoCard({ card }: InfoCardProps) {
             <Eye className="h-3 w-3" />
             {card.views}
           </span>
+
+          {/* Enhanced favorite button with animation */}
           <button
             onClick={handleLike}
             disabled={liking}
-            className={`flex items-center gap-1 transition-colors ${
-              favorite ? 'text-red-500 hover:text-red-600' : 'hover:text-red-500'
+            title={favorite ? "已收藏，AI正在持续监控" : "收藏此卡片，AI将持续监控市场变化"}
+            className={`relative group flex items-center gap-1 transition-all duration-300 ${
+              favorite
+                ? 'text-red-500 hover:text-red-600 scale-105'
+                : 'text-gray-400 hover:text-red-500 hover:scale-110'
             }`}
           >
-            <Heart className={`h-3 w-3 ${favorite ? 'fill-current' : ''}`} />
-            {localLikes}
+            {/* Heart icon with animation */}
+            <span className={`inline-block transition-transform duration-300 ${
+              favorite ? 'scale-110' : ''
+            }`}>
+              <Heart className={`h-5 w-5 ${favorite ? 'fill-current' : ''}`} />
+            </span>
+
+            {/* New user pulse indicator */}
+            {!favorite && (
+              <span className="absolute -top-1 -right-1 flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+              </span>
+            )}
+
+            <span className="text-xs">{localLikes}</span>
           </button>
-          <span>
+
+          <span className="text-xs">
             {new Date(card.created_at).toLocaleDateString('zh-CN')}
           </span>
         </div>

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { cardsApi, Card as CardType } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -39,6 +40,7 @@ export default function CardDetailPage() {
   const params = useParams();
   const router = useRouter();
   const cardId = params.id as string;
+  const { favoriteItems } = useFavorites();
   const { isFavorite, toggleFavorite } = useFavorites();
   const { isAuthenticated } = useAuth();
 
@@ -47,10 +49,39 @@ export default function CardDetailPage() {
   const [liking, setLiking] = useState(false);
   const [copied, setCopied] = useState(false);
   const [localLikes, setLocalLikes] = useState(0);
+  const [opportunityId, setOpportunityId] = useState<string | null>(null);
 
   useEffect(() => {
     loadCard();
+    checkOpportunity();
   }, [cardId]);
+
+  // Check if this card has an associated opportunity
+  const checkOpportunity = async () => {
+    if (!isAuthenticated) return;
+
+    try {
+      const token = localStorage.getItem('auth_token');
+      const response = await fetch('https://api.zenconsult.top/api/v1/favorites', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        // Find the favorite that matches this card and has an opportunity
+        const favorite = data.find((fav: any) =>
+          fav.card_id === cardId && fav.opportunity_id
+        );
+        if (favorite) {
+          setOpportunityId(favorite.opportunity_id);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to check opportunity:', error);
+    }
+  };
 
   const loadCard = async () => {
     try {
@@ -204,24 +235,42 @@ export default function CardDetailPage() {
                   {localLikes}
                 </button>
               </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleShare}
-                className="flex items-center gap-2"
-              >
-                {copied ? (
-                  <>
-                    <Check className="h-4 w-4 text-green-600" />
-                    已复制
-                  </>
-                ) : (
-                  <>
-                    <Share2 className="h-4 w-4" />
-                    分享
-                  </>
+
+              {/* 右侧按钮组 */}
+              <div className="flex items-center gap-2">
+                {/* 查看AI分析进展链接 - 如果已收藏 */}
+                {isFavorite(card.id) && opportunityId && (
+                  <Link href={`/opportunities/${opportunityId}`}>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="flex items-center gap-1 text-xs"
+                    >
+                      <TrendingUp className="h-3 w-3" />
+                      查看AI分析
+                    </Button>
+                  </Link>
                 )}
-              </Button>
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleShare}
+                  className="flex items-center gap-2"
+                >
+                  {copied ? (
+                    <>
+                      <Check className="h-4 w-4 text-green-600" />
+                      已复制
+                    </>
+                  ) : (
+                    <>
+                      <Share2 className="h-4 w-4" />
+                      分享
+                    </>
+                  )}
+                </Button>
+              </div>
             </div>
           </CardHeader>
         </Card>

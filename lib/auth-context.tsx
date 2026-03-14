@@ -5,6 +5,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import type { User } from '@/lib/api';
 
 const TOKEN_KEY = 'auth_token';
+const LOCAL_FAVORITES_KEY = 'zen_favorites';
 
 interface AuthContextType {
   user: User | null;
@@ -15,6 +16,44 @@ interface AuthContextType {
   logout: () => void;
   isAuthenticated: boolean;
 }
+
+/**
+ * Sync local favorites to server after login
+ */
+const syncLocalFavorites = async () => {
+  if (typeof window === 'undefined') return;
+
+  try {
+    const stored = localStorage.getItem(LOCAL_FAVORITES_KEY);
+    if (!stored) return;
+
+    const localFavorites: string[] = JSON.parse(stored);
+    if (localFavorites.length === 0) return;
+
+    // Sync to server
+    const { favoritesApi } = await import('@/lib/api');
+    let syncedCount = 0;
+
+    for (const cardId of localFavorites) {
+      try {
+        await favoritesApi.addFavorite(cardId);
+        syncedCount++;
+      } catch (error) {
+        console.error(`Failed to sync favorite ${cardId}:`, error);
+      }
+    }
+
+    // Clear local storage after successful sync
+    localStorage.removeItem(LOCAL_FAVORITES_KEY);
+
+    if (syncedCount > 0) {
+      // Use toast to show success message (will be implemented by caller)
+      console.log(`Synced ${syncedCount} local favorites to server`);
+    }
+  } catch (error) {
+    console.error('Failed to sync local favorites:', error);
+  }
+};
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -77,6 +116,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.setItem('user', JSON.stringify(response.user));
     }
 
+    // Sync local favorites after login
+    await syncLocalFavorites();
+
     // Note: Redirect is handled by the caller (login page)
   };
 
@@ -97,6 +139,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.setItem(TOKEN_KEY, response.access_token);
       localStorage.setItem('user', JSON.stringify(response.user));
     }
+
+    // Sync local favorites after registration
+    await syncLocalFavorites();
 
     // 注册后跳转到 dashboard
     router.push('/dashboard');
