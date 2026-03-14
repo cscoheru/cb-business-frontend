@@ -104,47 +104,96 @@ export default function HomePage() {
           <script dangerouslySetInnerHTML={{
             __html: `
               (function() {
-                // 加载漏斗数据
-                fetch('https://api.zenconsult.top/api/v1/opportunities/funnel')
-                  .then(r => r.json())
-                  .then(data => {
-                    if (data.success && data.funnel) {
-                      const f = data.funnel;
-                      document.getElementById('funnel-potential-count').textContent = f.potential?.count || 0;
-                      document.getElementById('funnel-verifying-count').textContent = f.verifying?.count || 0;
-                      document.getElementById('funnel-assessing-count').textContent = f.assessing?.count || 0;
-                      document.getElementById('funnel-executing-count').textContent = f.executing?.count || 0;
-                    }
-                  });
+                // 加载漏斗数据（带30秒缓存）
+                const cachedFunnel = sessionStorage.getItem('sos_funnel_cache');
+                const cachedTime = sessionStorage.getItem('sos_funnel_time');
+                const now = Date.now();
 
-                // 加载最新商机
-                fetch('https://api.zenconsult.top/api/v1/opportunities?status=potential&limit=3')
-                  .then(r => r.json())
-                  .then(data => {
-                    if (data.opportunities && data.opportunities.length > 0) {
-                      const container = document.getElementById('sos-opportunities-container');
-                      container.innerHTML = data.opportunities.map(opp => \`
-                        <a href="/opportunities/\${opp.id}" class="block bg-white rounded-lg p-4 shadow-sm hover:shadow-md transition-all border border-gray-100">
-                          <div class="flex items-center justify-between mb-2">
-                            <span class="px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
-                              发现期
-                            </span>
-                            <span class="text-xs text-gray-500">
-                              AI可信度 \${Math.round(opp.confidence_score * 100)}%
-                            </span>
-                          </div>
-                          <h3 class="font-semibold text-gray-900 mb-1 line-clamp-2">\${opp.title}</h3>
-                          <p class="text-sm text-gray-600 line-clamp-2">\${opp.description || '暂无描述'}</p>
-                        </a>
-                      \`).join('');
-                    } else {
-                      document.getElementById('sos-opportunities-container').innerHTML = \`
-                        <div class="col-span-3 text-center py-6 text-gray-500">
-                          暂无商机数据，AI正在分析中...
+                if (cachedFunnel && cachedTime && (now - parseInt(cachedTime)) < 30000) {
+                  // 使用缓存数据
+                  const data = JSON.parse(cachedFunnel);
+                  if (data.success && data.funnel) {
+                    const f = data.funnel;
+                    document.getElementById('funnel-potential-count').textContent = f.potential?.count || 0;
+                    document.getElementById('funnel-verifying-count').textContent = f.verifying?.count || 0;
+                    document.getElementById('funnel-assessing-count').textContent = f.assessing?.count || 0;
+                    document.getElementById('funnel-executing-count').textContent = f.executing?.count || 0;
+                  }
+                } else {
+                  // 从API获取
+                  fetch('https://api.zenconsult.top/api/v1/opportunities/funnel')
+                    .then(r => r.json())
+                    .then(data => {
+                      if (data.success && data.funnel) {
+                        const f = data.funnel;
+                        document.getElementById('funnel-potential-count').textContent = f.potential?.count || 0;
+                        document.getElementById('funnel-verifying-count').textContent = f.verifying?.count || 0;
+                        document.getElementById('funnel-assessing-count').textContent = f.assessing?.count || 0;
+                        document.getElementById('funnel-executing-count').textContent = f.executing?.count || 0;
+                        // 缓存30秒
+                        sessionStorage.setItem('sos_funnel_cache', JSON.stringify(data));
+                        sessionStorage.setItem('sos_funnel_time', now.toString());
+                      }
+                    });
+                }
+
+                // 加载最新商机（带30秒缓存）
+                const cachedOpps = sessionStorage.getItem('sos_opps_cache');
+                const cachedOppsTime = sessionStorage.getItem('sos_opps_time');
+
+                if (cachedOpps && cachedOppsTime && (now - parseInt(cachedOppsTime)) < 30000) {
+                  // 使用缓存数据
+                  const data = JSON.parse(cachedOpps);
+                  if (data.opportunities && data.opportunities.length > 0) {
+                    const container = document.getElementById('sos-opportunities-container');
+                    container.innerHTML = data.opportunities.map(opp => \`
+                      <a href="/opportunities/\${opp.id}" class="block bg-white rounded-lg p-4 shadow-sm hover:shadow-md transition-all border border-gray-100">
+                        <div class="flex items-center justify-between mb-2">
+                          <span class="px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                            发现期
+                          </span>
+                          <span class="text-xs text-gray-500">
+                            AI可信度 \${Math.round(opp.confidence_score * 100)}%
+                          </span>
                         </div>
-                      \`;
-                    }
-                  });
+                        <h3 class="font-semibold text-gray-900 mb-1 line-clamp-2">\${opp.title}</h3>
+                        <p class="text-sm text-gray-600 line-clamp-2">\${opp.description || '暂无描述'}</p>
+                      </a>
+                    \`).join('');
+                  }
+                } else {
+                  // 从API获取
+                  fetch('https://api.zenconsult.top/api/v1/opportunities?status=potential&limit=3')
+                    .then(r => r.json())
+                    .then(data => {
+                      if (data.opportunities && data.opportunities.length > 0) {
+                        const container = document.getElementById('sos-opportunities-container');
+                        container.innerHTML = data.opportunities.map(opp => \`
+                          <a href="/opportunities/\${opp.id}" class="block bg-white rounded-lg p-4 shadow-sm hover:shadow-md transition-all border border-gray-100">
+                            <div class="flex items-center justify-between mb-2">
+                              <span class="px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                                发现期
+                              </span>
+                              <span class="text-xs text-gray-500">
+                                AI可信度 \${Math.round(opp.confidence_score * 100)}%
+                              </span>
+                            </div>
+                            <h3 class="font-semibold text-gray-900 mb-1 line-clamp-2">\${opp.title}</h3>
+                            <p class="text-sm text-gray-600 line-clamp-2">\${opp.description || '暂无描述'}</p>
+                          </a>
+                        \`).join('');
+                        // 缓存30秒
+                        sessionStorage.setItem('sos_opps_cache', JSON.stringify(data));
+                        sessionStorage.setItem('sos_opps_time', Date.now().toString());
+                      } else {
+                        document.getElementById('sos-opportunities-container').innerHTML = \`
+                          <div class="col-span-3 text-center py-6 text-gray-500">
+                            暂无商机数据，AI正在分析中...
+                          </div>
+                        \`;
+                      }
+                    });
+                }
               })();
             `
           }} />
