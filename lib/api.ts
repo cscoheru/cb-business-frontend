@@ -514,6 +514,10 @@ export interface DailyCardsResponse {
   date: string;
   count: number;
   cards: Card[];
+  cache_info?: {
+    mode: string;
+    generated_at: string;
+  };
 }
 
 export interface LatestCardsResponse {
