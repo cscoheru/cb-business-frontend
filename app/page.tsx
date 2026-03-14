@@ -16,6 +16,7 @@ export default function HomePage() {
               </Link>
               <div className="hidden md:flex items-center gap-6 text-sm text-gray-600">
                 <Link href="/cards" className="font-semibold text-blue-600">商机卡片</Link>
+                <Link href="/opportunities" className="hover:text-gray-900">智能商机</Link>
                 <Link href="/favorites" className="hover:text-gray-900">我的收藏</Link>
               </div>
             </div>
@@ -31,6 +32,124 @@ export default function HomePage() {
 
       {/* 今日商机卡片 - Hero Section */}
       <DailyCardsHero />
+
+      {/* SOS智能商机 - 分阶段管理 */}
+      <section className="bg-gradient-to-r from-blue-50 to-purple-50 border-b py-10">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-1">
+                🎯 AI智能商机跟踪
+              </h2>
+              <p className="text-gray-600 text-sm">
+                实时发现 → 数据验证 → 市场评估 → 执行落地
+              </p>
+            </div>
+            <Link
+              href="/opportunities"
+              className="flex items-center gap-1 px-4 py-2 bg-white border border-gray-200 rounded-lg hover:shadow-md transition-all text-sm font-medium text-gray-700"
+            >
+              查看全部
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </Link>
+          </div>
+
+          {/* 商机漏斗概览 */}
+          <div id="sos-funnel-container" className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            <div className="bg-white rounded-lg p-4 text-center shadow-sm">
+              <div className="text-3xl font-bold text-blue-600" id="funnel-potential-count">-</div>
+              <div className="text-sm text-gray-600 mt-1">发现期</div>
+              <div className="text-xs text-gray-500">AI分析中</div>
+            </div>
+            <div className="bg-white rounded-lg p-4 text-center shadow-sm">
+              <div className="text-3xl font-bold text-yellow-600" id="funnel-verifying-count">-</div>
+              <div className="text-sm text-gray-600 mt-1">验证期</div>
+              <div className="text-xs text-gray-500">数据采集中</div>
+            </div>
+            <div className="bg-white rounded-lg p-4 text-center shadow-sm">
+              <div className="text-3xl font-bold text-purple-600" id="funnel-assessing-count">-</div>
+              <div className="text-sm text-gray-600 mt-1">评估期</div>
+              <div className="text-xs text-gray-500">市场分析中</div>
+            </div>
+            <div className="bg-white rounded-lg p-4 text-center shadow-sm">
+              <div className="text-3xl font-bold text-green-600" id="funnel-executing-count">-</div>
+              <div className="text-sm text-gray-600 mt-1">执行期</div>
+              <div className="text-xs text-gray-500">落地跟进中</div>
+            </div>
+          </div>
+
+          {/* 最新商机卡片（前3个） */}
+          <div id="sos-opportunities-container" className="grid md:grid-cols-3 gap-4">
+            {/* 动态加载 */}
+            <div className="bg-white rounded-lg p-4 shadow-sm animate-pulse">
+              <div className="h-4 bg-gray-200 rounded w-3/4 mb-3"></div>
+              <div className="h-3 bg-gray-200 rounded w-full mb-2"></div>
+              <div className="h-3 bg-gray-200 rounded w-2/3"></div>
+            </div>
+            <div className="bg-white rounded-lg p-4 shadow-sm animate-pulse">
+              <div className="h-4 bg-gray-200 rounded w-3/4 mb-3"></div>
+              <div className="h-3 bg-gray-200 rounded w-full mb-2"></div>
+              <div className="h-3 bg-gray-200 rounded w-2/3"></div>
+            </div>
+            <div className="bg-white rounded-lg p-4 shadow-sm animate-pulse">
+              <div className="h-4 bg-gray-200 rounded w-3/4 mb-3"></div>
+              <div className="h-3 bg-gray-200 rounded w-full mb-2"></div>
+              <div className="h-3 bg-gray-200 rounded w-2/3"></div>
+            </div>
+          </div>
+
+          {/* 加载SOS数据的脚本 */}
+          <script dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                // 加载漏斗数据
+                fetch('https://api.zenconsult.top/api/v1/opportunities/funnel')
+                  .then(r => r.json())
+                  .then(data => {
+                    if (data.success && data.funnel) {
+                      const f = data.funnel;
+                      document.getElementById('funnel-potential-count').textContent = f.potential?.count || 0;
+                      document.getElementById('funnel-verifying-count').textContent = f.verifying?.count || 0;
+                      document.getElementById('funnel-assessing-count').textContent = f.assessing?.count || 0;
+                      document.getElementById('funnel-executing-count').textContent = f.executing?.count || 0;
+                    }
+                  });
+
+                // 加载最新商机
+                fetch('https://api.zenconsult.top/api/v1/opportunities?status=potential&limit=3')
+                  .then(r => r.json())
+                  .then(data => {
+                    if (data.opportunities && data.opportunities.length > 0) {
+                      const container = document.getElementById('sos-opportunities-container');
+                      container.innerHTML = data.opportunities.map(opp => \`
+                        <a href="/opportunities/\${opp.id}" class="block bg-white rounded-lg p-4 shadow-sm hover:shadow-md transition-all border border-gray-100">
+                          <div class="flex items-center justify-between mb-2">
+                            <span class="px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                              发现期
+                            </span>
+                            <span class="text-xs text-gray-500">
+                              AI可信度 \${Math.round(opp.confidence_score * 100)}%
+                            </span>
+                          </div>
+                          <h3 class="font-semibold text-gray-900 mb-1 line-clamp-2">\${opp.title}</h3>
+                          <p class="text-sm text-gray-600 line-clamp-2">\${opp.description || '暂无描述'}</p>
+                        </a>
+                      \`).join('');
+                    } else {
+                      document.getElementById('sos-opportunities-container').innerHTML = \`
+                        <div class="col-span-3 text-center py-6 text-gray-500">
+                          暂无商机数据，AI正在分析中...
+                        </div>
+                      \`;
+                    }
+                  });
+              })();
+            `
+          }} />
+        </div>
+      </section>
 
       {/* 深度数据探索区域 */}
       <section className="bg-white border-b py-8">
