@@ -1,25 +1,40 @@
 'use client';
 
 import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { JourneyTracker } from '@/components/dashboard/JourneyTracker';
 import { QuickActionCard } from '@/components/dashboard/QuickActionCard';
 import { OpportunityCard, mockOpportunityCard } from '@/components/dashboard/OpportunityCard';
-import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { TrialReminderBanner } from '@/components/trial/trial-reminder-banner';
+import { UpgradePrompt } from '@/components/subscription/upgrade-prompt';
 import { useAuth } from '@/lib/auth-context';
+import { useSubscription } from '@/hooks/useSubscription';
 import Link from 'next/link';
 
 export default function DashboardPage() {
   const { user } = useAuth();
+  const { status, isLoading, getPlanLabel, getStatusBadge } = useSubscription();
 
   return (
-    <ProtectedRoute>
+    <>
       {/* Trial Reminder Banner - Full mode */}
       <TrialReminderBanner />
 
       <div className="container mx-auto px-4 py-8">
       {/* Dashboard Page Title */}
-      <h1 className="text-2xl font-bold mb-6">仪表盘</h1>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-bold">仪表盘</h1>
+        {!isLoading && status && (
+          <Badge className={getStatusBadge(status).color}>
+            {getPlanLabel(status.plan)}
+          </Badge>
+        )}
+      </div>
+
+      {/* Upgrade Prompt for Free Tier */}
+      {!isLoading && status && status.plan === 'free' && (
+        <UpgradePrompt variant="banner" className="mb-6" />
+      )}
 
       {/* Welcome Section */}
       <div className="mb-8">
@@ -107,6 +122,6 @@ export default function DashboardPage() {
         </div>
       </section>
       </div>
-    </ProtectedRoute>
+    </>
   );
 }

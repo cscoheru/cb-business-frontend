@@ -3,11 +3,10 @@
 import { useFavorites } from '@/lib/contexts/favorites-context';
 import { useAuth } from '@/lib/auth-context';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Heart } from 'lucide-react';
+import { ArrowLeft, Heart, LogIn } from 'lucide-react';
 import Link from 'next/link';
 import { InfoCard } from '@/components/cards/card';
 import { OpportunityCard } from '@/components/opportunities/OpportunityCard';
-import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 
 export default function FavoritesPage() {
   const { favoriteItems, isLoading, error, favoriteCount } = useFavorites();
@@ -23,8 +22,7 @@ export default function FavoritesPage() {
     .filter((opp): opp is NonNullable<typeof opp> => opp !== undefined);
 
   return (
-    <ProtectedRoute>
-      <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8">
         {/* 返回按钮 */}
         <Link href="/">
           <Button variant="ghost" className="mb-6">
@@ -102,16 +100,26 @@ export default function FavoritesPage() {
                 <p className="text-muted-foreground mb-6">
                   点击卡片上的心形图标，收藏感兴趣的市场分析
                 </p>
-                <Link href="/cards">
-                  <Button>
-                    浏览信息卡片
-                  </Button>
-                </Link>
+                <div className="flex items-center justify-center gap-3">
+                  <Link href="/cards">
+                    <Button>
+                      浏览信息卡片
+                    </Button>
+                  </Link>
+                  {!isAuthenticated && (
+                    <Link href="/register">
+                      <Button variant="outline">
+                        <LogIn className="h-4 w-4 mr-2" />
+                        注册账户
+                      </Button>
+                    </Link>
+                  )}
+                </div>
               </div>
             )}
           </>
         )}
       </div>
-    </ProtectedRoute>
+    </>
   );
 }

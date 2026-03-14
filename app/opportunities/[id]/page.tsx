@@ -6,6 +6,8 @@ import Link from 'next/link';
 import { favoritesApi } from '@/lib/api';
 import { Heart } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
+import { useFavorites } from '@/lib/contexts/favorites-context';
+import { useToast } from '@/components/ui/toast';
 
 interface Opportunity {
   id: string;
@@ -35,6 +37,8 @@ export default function OpportunityDetailPage() {
   const params = useParams();
   const router = useRouter();
   const { isAuthenticated } = useAuth();
+  const { toggleFavorite } = useFavorites();
+  const { showSuccess, showError } = useToast();
   const [opportunity, setOpportunity] = useState<Opportunity | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -71,30 +75,36 @@ export default function OpportunityDetailPage() {
 
   const handleSave = async () => {
     if (!opportunity) return;
-
-    // Check if user is authenticated before allowing favorites
-    if (!isAuthenticated) {
-      // Redirect to login with return URL
-      router.push(`/login?redirect=${encodeURIComponent(window.location.pathname)}`);
-      return;
-    }
+    if (saving) return;
 
     setSaving(true);
+
     try {
+      // For opportunities, we need to handle differently than cards
+      // Opportunities require authentication as they involve AI monitoring
+      if (!isAuthenticated) {
+        // Show registration prompt for anonymous users
+        showError('需要注册', '收藏商机需要注册账户，注册后AI将为您持续监控此机会');
+        setTimeout(() => {
+          router.push(`/register?redirect=${encodeURIComponent(window.location.pathname)}`);
+        }, 1500);
+        return;
+      }
+
       if (isFavorite) {
         // 取消收藏
         await favoritesApi.removeFavoriteByOpportunity(opportunity.id);
         setIsFavorite(false);
-        alert('已取消收藏');
+        showSuccess('已取消收藏');
       } else {
         // 添加收藏
         await favoritesApi.addOpportunityFavorite(opportunity.id);
         setIsFavorite(true);
-        alert('已收藏');
+        showSuccess('收藏成功', 'AI将为您持续监控此机会的进展');
       }
     } catch (error) {
       console.error('Failed to toggle favorite:', error);
-      alert('操作失败，请稍后再试');
+      showError('操作失败', '请稍后再试');
     } finally {
       setSaving(false);
     }

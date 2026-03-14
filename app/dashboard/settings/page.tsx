@@ -8,10 +8,12 @@ import { Label } from '@/components/ui/label';
 import { Avatar } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { User, Bell, Globe, Shield, CreditCard, HelpCircle, Moon, Sun, ArrowRight } from 'lucide-react';
+import { User, Bell, Globe, Shield, CreditCard, HelpCircle, Moon, Sun, ArrowRight, CheckCircle, XCircle, AlertCircle, Loader2 } from 'lucide-react';
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import { useSubscription } from '@/hooks/useSubscription';
+import { UpgradePrompt } from '@/components/subscription/upgrade-prompt';
 
 function SettingsContent() {
   const router = useRouter();
@@ -22,6 +24,7 @@ function SettingsContent() {
     push: false,
     sms: false,
   });
+  const { status, isLoading, error, getPlanLabel, getStatusBadge, canAccessFeature, loadSubscription } = useSubscription();
 
   // Get tab from URL query param, default to 'profile'
   const activeTab = searchParams.get('tab') || 'profile';
@@ -291,44 +294,143 @@ function SettingsContent() {
 
         {/* Subscription Tab */}
         <TabsContent value="subscription" className="space-y-6">
+          {/* Upgrade Prompt for Free Tier */}
+          {!isLoading && status && status.plan === 'free' && (
+            <UpgradePrompt variant="banner" className="mb-6" />
+          )}
           <Card className="p-6">
             <div className="flex items-center justify-between mb-6">
               <div>
                 <h2 className="text-xl font-semibold">当前订阅</h2>
                 <p className="text-sm text-muted-foreground">管理您的订阅计划</p>
               </div>
-              <Badge variant="outline">免费版</Badge>
+              {isLoading ? (
+                <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+              ) : status ? (
+                <Badge className={getStatusBadge(status).color}>
+                  {getStatusBadge(status).label}
+                </Badge>
+              ) : (
+                <Badge variant="outline">免费版</Badge>
+              )}
             </div>
 
-            <div className="bg-muted p-6 rounded-lg mb-6">
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <h3 className="text-lg font-semibold">免费版</h3>
-                  <p className="text-sm text-muted-foreground">¥0/月</p>
+            {error && (
+              <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
+                <AlertCircle className="h-5 w-5 text-red-600 mt-0.5" />
+                <div className="flex-1">
+                  <p className="text-sm text-red-800 font-medium">加载订阅信息失败</p>
+                  <p className="text-xs text-red-600 mt-1">{error}</p>
                 </div>
-                <Link href="/checkout?plan=pro&cycle=monthly">
-                  <Button size="sm">升级到专业版</Button>
-                </Link>
+                <Button variant="outline" size="sm" onClick={loadSubscription}>
+                  重试
+                </Button>
               </div>
-              <div className="space-y-2 text-sm">
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-primary" />
-                  <span>基础市场数据</span>
+            )}
+
+            {status && (
+              <div className={`bg-muted p-6 rounded-lg mb-6 ${status.plan === 'pro' || status.plan === 'enterprise' ? 'border-2 border-primary' : ''}`}>
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <h3 className="text-lg font-semibold">{getPlanLabel(status.plan)}</h3>
+                    <p className="text-sm text-muted-foreground">
+                      {status.plan === 'free' ? '¥0/月' : status.billingCycle === 'yearly' ? '年付订阅' : '月付订阅'}
+                    </p>
+                  </div>
+                  {status.plan === 'free' && (
+                    <Link href="/checkout?plan=pro&cycle=monthly">
+                      <Button size="sm">升级到专业版</Button>
+                    </Link>
+                  )}
+                  {status.plan === 'pro' && (
+                    <Link href="/checkout?plan=enterprise&cycle=yearly">
+                      <Button variant="outline" size="sm">升级到企业版</Button>
+                    </Link>
+                  )}
                 </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-primary" />
-                  <span>每日5次API调用</span>
-                </div>
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <div className="w-2 h-2 rounded-full bg-muted-foreground" />
-                  <span>AI机会分析（专业版功能）</span>
-                </div>
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <div className="w-2 h-2 rounded-full bg-muted-foreground" />
-                  <span>风险预警（专业版功能）</span>
-                </div>
+
+                {status.plan === 'free' && (
+                  <div className="space-y-2 text-sm">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-green-600" />
+                      <span>基础市场数据</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-green-600" />
+                      <span>每日5次API调用</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <XCircle className="h-4 w-4" />
+                      <span>AI机会分析（专业版功能）</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <XCircle className="h-4 w-4" />
+                      <span>风险预警（专业版功能）</span>
+                    </div>
+                  </div>
+                )}
+
+                {(status.plan === 'pro' || status.plan === 'enterprise') && (
+                  <div className="space-y-2 text-sm">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-green-600" />
+                      <span>完整市场数据</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-green-600" />
+                      <span>AI机会分析</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-green-600" />
+                      <span>风险预警</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-green-600" />
+                      <span>无限API调用</span>
+                    </div>
+                    {status.plan === 'enterprise' && (
+                      <>
+                        <div className="flex items-center gap-2">
+                          <CheckCircle className="h-4 w-4 text-green-600" />
+                          <span>专属客户经理</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <CheckCircle className="h-4 w-4 text-green-600" />
+                          <span>定制化报告</span>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                )}
+
+                {status.expiresAt && status.status === 'active' && (
+                  <div className="mt-4 pt-4 border-t">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-muted-foreground">下次续费日期</span>
+                      <span className="font-medium">{new Date(status.expiresAt).toLocaleDateString('zh-CN')}</span>
+                    </div>
+                    {status.daysUntilExpiry !== null && status.daysUntilExpiry > 0 && (
+                      <div className="flex items-center justify-between text-sm mt-2">
+                        <span className="text-muted-foreground">距离续费</span>
+                        <span className="font-medium">{status.daysUntilExpiry} 天</span>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {status.canceledAt && (
+                  <div className="mt-4 pt-4 border-t">
+                    <div className="flex items-center gap-2 text-sm text-yellow-700 bg-yellow-50 p-3 rounded-lg">
+                      <AlertCircle className="h-4 w-4" />
+                      <div>
+                        <p className="font-medium">订阅已取消</p>
+                        <p className="text-xs">有效期至: {new Date(status.expiresAt || '').toLocaleDateString('zh-CN')}</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
-            </div>
+            )}
 
             {/* Pricing Plans */}
             <div className="grid md:grid-cols-2 gap-4 mb-6">
@@ -380,10 +482,59 @@ function SettingsContent() {
           </Card>
 
           <Card className="p-6">
-            <h2 className="text-xl font-semibold mb-4">订阅历史</h2>
-            <div className="text-center text-muted-foreground py-8">
-              <p>暂无订阅历史</p>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-semibold">订阅历史</h2>
+              {status && status.startedAt && (
+                <span className="text-sm text-muted-foreground">
+                  开始于 {new Date(status.startedAt).toLocaleDateString('zh-CN')}
+                </span>
+              )}
             </div>
+
+            {status && (status.plan !== 'free' || status.startedAt) ? (
+              <div className="space-y-3">
+                <div className="flex items-center justify-between py-3 border-b">
+                  <div className="flex items-center gap-3">
+                    <CheckCircle className="h-5 w-5 text-green-600" />
+                    <div>
+                      <p className="font-medium">{getPlanLabel(status.plan)}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {new Date(status.startedAt).toLocaleDateString('zh-CN')}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-medium">
+                      {status.plan === 'free' ? '免费' : status.billingCycle === 'yearly' ? '¥990/年' : '¥99/月'}
+                    </p>
+                    <Badge variant="outline" className="text-xs">
+                      {status.status === 'active' ? '活跃' : status.status === 'canceled' ? '已取消' : '逾期'}
+                    </Badge>
+                  </div>
+                </div>
+
+                {status.canceledAt && (
+                  <div className="flex items-center justify-between py-3 border-b">
+                    <div className="flex items-center gap-3">
+                      <XCircle className="h-5 w-5 text-red-600" />
+                      <div>
+                        <p className="font-medium">取消订阅</p>
+                        <p className="text-sm text-muted-foreground">
+                          {new Date(status.canceledAt).toLocaleDateString('zh-CN')}
+                        </p>
+                      </div>
+                    </div>
+                    <Badge variant="outline" className="text-xs text-red-600">
+                      已取消
+                    </Badge>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="text-center text-muted-foreground py-8">
+                <p>暂无订阅历史</p>
+              </div>
+            )}
           </Card>
         </TabsContent>
 

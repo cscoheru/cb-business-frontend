@@ -117,18 +117,18 @@ export default function CardsPage() {
 
       {/* 标签页切换 */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
-        <div className="flex items-center justify-between mb-4">
-          <TabsList>
-            <TabsTrigger value="daily">今日卡片</TabsTrigger>
-            <TabsTrigger value="latest">最新卡片</TabsTrigger>
-            <TabsTrigger value="history">历史卡片</TabsTrigger>
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
+          <TabsList className="w-full sm:w-auto">
+            <TabsTrigger value="daily" className="flex-1">今日卡片</TabsTrigger>
+            <TabsTrigger value="latest" className="flex-1">最新卡片</TabsTrigger>
+            <TabsTrigger value="history" className="flex-1">历史卡片</TabsTrigger>
           </TabsList>
 
           {activeTab === 'history' && (
-            <div className="flex items-center gap-3">
-              <Filter className="h-4 w-4 text-muted-foreground" />
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+              <Filter className="h-4 w-4 text-muted-foreground flex-shrink-0" />
               <Select value={selectedCategory} onValueChange={handleCategoryChange}>
-                <SelectTrigger className="w-40">
+                <SelectTrigger className="w-full sm:w-40">
                   <SelectValue placeholder="选择品类" />
                 </SelectTrigger>
                 <SelectContent>
@@ -156,30 +156,32 @@ export default function CardsPage() {
 
           {/* 分页 */}
           {totalCards > 0 && (
-            <div className="flex items-center justify-between mt-8 pt-6 border-t">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mt-8 pt-6 border-t">
               <p className="text-sm text-muted-foreground">
                 显示 {currentPage * cardsPerPage + 1} - {Math.min((currentPage + 1) * cardsPerPage, totalCards)} 条，共 {totalCards} 条
               </p>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 w-full sm:w-auto">
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={handlePreviousPage}
                   disabled={currentPage === 0}
+                  className="flex-1 sm:flex-none"
                 >
                   <ChevronLeft className="h-4 w-4" />
-                  上一页
+                  <span className="hidden sm:inline">上一页</span>
                 </Button>
-                <span className="text-sm text-muted-foreground">
-                  第 {currentPage + 1} / {totalPages} 页
+                <span className="text-sm text-muted-foreground px-2">
+                  {currentPage + 1} / {totalPages}
                 </span>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={handleNextPage}
                   disabled={currentPage >= totalPages - 1}
+                  className="flex-1 sm:flex-none"
                 >
-                  下一页
+                  <span className="hidden sm:inline">下一页</span>
                   <ChevronRight className="h-4 w-4" />
                 </Button>
               </div>
