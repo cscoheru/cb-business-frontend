@@ -64,7 +64,34 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
         const localFavorites = loadLocalFavorites();
         setFavorites(new Set(localFavorites));
         setAnonymousFavoriteCount(localFavorites.length);
-        setFavoriteItems([]); // Don't load items when not authenticated
+
+        // Load card data for local favorites to display
+        if (localFavorites.length > 0) {
+          try {
+            const { cardsApi } = await import('@/lib/api');
+            // Get all cards and filter to favorites
+            const allCards = await cardsApi.getCardHistory({ limit: 100 });
+            const favoriteCards = allCards.cards.filter((card: any) =>
+              localFavorites.includes(card.id)
+            );
+
+            // Create FavoriteItem objects for local favorites
+            const items: FavoriteItem[] = favoriteCards.map((card: any) => ({
+              id: card.id, // Use card id as favorite id
+              card_id: card.id,
+              card: card,
+              opportunity: null,
+              opportunity_id: null,
+              created_at: new Date().toISOString(),
+            }));
+            setFavoriteItems(items);
+          } catch (error) {
+            console.error('Failed to load cards for local favorites:', error);
+            setFavoriteItems([]); // Fallback to empty on error
+          }
+        } else {
+          setFavoriteItems([]);
+        }
         return;
       }
 
