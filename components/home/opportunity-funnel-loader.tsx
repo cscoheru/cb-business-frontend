@@ -27,6 +27,17 @@ export function OpportunityFunnelLoader() {
   useEffect(() => {
     const loadData = async () => {
       try {
+        // 检查 API URL 是否变更，清除旧缓存
+        const lastApiUrl = localStorage.getItem('last_api_url');
+        if (lastApiUrl && lastApiUrl !== API_BASE_URL) {
+          console.log('API URL changed, clearing cache');
+          sessionStorage.removeItem('sos_funnel_cache');
+          sessionStorage.removeItem('sos_funnel_time');
+          sessionStorage.removeItem('sos_opps_cache');
+          sessionStorage.removeItem('sos_opps_time');
+        }
+        localStorage.setItem('last_api_url', API_BASE_URL);
+
         // 加载漏斗数据（带30秒缓存）
         const cachedFunnel = sessionStorage.getItem('sos_funnel_cache');
         const cachedTime = sessionStorage.getItem('sos_funnel_time');
