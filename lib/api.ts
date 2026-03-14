@@ -407,12 +407,12 @@ export const articlesApi = {
     if (params?.per_page) searchParams.set('per_page', params.per_page.toString());
 
     const queryString = searchParams.toString();
-    const url = `/api/v1/crawler/articles${queryString ? `?${queryString}` : ''}`;
+    const url = `/api/v1/crawler-sync/articles${queryString ? `?${queryString}` : ''}`;
     return apiClient.get(url, false);  // ✅ public endpoint - 无需认证
   },
 
   async getArticle(id: string): Promise<Article> {
-    return apiClient.get(`/api/v1/crawler/articles/${id}`, false);  // ✅ public endpoint
+    return apiClient.get(`/api/v1/crawler-sync/articles/${id}`, false);  // ✅ public endpoint
   },
 };
 
