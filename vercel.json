@@ -1,0 +1,10 @@
+{
+  "build": {
+    "env": {
+      "NEXT_PUBLIC_API_URL": "https://api.zenconsult.top"
+    }
+  },
+  "env": {
+    "NEXT_PUBLIC_API_URL": "https://api.zenconsult.top"
+  }
+}
