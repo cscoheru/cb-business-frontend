@@ -117,7 +117,7 @@ export default function CostCalculatorPage() {
             <div className="text-center p-4 bg-gray-50 rounded">
               <div className="text-sm text-gray-600 mb-1">总成本</div>
               <div className="text-2xl font-bold text-gray-900">
-                ${(parseFloat(cost || 0) + parseFloat(shipping || 0) + parseFloat(fees || 0)).toFixed(2)}
+                ${((parseFloat(cost || '0') + parseFloat(shipping || '0') + parseFloat(fees || '0')).toFixed(2))}
               </div>
             </div>
 
