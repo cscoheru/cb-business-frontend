@@ -123,8 +123,8 @@ test.describe('会员流程 - 注册流程', () => {
         await nameField.fill(testUser.name);
       }
 
-      // 提交注册
-      const submitButton = page.locator('button[type="submit"], button:has-text("注册"), button:has-text("Sign Up")');
+      // 提交注册 - 使用更精确的选择器，只匹配表单内的提交按钮
+      const submitButton = page.locator('form button[type="submit"]');
       await submitButton.click();
 
       // 等待响应
@@ -169,7 +169,8 @@ test.describe('会员流程 - 注册流程', () => {
           await nameField.fill(testUser.name);
         }
 
-        const submitButton = page.locator('button[type="submit"], button:has-text("开始试用"), button:has-text("注册")');
+        // 使用更精确的选择器，只匹配表单内的提交按钮
+        const submitButton = page.locator('form button[type="submit"]');
         await submitButton.click();
 
         await page.waitForTimeout(3000);

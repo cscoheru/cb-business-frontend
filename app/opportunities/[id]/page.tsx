@@ -1,10 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { favoritesApi } from '@/lib/api';
 import { Heart } from 'lucide-react';
+import { useAuth } from '@/lib/auth-context';
 
 interface Opportunity {
   id: string;
@@ -32,6 +33,8 @@ interface DataCollectionTask {
 
 export default function OpportunityDetailPage() {
   const params = useParams();
+  const router = useRouter();
+  const { isAuthenticated } = useAuth();
   const [opportunity, setOpportunity] = useState<Opportunity | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -68,6 +71,13 @@ export default function OpportunityDetailPage() {
 
   const handleSave = async () => {
     if (!opportunity) return;
+
+    // Check if user is authenticated before allowing favorites
+    if (!isAuthenticated) {
+      // Redirect to login with return URL
+      router.push(`/login?redirect=${encodeURIComponent(window.location.pathname)}`);
+      return;
+    }
 
     setSaving(true);
     try {
