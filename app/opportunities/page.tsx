@@ -5,6 +5,23 @@ import Link from 'next/link';
 import { useAuth } from '@/lib/auth-context';
 import { SubscriptionPrompt } from '@/components/opportunities/permission-badge';
 
+// Intercept fetch ASAP - before any component renders
+if (typeof window !== 'undefined') {
+  const originalFetch = window.fetch;
+  window.fetch = function(url: RequestInfo | URL, options?: RequestInit): Promise<Response> {
+    const urlStr = url.toString();
+    console.log('🔍 Intercepted fetch:', urlStr);
+
+    if (urlStr.includes('http://api.zenconsult.top')) {
+      const httpsUrl = urlStr.replace('http://api.zenconsult.top', 'https://api.zenconsult.top');
+      console.log('🔧 FORCED:', urlStr, '→', httpsUrl);
+      return originalFetch(httpsUrl, options);
+    }
+    return originalFetch(url, options);
+  };
+  console.log('✅ Opportunities page fetch interceptor installed');
+}
+
 interface Opportunity {
   id: string;
   title: string;
@@ -259,6 +276,7 @@ export default function OpportunitiesPage() {
               key={opp.id}
               href={`/opportunities/${opp.id}`}
               className="block"
+              prefetch={false}
             >
               <div className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow">
                 {/* 状态标签 */}
