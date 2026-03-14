@@ -247,6 +247,87 @@ export default function OpportunityDetailPage() {
         </div>
       )}
 
+      {/* 关联的产品和资讯 - 融合设计 */}
+      {(opportunity as any).card && (
+        <div className="bg-white rounded-lg shadow p-6 mb-6">
+          <h2 className="text-xl font-semibold mb-4">📦 关联产品</h2>
+          <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+            <div className="flex items-center gap-3 mb-3">
+              <span className="text-2xl">🛒</span>
+              <div>
+                <h3 className="font-semibold text-gray-900">
+                  {(opportunity as any).card.content.summary.title}
+                </h3>
+                <p className="text-sm text-gray-600">
+                  类别: {(opportunity as any).card.category}
+                </p>
+              </div>
+            </div>
+            {(opportunity as any).card.amazon_data?.products && (
+              <div className="mt-3">
+                <p className="text-sm text-gray-700 mb-2">
+                  参考产品 ({(opportunity as any).card.amazon_data.products.length}个):
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {(opportunity as any).card.amazon_data.products.slice(0, 3).map((product: any, idx: number) => (
+                    <span key={idx} className="px-2 py-1 bg-white rounded text-xs text-gray-700 border">
+                      {product.title?.substring(0, 20)}...
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+            <Link
+              href={`/cards`}
+              className="inline-block mt-3 text-sm text-blue-600 hover:text-blue-800"
+            >
+              查看完整产品分析 →
+            </Link>
+          </div>
+        </div>
+      )}
+
+      {(opportunity as any).article && (
+        <div className="bg-white rounded-lg shadow p-6 mb-6">
+          <h2 className="text-xl font-semibold mb-4">📰 关联资讯</h2>
+          <div className="p-4 bg-green-50 rounded-lg border border-green-200">
+            <div className="flex items-start gap-3">
+              <span className="text-2xl">📄</span>
+              <div className="flex-1">
+                <h3 className="font-semibold text-gray-900 mb-1">
+                  {(opportunity as any).article.title}
+                </h3>
+                <p className="text-sm text-gray-600 mb-2">
+                  {(opportunity as any).article.summary?.substring(0, 150)}...
+                </p>
+                <div className="flex items-center gap-2 text-xs text-gray-500 mb-3">
+                  <span>📍 {(opportunity as any).article.region || '全球'}</span>
+                  <span>🏢 {(opportunity as any).article.platform || '综合'}</span>
+                  <span>🏷️ {(opportunity as any).article.content_theme || '通用'}</span>
+                </div>
+                {(opportunity as any).article.tags && (opportunity as any).article.tags.length > 0 && (
+                  <div className="flex flex-wrap gap-1 mb-3">
+                    {(opportunity as any).article.tags.slice(0, 5).map((tag: string, idx: number) => (
+                      <span key={idx} className="px-2 py-0.5 bg-white rounded text-xs text-gray-600 border">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
+                <a
+                  href={(opportunity as any).article.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block text-sm text-green-600 hover:text-green-800"
+                >
+                  阅读原文 →
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* 数据采集任务 */}
       {opportunity.data_collection_tasks && opportunity.data_collection_tasks.length > 0 && (
         <div className="bg-white rounded-lg shadow p-6 mb-6">
