@@ -13,8 +13,8 @@ export function Header() {
   return (
     <header className="border-b">
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-        <Link href="/" className="text-xl font-bold">
-          CB Business
+        <Link href="/" className="text-xl font-bold flex items-center gap-2">
+          <span className="text-2xl">🎯</span>
         </Link>
         <nav className="flex items-center gap-6">
           <Link href="/" className="font-semibold text-blue-600">商机卡片</Link>
