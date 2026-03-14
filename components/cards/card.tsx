@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Card as CardType } from '@/lib/api';
 import { cardsApi } from '@/lib/api';
 import { Card, CardHeader, CardContent, CardFooter } from '@/components/ui/card';
@@ -9,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Eye, Heart, TrendingUp, DollarSign, Star } from 'lucide-react';
 import { useFavorites } from '@/lib/contexts/favorites-context';
+import { useAuth } from '@/lib/auth-context';
 
 interface InfoCardProps {
   card: CardType;
@@ -58,6 +60,8 @@ function getSaturationColor(saturation: string): string {
 
 export function InfoCard({ card }: InfoCardProps) {
   const { isFavorite, toggleFavorite } = useFavorites();
+  const { isAuthenticated } = useAuth();
+  const router = useRouter();
   const [liking, setLiking] = useState(false);
   const [localLikes, setLocalLikes] = useState(card.likes);
   const favorite = isFavorite(card.id);
@@ -72,13 +76,29 @@ export function InfoCard({ card }: InfoCardProps) {
 
     if (liking) return;
 
+    // Check if user is authenticated before allowing favorites
+    if (!isAuthenticated) {
+      // Redirect to login with return URL
+      router.push(`/login?redirect=${encodeURIComponent(window.location.pathname)}`);
+      return;
+    }
+
+    setLiking(true);
+
     try {
-      setLiking(true);
+      // First, like the card (public API, no auth required)
       await cardsApi.likeCard(card.id);
       setLocalLikes((prev) => prev + 1);
-      toggleFavorite(card.id);
-    } catch (error) {
+
+      // Then, add to favorites (requires auth)
+      await toggleFavorite(card.id);
+    } catch (error: any) {
       console.error('Failed to like card:', error);
+
+      // If it's an auth error, redirect to login
+      if (error?.message === '请先登录后再收藏') {
+        router.push(`/login?redirect=${encodeURIComponent(window.location.pathname)}`);
+      }
     } finally {
       setLiking(false);
     }

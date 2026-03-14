@@ -77,10 +77,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.setItem('user', JSON.stringify(response.user));
     }
 
-    // 登录后停留在当前页面，但如果当前是login/register页，则跳转到cards
-    if (pathname === '/login' || pathname === '/register') {
-      router.push('/cards');
-    }
+    // Note: Redirect is handled by the caller (login page)
   };
 
   const register = async (email: string, password: string, name: string, plan_choice: 'trial' | 'free' = 'trial') => {

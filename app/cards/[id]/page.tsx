@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ArrowLeft, Heart, TrendingUp, DollarSign, Star, Award, BarChart3, CheckCircle, Share2, Check } from 'lucide-react';
 import { useFavorites } from '@/lib/contexts/favorites-context';
+import { useAuth } from '@/lib/auth-context';
 
 const CATEGORY_NAMES: Record<string, string> = {
   wireless_earbuds: '无线耳机',
@@ -39,6 +40,7 @@ export default function CardDetailPage() {
   const router = useRouter();
   const cardId = params.id as string;
   const { isFavorite, toggleFavorite } = useFavorites();
+  const { isAuthenticated } = useAuth();
 
   const [card, setCard] = useState<CardType | null>(null);
   const [loading, setLoading] = useState(true);
@@ -67,13 +69,25 @@ export default function CardDetailPage() {
   const handleLike = async () => {
     if (!card || liking) return;
 
+    // Check if user is authenticated before allowing favorites
+    if (!isAuthenticated) {
+      // Redirect to login with return URL
+      router.push(`/login?redirect=${encodeURIComponent(window.location.pathname)}`);
+      return;
+    }
+
     try {
       setLiking(true);
       const response = await cardsApi.likeCard(card.id);
       setLocalLikes(response.likes);
-      toggleFavorite(card.id);
-    } catch (error) {
+      await toggleFavorite(card.id);
+    } catch (error: any) {
       console.error('Failed to like card:', error);
+
+      // If it's an auth error, redirect to login
+      if (error?.message === '请先登录后再收藏') {
+        router.push(`/login?redirect=${encodeURIComponent(window.location.pathname)}`);
+      }
     } finally {
       setLiking(false);
     }

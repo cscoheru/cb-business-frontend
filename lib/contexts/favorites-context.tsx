@@ -60,8 +60,10 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
 
   const toggleFavorite = async (cardId: string) => {
     if (!isAuthenticated) {
-      setError('请先登录后再收藏');
-      return;
+      const errorMsg = '请先登录后再收藏';
+      setError(errorMsg);
+      // Throw error so caller can handle it
+      throw new Error(errorMsg);
     }
 
     setError(null);

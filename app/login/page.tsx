@@ -1,18 +1,22 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/lib/auth-context';
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  // Get redirect URL from query params
+  const redirectTo = searchParams.get('redirect') || '/cards';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,7 +25,8 @@ export default function LoginPage() {
 
     try {
       await login(email, password);
-      // login函数会自动跳转到dashboard
+      // Redirect to the page the user was trying to access, or default to /cards
+      router.push(redirectTo);
     } catch (err: any) {
       setError(err.message || '登录失败，请检查邮箱和密码');
     } finally {
