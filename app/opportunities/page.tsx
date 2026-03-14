@@ -5,9 +5,6 @@ import Link from 'next/link';
 import { useAuth } from '@/lib/auth-context';
 import { SubscriptionPrompt } from '@/components/opportunities/permission-badge';
 
-// Get API URL from environment variable
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.zenconsult.top';
-
 interface Opportunity {
   id: string;
   title: string;
@@ -45,6 +42,18 @@ export default function OpportunitiesPage() {
     minConfidence: ''
   });
 
+  // Get API URL at runtime (not build time)
+  const getApiUrl = () => {
+    const url = process.env.NEXT_PUBLIC_API_URL || 'https://api.zenconsult.top';
+    // Force HTTPS in client-side
+    if (typeof window !== 'undefined' && url.startsWith('http://')) {
+      const httpsUrl = url.replace('http://', 'https://');
+      console.warn('Forced API URL from HTTP to HTTPS:', url, '→', httpsUrl);
+      return httpsUrl;
+    }
+    return url;
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -72,6 +81,9 @@ export default function OpportunitiesPage() {
         headers['Authorization'] = `Bearer ${token}`;
       }
 
+      const API_BASE_URL = getApiUrl();
+      console.log('Fetching opportunities from:', API_BASE_URL);
+
       const response = await fetch(`${API_BASE_URL}/api/v1/opportunities?${params}`, {
         headers
       });
@@ -90,6 +102,9 @@ export default function OpportunitiesPage() {
       if (token) {
         headers['Authorization'] = `Bearer ${token}`;
       }
+
+      const API_BASE_URL = getApiUrl();
+      console.log('Fetching funnel from:', API_BASE_URL);
 
       const response = await fetch(`${API_BASE_URL}/api/v1/opportunities/funnel`, {
         headers
