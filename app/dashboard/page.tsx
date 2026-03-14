@@ -18,11 +18,14 @@ export default function DashboardPage() {
       <TrialReminderBanner />
 
       <div className="container mx-auto px-4 py-8">
+      {/* Dashboard Page Title */}
+      <h1 className="text-2xl font-bold mb-6">仪表盘</h1>
+
       {/* Welcome Section */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">
+        <h2 className="text-3xl font-bold mb-2">
           早上好，{user?.name || user?.email || '创业者'}！
-        </h1>
+        </h2>
         <p className="text-muted-foreground">
           今天有 <span className="text-primary font-bold">3个</span> 新机会等待您
         </p>
