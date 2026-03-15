@@ -8,7 +8,7 @@ import { useAuth } from '@/lib/auth-context';
 import { useSubscription } from '@/hooks/useSubscription';
 import {
   LayoutDashboard,
-  TrendingUp,
+  Target,
   AlertTriangle,
   Globe,
   FileText,
@@ -30,9 +30,9 @@ const navItems = [
     icon: LayoutDashboard,
   },
   {
-    title: '商机监控',
+    title: '我的商机',  // 关注的商机 (CPI跟踪)
     href: '/dashboard/opportunities',
-    icon: TrendingUp,
+    icon: Target,
   },
   {
     title: '风险预警',
@@ -163,6 +163,7 @@ export default function DashboardLayout({
                     >
                       <Heart className="h-5 w-5" />
                       <span className="font-medium">我的收藏</span>
+                      <span className="text-xs text-muted-foreground">(线索)</span>
                     </Link>
                   </li>
                   <li>

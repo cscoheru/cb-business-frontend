@@ -900,7 +900,9 @@ export const opportunitiesApi = {
 
   /** 从卡片创建商机 (关注为商机) - 匿名用户最多3个 */
   async createFromCard(cardId: string): Promise<BusinessOpportunity> {
-    return apiClient.post(`/api/v1/opportunities/from-card/${cardId}`, {}, false);
+    // ✅ requiresAuth = true to send auth token for logged-in users
+    // Backend uses get_current_user_optional, so it handles both cases
+    return apiClient.post(`/api/v1/opportunities/from-card/${cardId}`, {}, true);
   },
 };
 
