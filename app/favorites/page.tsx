@@ -13,15 +13,24 @@ export default function FavoritesPage() {
   const { isAuthenticated } = useAuth();
 
   // Separate cards and opportunities from favoriteItems
+  // Filter out cards that don't have required data structure
   const cards = favoriteItems
     .map(item => item.card)
-    .filter((card): card is NonNullable<typeof card> => card !== undefined);
+    .filter((card): card is NonNullable<typeof card> => {
+      if (!card || !card.id || !card.content || !card.content.summary) {
+        return false;
+      }
+      return true;
+    });
 
   const opportunities = favoriteItems
     .map(item => item.opportunity)
-    .filter((opp): opp is NonNullable<typeof opp> =>
-      opp !== undefined && opp !== null && opp.id
-    );
+    .filter((opp): opp is NonNullable<typeof opp> => {
+      if (!opp || !opp.id) {
+        return false;
+      }
+      return true;
+    });
 
   return (
     <div className="container mx-auto px-4 py-8">

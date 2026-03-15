@@ -66,9 +66,15 @@ export function InfoCard({ card }: InfoCardProps) {
   const [localLikes, setLocalLikes] = useState(card.likes);
   const favorite = isFavorite(card.id);
 
+  // Safety checks for nested properties
+  const summary = card.content?.summary;
+  const marketData = card.content?.market_data;
+  const insights = card.content?.insights;
+  const opportunityScore = summary?.opportunity_score ?? 0;
+
   const categoryName = CATEGORY_NAMES[card.category] || card.category;
   const categoryColor = CATEGORY_COLORS[card.category] || 'bg-gray-100 text-gray-800';
-  const scoreColor = getScoreColor(card.content.summary.opportunity_score);
+  const scoreColor = getScoreColor(opportunityScore);
 
   const handleLike = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -112,7 +118,7 @@ export function InfoCard({ card }: InfoCardProps) {
             <h3 className="text-lg font-semibold line-clamp-2">{card.title}</h3>
           </div>
           <div className={`px-3 py-1 rounded-full text-sm font-bold ${scoreColor}`}>
-            {card.content.summary.opportunity_score}分
+            {opportunityScore}分
           </div>
         </div>
       </CardHeader>
@@ -123,10 +129,10 @@ export function InfoCard({ card }: InfoCardProps) {
           <DollarSign className="h-4 w-4 text-green-600" />
           <span className="text-muted-foreground">价格甜蜜点:</span>
           <span className="font-semibold">
-            ${card.content.summary.sweet_spot.min} - ${card.content.summary.sweet_spot.max}
+            ${summary?.sweet_spot?.min ?? 0} - ${summary?.sweet_spot?.max ?? 0}
           </span>
           <span className="text-xs text-muted-foreground">
-            (最佳: ${card.content.summary.sweet_spot.best})
+            (最佳: ${summary?.sweet_spot?.best ?? 0})
           </span>
         </div>
 
@@ -135,13 +141,13 @@ export function InfoCard({ card }: InfoCardProps) {
           <div className="flex items-center gap-1">
             <TrendingUp className="h-4 w-4 text-blue-600" />
             <span className="text-muted-foreground">市场产品数:</span>
-            <span className="font-semibold">{card.content.summary.market_size}</span>
+            <span className="font-semibold">{summary?.market_size ?? 0}</span>
           </div>
           <div className="flex items-center gap-1">
             <Star className="h-4 w-4 text-yellow-600" />
             <span className="text-muted-foreground">平均评分:</span>
             <span className="font-semibold">
-              {card.content.market_data.rating.avg?.toFixed(1) || 'N/A'}
+              {marketData?.rating?.avg?.toFixed(1) || 'N/A'}
             </span>
           </div>
         </div>
@@ -152,25 +158,25 @@ export function InfoCard({ card }: InfoCardProps) {
           <div className="flex-1 bg-gray-200 rounded-full h-2">
             <div
               className="bg-blue-600 h-2 rounded-full transition-all"
-              style={{ width: `${card.content.summary.reliability * 100}%` }}
+              style={{ width: `${(summary?.reliability ?? 0) * 100}%` }}
             />
           </div>
           <span className="font-semibold text-xs">
-            {Math.round(card.content.summary.reliability * 100)}%
+            {Math.round((summary?.reliability ?? 0) * 100)}%
           </span>
         </div>
 
         {/* 竞争饱和度 */}
         <div className="flex items-center gap-2 text-sm">
           <span className="text-muted-foreground">市场饱和度:</span>
-          <span className={`font-semibold ${getSaturationColor(card.content.insights.market_saturation)}`}>
-            {card.content.insights.market_saturation === 'low' ? '低' :
-             card.content.insights.market_saturation === 'medium' ? '中' : '高'}
+          <span className={`font-semibold ${getSaturationColor(insights?.market_saturation ?? 'medium')}`}>
+            {insights?.market_saturation === 'low' ? '低' :
+             insights?.market_saturation === 'medium' ? '中' : '高'}
           </span>
         </div>
 
         {/* 推荐建议预览 */}
-        {card.content.recommendations && card.content.recommendations.length > 0 && (
+        {card.content?.recommendations && card.content.recommendations.length > 0 && (
           <div className="border-t pt-3">
             <p className="text-xs text-muted-foreground mb-2">推荐建议:</p>
             <ul className="text-sm space-y-1">
@@ -182,13 +188,15 @@ export function InfoCard({ card }: InfoCardProps) {
         )}
 
         {/* 数据来源 */}
-        <div className="flex flex-wrap gap-1">
-          {card.content.data_sources.map((source, idx) => (
-            <Badge key={idx} variant="outline" className="text-xs">
-              {source}
-            </Badge>
-          ))}
-        </div>
+        {card.content?.data_sources && card.content.data_sources.length > 0 && (
+          <div className="flex flex-wrap gap-1">
+            {card.content.data_sources.map((source, idx) => (
+              <Badge key={idx} variant="outline" className="text-xs">
+                {source}
+              </Badge>
+            ))}
+          </div>
+        )}
       </CardContent>
 
       <CardFooter className="flex items-center justify-between text-sm text-muted-foreground">
