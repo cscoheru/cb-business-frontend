@@ -141,7 +141,7 @@ export default function OpportunitiesPage() {
       {/* 页面标题 */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">
-          🎯 智能商机跟踪系统
+          机会发现
         </h1>
         <p className="text-gray-600">
           AI驱动的商机发现与验证平台
