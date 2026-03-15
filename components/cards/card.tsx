@@ -313,19 +313,19 @@ export function InfoCard({ card }: InfoCardProps) {
             <span className="text-xs">{localLikes}</span>
           </button>
 
-          {/* Follow as Opportunity button */}
+          {/* Follow as Opportunity button - prominent action */}
           <button
             onClick={handleFollow}
             disabled={following}
             title={followed ? "取消商机跟踪" : "关注为商机 - AI将持续监控市场变化"}
-            className={`relative group flex items-center gap-1 transition-all duration-300 ${
+            className={`relative group flex items-center gap-1.5 px-2.5 py-1 rounded-full transition-all duration-300 ${
               followed
-                ? 'text-orange-500 hover:text-orange-600'
-                : 'text-gray-400 hover:text-orange-500 hover:scale-110'
+                ? 'bg-orange-100 text-orange-600 hover:bg-orange-200 border border-orange-300'
+                : 'bg-gradient-to-r from-orange-500 to-amber-500 text-white hover:from-orange-600 hover:to-amber-600 shadow-md hover:shadow-lg'
             }`}
           >
-            <Target className={`h-4 w-4 ${followed ? 'fill-current' : ''}`} />
-            <span className="text-xs">{followed ? '跟踪中' : '关注'}</span>
+            <Target className={`h-3.5 w-3.5 ${followed ? '' : 'animate-pulse'}`} />
+            <span className="text-xs font-medium">{followed ? '跟踪中' : '关注商机'}</span>
           </button>
 
           <span className="text-xs">
