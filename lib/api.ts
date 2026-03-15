@@ -424,11 +424,55 @@ export const articlesApi = {
   },
 };
 
+// ============ Multi-Platform Types ============
+
+/** 支持的电商平台 */
+export type Platform = 'amazon' | 'lazada' | 'shopee' | 'temu' | 'ebay' | 'walmart';
+
+/** 支持的区域 */
+export type Region = 'US' | 'UK' | 'DE' | 'JP' | 'AU' | 'TH' | 'VN' | 'MY' | 'SG' | 'ID' | 'PH' | 'BR' | 'MX';
+
+/** 平台价格信息 */
+export interface PlatformPrice {
+  platform: Platform;
+  region: Region;
+  min: number;
+  max: number;
+  avg: number;
+  currency: string;
+}
+
+/** 平台竞争信息 */
+export interface PlatformCompetition {
+  platform: Platform;
+  region: Region;
+  seller_count: number;
+  avg_rating: number;
+  total_reviews: number;
+}
+
+/** 多平台聚合数据 */
+export interface MultiPlatformData {
+  platforms: Array<{
+    platform: Platform;
+    region: Region;
+    product_count: number;
+  }>;
+  price_comparison: PlatformPrice[];
+  competition_analysis: PlatformCompetition[];
+  total_products: number;
+  total_sellers: number;
+  avg_google_trends_score: number | null;
+}
+
 // ============ Cards API ============
 export interface Card {
   id: string;
   title: string;
   category: 'wireless_earbuds' | 'smart_plugs' | 'fitness_trackers' | 'phone_chargers' | 'desk_lamps' | 'phone_cases' | 'yoga_mats' | 'coffee_makers' | 'bluetooth_speakers' | 'webcams' | 'keyboards' | 'mouse';
+
+  /** 多平台数据 (新增) */
+  multi_platform_data?: MultiPlatformData;
   content: {
     summary: {
       title: string;
@@ -567,6 +611,25 @@ export interface CardStatsResponse {
   };
 }
 
+/** 相关资讯文章 (仅展示，不进入AI分析) */
+export interface RelatedArticle {
+  id: string;
+  title: string;
+  summary: string | null;
+  link: string;
+  source: string;
+  published_at: string | null;
+  relevance_score: number;
+  matched_keywords: string[];
+}
+
+export interface RelatedNewsResponse {
+  success: boolean;
+  card_id: string;
+  articles: RelatedArticle[];
+  disclaimer: string;  // 提示：仅供参考，不计入AI分析
+}
+
 export const cardsApi = {
   async getDailyCards(date?: string): Promise<DailyCardsResponse> {
     const url = date
@@ -604,6 +667,11 @@ export const cardsApi = {
 
   async getCardStats(): Promise<CardStatsResponse> {
     return apiClient.get('/api/v1/cards/stats/overview', false);
+  },
+
+  /** 获取卡片相关资讯 (仅展示，不进入AI分析) */
+  async getRelatedNews(cardId: string): Promise<RelatedNewsResponse> {
+    return apiClient.get(`/api/v1/cards/${cardId}/related-news`, false);
   },
 };
 
