@@ -11,38 +11,47 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Search, Eye, Edit, Trash2 } from 'lucide-react';
+import { Eye, Edit, Trash2, RefreshCw } from 'lucide-react';
 
-// TODO: 从API获取真实数据
-const mockArticles = [
-  {
-    id: '1',
-    title: '2025年跨境电商新趋势分析',
-    source: '36kr',
-    category: '行业分析',
-    theme: '市场趋势',
-    publishedAt: '2026-03-10',
-    riskLevel: 'low',
-  },
-  {
-    id: '2',
-    title: '东南亚电商政策更新通知',
-    source: 'custom',
-    category: '政策法规',
-    theme: '法规变化',
-    publishedAt: '2026-03-11',
-    riskLevel: 'medium',
-  },
-  {
-    id: '3',
-    title: '亚马逊欧洲站新规解读',
-    source: 'selleramp',
-    category: '平台动态',
-    theme: '合规要求',
-    publishedAt: '2026-03-12',
-    riskLevel: 'high',
-  },
-];
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://api.zenconsult.top';
+
+interface Article {
+  id: string;
+  title: string;
+  summary: string | null;
+  source: string;
+  link: string;
+  region: string | null;
+  country: string | null;
+  platform: string | null;
+  content_theme: string | null;
+  tags: string[];
+  risk_level: string | null;
+  opportunity_score: number | null;
+  published_at: string | null;
+  crawled_at: string | null;
+  is_processed: boolean;
+}
+
+interface ArticlesResponse {
+  articles: Article[];
+  total: number;
+  page: number;
+  per_page: number;
+}
+
+async function getArticles(): Promise<ArticlesResponse> {
+  try {
+    const res = await fetch(`${API_BASE}/api/v1/crawler-sync/articles?per_page=50`, {
+      cache: 'no-store',
+    });
+    if (!res.ok) return { articles: [], total: 0, page: 1, per_page: 50 };
+    return await res.json();
+  } catch (error) {
+    console.error('Failed to fetch articles:', error);
+    return { articles: [], total: 0, page: 1, per_page: 50 };
+  }
+}
 
 export default async function AdminArticlesPage() {
   const cookieStore = await cookies();
@@ -52,6 +61,26 @@ export default async function AdminArticlesPage() {
     redirect('/login?redirect=/admin/content/articles');
   }
 
+  const { articles, total } = await getArticles();
+
+  const processedCount = articles.filter(a => a.is_processed).length;
+  const highRiskCount = articles.filter(a => a.risk_level === 'high').length;
+  const mediumRiskCount = articles.filter(a => a.risk_level === 'medium').length;
+
+  const sourceLabels: Record<string, string> = {
+    '36kr': '36氪',
+    'selleramp': 'SellerAMP',
+    'custom': '自定义',
+    'zhihu': '知乎',
+    'toutiao': '头条',
+  };
+
+  const riskLabels: Record<string, { label: string; variant: 'destructive' | 'default' | 'secondary' }> = {
+    high: { label: '高风险', variant: 'destructive' },
+    medium: { label: '中风险', variant: 'default' },
+    low: { label: '低风险', variant: 'secondary' },
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -59,113 +88,120 @@ export default async function AdminArticlesPage() {
           <h1 className="text-3xl font-bold">文章管理</h1>
           <p className="text-muted-foreground">管理爬虫文章和AI分析内容</p>
         </div>
-        <Button>同步文章</Button>
+        <Button>
+          <RefreshCw className="h-4 w-4 mr-2" />
+          同步文章
+        </Button>
       </div>
 
       {/* Stats */}
       <div className="grid gap-4 md:grid-cols-4">
         <Card className="p-6">
           <div className="text-sm text-muted-foreground">总文章数</div>
-          <div className="text-2xl font-bold">286</div>
+          <div className="text-2xl font-bold">{total}</div>
         </Card>
         <Card className="p-6">
-          <div className="text-sm text-muted-foreground">今日新增</div>
-          <div className="text-2xl font-bold">12</div>
+          <div className="text-sm text-muted-foreground">已处理</div>
+          <div className="text-2xl font-bold text-green-600">{processedCount}</div>
         </Card>
         <Card className="p-6">
-          <div className="text-sm text-muted-foreground">高风险文章</div>
-          <div className="text-2xl font-bold text-red-600">3</div>
+          <div className="text-sm text-muted-foreground">中/高风险</div>
+          <div className="text-2xl font-bold text-red-600">{highRiskCount + mediumRiskCount}</div>
         </Card>
         <Card className="p-6">
-          <div className="text-sm text-muted-foreground">AI分析完成</div>
-          <div className="text-2xl font-bold text-green-600">280</div>
+          <div className="text-sm text-muted-foreground">待处理</div>
+          <div className="text-2xl font-bold">{total - processedCount}</div>
         </Card>
       </div>
 
       {/* Articles Table */}
       <Card>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>标题</TableHead>
-              <TableHead>来源</TableHead>
-              <TableHead>分类</TableHead>
-              <TableHead>主题</TableHead>
-              <TableHead>风险等级</TableHead>
-              <TableHead>发布时间</TableHead>
-              <TableHead className="text-right">操作</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {mockArticles.map((article) => (
-              <TableRow key={article.id}>
-                <TableCell className="font-medium max-w-md truncate">
-                  {article.title}
-                </TableCell>
-                <TableCell>
-                  <Badge variant="outline">{article.source}</Badge>
-                </TableCell>
-                <TableCell>{article.category}</TableCell>
-                <TableCell>{article.theme}</TableCell>
-                <TableCell>
-                  <Badge
-                    variant={
-                      article.riskLevel === 'high' ? 'destructive' :
-                      article.riskLevel === 'medium' ? 'default' :
-                      'secondary'
-                    }
-                  >
-                    {article.riskLevel === 'high' ? '高风险' :
-                     article.riskLevel === 'medium' ? '中风险' : '低风险'}
-                  </Badge>
-                </TableCell>
-                <TableCell>{article.publishedAt}</TableCell>
-                <TableCell className="text-right">
-                  <div className="flex justify-end gap-2">
-                    <Button variant="ghost" size="icon">
-                      <Eye className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="icon">
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="icon" className="text-red-600">
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </TableCell>
+        {articles.length > 0 ? (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>标题</TableHead>
+                <TableHead>来源</TableHead>
+                <TableHead>区域</TableHead>
+                <TableHead>主题</TableHead>
+                <TableHead>风险等级</TableHead>
+                <TableHead>状态</TableHead>
+                <TableHead>采集时间</TableHead>
+                <TableHead className="text-right">操作</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {articles.map((article) => {
+                const risk = riskLabels[article.risk_level || 'low'] || riskLabels.low;
+                return (
+                  <TableRow key={article.id}>
+                    <TableCell className="font-medium max-w-md truncate">
+                      {article.title}
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="outline">
+                        {sourceLabels[article.source] || article.source}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      {article.region || article.country || '-'}
+                    </TableCell>
+                    <TableCell>{article.content_theme || '-'}</TableCell>
+                    <TableCell>
+                      <Badge variant={risk.variant}>
+                        {risk.label}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant={article.is_processed ? 'default' : 'secondary'}>
+                        {article.is_processed ? '已处理' : '待处理'}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      {article.crawled_at
+                        ? new Date(article.crawled_at).toLocaleDateString('zh-CN')
+                        : '-'}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex justify-end gap-2">
+                        <a
+                          href={article.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground h-9 w-9"
+                        >
+                          <Eye className="h-4 w-4" />
+                        </a>
+                        <Button variant="ghost" size="icon">
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" size="icon" className="text-red-600">
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        ) : (
+          <div className="p-8 text-center text-muted-foreground">
+            暂无文章数据
+          </div>
+        )}
       </Card>
 
-      {/* Sync Status */}
-      <Card className="p-6">
-        <h3 className="text-lg font-semibold mb-4">同步状态</h3>
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-2 h-2 rounded-full bg-green-500" />
-              <span>36kr 爬虫</span>
-            </div>
-            <span className="text-sm text-muted-foreground">最后同步: 2小时前</span>
-          </div>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-2 h-2 rounded-full bg-green-500" />
-              <span>SellerAMP 爬虫</span>
-            </div>
-            <span className="text-sm text-muted-foreground">最后同步: 4小时前</span>
-          </div>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-2 h-2 rounded-full bg-yellow-500" />
-              <span>Custom 爬虫</span>
-            </div>
-            <span className="text-sm text-muted-foreground">最后同步: 1天前</span>
-          </div>
+      {/* Pagination */}
+      <div className="flex items-center justify-between">
+        <p className="text-sm text-muted-foreground">
+          显示 {articles.length} 条，共 {total} 条
+        </p>
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm" disabled>上一页</Button>
+          <Button variant="outline" size="sm" disabled>下一页</Button>
         </div>
-      </Card>
+      </div>
     </div>
   );
 }
