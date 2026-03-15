@@ -3,12 +3,12 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { cardsApi, Card as CardType } from '@/lib/api';
+import { cardsApi, Card as CardType, RelatedArticle } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowLeft, Heart, TrendingUp, DollarSign, Star, Award, BarChart3, CheckCircle, Share2, Check } from 'lucide-react';
+import { ArrowLeft, Heart, TrendingUp, DollarSign, Star, Award, BarChart3, CheckCircle, Share2, Check, Newspaper, ExternalLink, Clock } from 'lucide-react';
 import { useFavorites } from '@/lib/contexts/favorites-context';
 import { useAuth } from '@/lib/auth-context';
 
@@ -50,11 +50,34 @@ export default function CardDetailPage() {
   const [copied, setCopied] = useState(false);
   const [localLikes, setLocalLikes] = useState(0);
   const [opportunityId, setOpportunityId] = useState<string | null>(null);
+  const [relatedNews, setRelatedNews] = useState<RelatedArticle[]>([]);
+  const [newsLoading, setNewsLoading] = useState(false);
 
   useEffect(() => {
     loadCard();
     checkOpportunity();
   }, [cardId]);
+
+  // Load related news when card is loaded
+  useEffect(() => {
+    if (card) {
+      loadRelatedNews();
+    }
+  }, [card?.id]);
+
+  const loadRelatedNews = async () => {
+    if (!cardId) return;
+    try {
+      setNewsLoading(true);
+      const response = await cardsApi.getRelatedNews(cardId);
+      setRelatedNews(response.articles || []);
+    } catch (error) {
+      console.error('Failed to load related news:', error);
+      setRelatedNews([]);
+    } finally {
+      setNewsLoading(false);
+    }
+  };
 
   // Check if this card has an associated opportunity
   const checkOpportunity = async () => {
@@ -277,11 +300,15 @@ export default function CardDetailPage() {
 
         {/* 详细内容标签页 */}
         <Tabs defaultValue="overview" className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="overview">概览</TabsTrigger>
             <TabsTrigger value="market">市场数据</TabsTrigger>
             <TabsTrigger value="insights">洞察分析</TabsTrigger>
             <TabsTrigger value="products">热门产品</TabsTrigger>
+            <TabsTrigger value="news" className="flex items-center gap-1">
+              <Newspaper className="h-3.5 w-3.5" />
+              相关资讯
+            </TabsTrigger>
           </TabsList>
 
           {/* 概览 */}
@@ -499,6 +526,77 @@ export default function CardDetailPage() {
                     </div>
                   ))}
                 </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* 相关资讯 */}
+          <TabsContent value="news" className="space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <Newspaper className="h-5 w-5 text-blue-600" />
+                  相关行业资讯
+                </CardTitle>
+                <p className="text-sm text-muted-foreground">
+                  行业资讯仅供参考，不计入AI分析评分
+                </p>
+              </CardHeader>
+              <CardContent>
+                {newsLoading ? (
+                  <div className="text-center py-8">
+                    <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4" />
+                    <p className="text-muted-foreground">加载资讯中...</p>
+                  </div>
+                ) : relatedNews.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <Newspaper className="h-12 w-12 mx-auto mb-4 opacity-30" />
+                    <p>暂无相关资讯</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {relatedNews.map((article) => (
+                      <a
+                        key={article.id}
+                        href={article.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block p-4 border rounded-lg hover:bg-muted transition-colors group"
+                      >
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="flex-1 min-w-0">
+                            <h4 className="font-semibold group-hover:text-blue-600 transition-colors line-clamp-2 mb-1">
+                              {article.title}
+                            </h4>
+                            {article.summary && (
+                              <p className="text-sm text-muted-foreground line-clamp-2 mb-2">
+                                {article.summary}
+                              </p>
+                            )}
+                            <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                              <span className="flex items-center gap-1">
+                                <Newspaper className="h-3 w-3" />
+                                {article.source}
+                              </span>
+                              {article.published_at && (
+                                <span className="flex items-center gap-1">
+                                  <Clock className="h-3 w-3" />
+                                  {new Date(article.published_at).toLocaleDateString('zh-CN')}
+                                </span>
+                              )}
+                              {article.relevance_score > 0 && (
+                                <Badge variant="outline" className="text-xs">
+                                  相关度 {Math.round(article.relevance_score * 100)}%
+                                </Badge>
+                              )}
+                            </div>
+                          </div>
+                          <ExternalLink className="h-4 w-4 text-muted-foreground group-hover:text-blue-600 transition-colors shrink-0" />
+                        </div>
+                      </a>
+                    ))}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
