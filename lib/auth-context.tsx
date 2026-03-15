@@ -164,8 +164,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!token) return;
 
     try {
-      const { authApi } = await import('@/lib/api');
-      const userData = await authApi.getCurrentUser();
+      const { usersApi } = await import('@/lib/api');
+      const userData = await usersApi.getMe();
 
       setUser(userData);
 
