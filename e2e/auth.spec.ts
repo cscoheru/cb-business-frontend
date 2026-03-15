@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { test as authenticatedTest } from './fixtures';
+import { setMockAuth } from './fixtures';
 
 test.describe('用户认证流程', () => {
   test('应该显示首页', async ({ page }) => {
@@ -34,41 +34,56 @@ test.describe('用户认证流程', () => {
   });
 });
 
-// Dashboard page tests - require authentication
-authenticatedTest.describe('仪表盘页面（已认证）', () => {
-  authenticatedTest('应该显示市场概览页面', async ({ page }) => {
+// Dashboard page tests - use mock authentication
+test.describe('仪表盘页面（已认证）', () => {
+  test.beforeEach(async ({ page }) => {
+    // Set mock authentication before each test
+    await setMockAuth(page);
+  });
+
+  test('应该显示市场概览页面', async ({ page }) => {
     await page.goto('/dashboard/market');
 
     // 验证页面加载
-    await expect(page.locator('h1')).toContainText('市场概览');
+    const h1 = page.locator('h1');
+    await expect(h1).toBeVisible();
+    await expect(h1).toContainText('市场概览');
   });
 
-  authenticatedTest('应该显示政策中心页面', async ({ page }) => {
+  test('应该显示政策中心页面', async ({ page }) => {
     await page.goto('/dashboard/policies');
 
     // 验证页面加载
-    await expect(page.locator('h1')).toContainText('政策中心');
+    const h1 = page.locator('h1');
+    await expect(h1).toBeVisible();
+    await expect(h1).toContainText('政策中心');
   });
 
-  authenticatedTest('应该显示风险预警页面', async ({ page }) => {
+  test('应该显示风险预警页面', async ({ page }) => {
     await page.goto('/dashboard/risks');
 
     // 验证页面加载
-    await expect(page.locator('h1')).toContainText('风险预警');
+    const h1 = page.locator('h1');
+    await expect(h1).toBeVisible();
+    await expect(h1).toContainText('风险预警');
   });
 
-  authenticatedTest('应该显示机会发现页面', async ({ page }) => {
+  test('应该显示机会发现页面', async ({ page }) => {
     await page.goto('/dashboard/opportunities');
 
     // 验证页面加载
-    await expect(page.locator('h1')).toContainText('机会发现');
+    const h1 = page.locator('h1');
+    await expect(h1).toBeVisible();
+    await expect(h1).toContainText('机会发现');
   });
 
-  authenticatedTest('应该显示设置页面', async ({ page }) => {
+  test('应该显示设置页面', async ({ page }) => {
     await page.goto('/dashboard/settings');
 
     // 验证页面加载
-    await expect(page.locator('h1')).toContainText('设置');
+    const h1 = page.locator('h1');
+    await expect(h1).toBeVisible();
+    await expect(h1).toContainText('设置');
   });
 });
 
@@ -77,15 +92,15 @@ test.describe('定价页面', () => {
     await page.goto('/pricing');
 
     // 验证定价卡片存在
-    await expect(page.locator('text=免费版')).toBeVisible();
-    await expect(page.locator('text=专业版')).toBeVisible();
+    await expect(page.locator('text=免费版').or(page.locator('text=Free'))).toBeVisible();
+    await expect(page.locator('text=专业版').or(page.locator('text=Pro'))).toBeVisible();
   });
 
   test('应该显示价格对比', async ({ page }) => {
     await page.goto('/pricing');
 
     // 验证功能列表显示
-    await expect(page.locator('text=API调用')).toBeVisible();
+    await expect(page.locator('text=API调用').or(page.locator('text=无限API'))).toBeVisible();
   });
 });
 

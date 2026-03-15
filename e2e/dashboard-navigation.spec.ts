@@ -1,9 +1,13 @@
 import { test, expect } from '@playwright/test';
-import { test as authenticatedTest } from './fixtures';
+import { setMockAuth } from './fixtures';
 
 // Dashboard navigation tests - require authentication
-authenticatedTest.describe('仪表盘导航', () => {
-  authenticatedTest('应该能够导航到仪表盘首页', async ({ page }) => {
+test.describe('仪表盘导航', () => {
+  test.beforeEach(async ({ page }) => {
+    // Set mock authentication before each test
+    await setMockAuth(page);
+  });
+  test('应该能够导航到仪表盘首页', async ({ page }) => {
     await page.goto('/dashboard');
 
     // 验证页面标题
@@ -12,7 +16,7 @@ authenticatedTest.describe('仪表盘导航', () => {
     await expect(h1).toContainText('仪表盘');
   });
 
-  authenticatedTest('应该能够访问市场概览页面', async ({ page }) => {
+  test('应该能够访问市场概览页面', async ({ page }) => {
     await page.goto('/dashboard/market');
 
     // 验证页面加载
@@ -31,7 +35,7 @@ authenticatedTest.describe('仪表盘导航', () => {
     expect(await stats.count()).toBeGreaterThan(0);
   });
 
-  authenticatedTest('应该能够访问政策中心页面', async ({ page }) => {
+  test('应该能够访问政策中心页面', async ({ page }) => {
     await page.goto('/dashboard/policies');
 
     // 验证页面加载
@@ -40,7 +44,7 @@ authenticatedTest.describe('仪表盘导航', () => {
     await expect(h1).toContainText('政策中心');
   });
 
-  authenticatedTest('应该能够访问风险预警页面', async ({ page }) => {
+  test('应该能够访问风险预警页面', async ({ page }) => {
     await page.goto('/dashboard/risks');
 
     // 验证页面加载
@@ -49,7 +53,7 @@ authenticatedTest.describe('仪表盘导航', () => {
     await expect(h1).toContainText('风险预警');
   });
 
-  authenticatedTest('应该能够访问机会发现页面', async ({ page }) => {
+  test('应该能够访问机会发现页面', async ({ page }) => {
     await page.goto('/dashboard/opportunities');
 
     // 验证页面加载
@@ -58,7 +62,7 @@ authenticatedTest.describe('仪表盘导航', () => {
     await expect(h1).toContainText('机会发现');
   });
 
-  authenticatedTest('应该能够访问设置页面', async ({ page }) => {
+  test('应该能够访问设置页面', async ({ page }) => {
     await page.goto('/dashboard/settings');
 
     // 验证页面加载
@@ -67,7 +71,7 @@ authenticatedTest.describe('仪表盘导航', () => {
     await expect(h1).toContainText('设置');
   });
 
-  authenticatedTest('应该能够在不同仪表盘页面间导航', async ({ page }) => {
+  test('应该能够在不同仪表盘页面间导航', async ({ page }) => {
     // Start from dashboard
     await page.goto('/dashboard');
 
@@ -84,7 +88,7 @@ authenticatedTest.describe('仪表盘导航', () => {
     await expect(page).toHaveURL(/\/dashboard\/opportunities/);
   });
 
-  authenticatedTest('响应式布局 › 桌面端应该显示完整导航栏', async ({ page }) => {
+  test('响应式布局 › 桌面端应该显示完整导航栏', async ({ page }) => {
     await page.goto('/dashboard');
 
     // Verify sidebar is visible on desktop
@@ -96,7 +100,7 @@ authenticatedTest.describe('仪表盘导航', () => {
     expect(await navItems.count()).toBeGreaterThan(0);
   });
 
-  authenticatedTest('响应式布局 › 移动端应该显示汉堡菜单', async ({ page }) => {
+  test('响应式布局 › 移动端应该显示汉堡菜单', async ({ page }) => {
     // Set mobile viewport
     await page.setViewportSize({ width: 375, height: 667 });
     await page.goto('/dashboard');

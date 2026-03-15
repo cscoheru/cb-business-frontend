@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
 import { login, register } from './fixtures';
 
 /**
@@ -29,7 +29,7 @@ const expiredTrialUser = {
 /**
  * Helper to clear authentication state
  */
-async function clearAuth(page: ReturnType<typeof test.fixtures.page>) {
+async function clearAuth(page: Page) {
   await page.goto('/');
   await page.evaluate(() => {
     localStorage.clear();

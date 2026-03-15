@@ -251,19 +251,27 @@ export const apiClient = {
 // ============ Auth API ============
 export const authApi = {
   async register(email: string, password: string, name: string, plan_choice?: 'trial' | 'free'): Promise<AuthResponse> {
-    const response = await apiClient.post('/api/v1/auth/register', {
-      email,
-      password,
-      name,
-      plan_choice: plan_choice || 'trial',  // 默认trial
-    }, false);  // ✅ requiresAuth = false for public endpoint
+    try {
+      const response = await apiClient.post('/api/v1/auth/register', {
+        email,
+        password,
+        name,
+        plan_choice: plan_choice || 'trial',  // 默认trial
+      }, false);  // ✅ requiresAuth = false for public endpoint
 
-    // Store token
-    if (response.access_token) {
-      setToken(response.access_token);
+      // Store token
+      if (response.access_token) {
+        setToken(response.access_token);
+      }
+
+      return response;
+    } catch (error: any) {
+      // Enhanced error handling for registration
+      if (error.message?.includes('CORS') || error.message?.includes('ERR_FAILED')) {
+        throw new Error('注册服务暂时不可用，请稍后再试。如果问题持续，请联系客服。');
+      }
+      throw error;
     }
-
-    return response;
   },
 
   async login(email: string, password: string): Promise<AuthResponse> {
