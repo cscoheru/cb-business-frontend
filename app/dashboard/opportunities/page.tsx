@@ -96,7 +96,7 @@ export default function OpportunitiesPage() {
     return (
       opp.title?.toLowerCase().includes(query) ||
       opp.description?.toLowerCase().includes(query) ||
-      opp.category?.toLowerCase().includes(query)
+      opp.opportunity_type?.toLowerCase().includes(query)
     );
   });
 
