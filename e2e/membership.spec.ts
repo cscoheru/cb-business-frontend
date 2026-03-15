@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { login, register } from './fixtures';
 
 /**
  * 会员流程 E2E 测试套件
@@ -25,14 +26,21 @@ const expiredTrialUser = {
   name: '过期试用用户'
 };
 
+/**
+ * Helper to clear authentication state
+ */
+async function clearAuth(page: ReturnType<typeof test.fixtures.page>) {
+  await page.goto('/');
+  await page.evaluate(() => {
+    localStorage.clear();
+    sessionStorage.clear();
+  });
+}
+
 test.describe('会员流程 - 未注册用户浏览', () => {
   test.beforeEach(async ({ page }) => {
     // 清除所有认证状态
-    await page.goto('/');
-    await page.evaluate(() => {
-      localStorage.clear();
-      sessionStorage.clear();
-    });
+    await clearAuth(page);
   });
 
   test('未登录用户应该能够访问首页和公开页面', async ({ page }) => {

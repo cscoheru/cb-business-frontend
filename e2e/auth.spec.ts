@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { test as authenticatedTest } from './fixtures';
 
 test.describe('用户认证流程', () => {
   test('应该显示首页', async ({ page }) => {
@@ -30,36 +31,39 @@ test.describe('用户认证流程', () => {
     const currentUrl = page.url();
     expect(currentUrl).toMatch(/(dashboard|login|\/)$/);
   });
+});
 
-  test('应该显示市场概览页面', async ({ page }) => {
+// Dashboard page tests - require authentication
+authenticatedTest.describe('仪表盘页面（已认证）', () => {
+  authenticatedTest('应该显示市场概览页面', async ({ page }) => {
     await page.goto('/dashboard/market');
 
     // 验证页面加载
     await expect(page.locator('h1')).toContainText('市场概览');
   });
 
-  test('应该显示政策中心页面', async ({ page }) => {
+  authenticatedTest('应该显示政策中心页面', async ({ page }) => {
     await page.goto('/dashboard/policies');
 
     // 验证页面加载
     await expect(page.locator('h1')).toContainText('政策中心');
   });
 
-  test('应该显示风险预警页面', async ({ page }) => {
+  authenticatedTest('应该显示风险预警页面', async ({ page }) => {
     await page.goto('/dashboard/risks');
 
     // 验证页面加载
     await expect(page.locator('h1')).toContainText('风险预警');
   });
 
-  test('应该显示机会发现页面', async ({ page }) => {
+  authenticatedTest('应该显示机会发现页面', async ({ page }) => {
     await page.goto('/dashboard/opportunities');
 
     // 验证页面加载
     await expect(page.locator('h1')).toContainText('机会发现');
   });
 
-  test('应该显示设置页面', async ({ page }) => {
+  authenticatedTest('应该显示设置页面', async ({ page }) => {
     await page.goto('/dashboard/settings');
 
     // 验证页面加载
@@ -90,8 +94,8 @@ test.describe('响应式设计', () => {
     await page.setViewportSize({ width: 375, height: 667 });
     await page.goto('/');
 
-    // 验证主要内容可见
-    await expect(page.locator('h1')).toBeVisible();
+    // 验证主要内容可见 - use first() to handle multiple h1 elements
+    await expect(page.locator('h1').first()).toBeVisible();
   });
 
   test('应该在平板设备上正常显示', async ({ page }) => {
@@ -99,7 +103,7 @@ test.describe('响应式设计', () => {
     await page.setViewportSize({ width: 768, height: 1024 });
     await page.goto('/');
 
-    // 验证主要内容可见
-    await expect(page.locator('h1')).toBeVisible();
+    // 验证主要内容可见 - use first() to handle multiple h1 elements
+    await expect(page.locator('h1').first()).toBeVisible();
   });
 });
