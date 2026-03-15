@@ -37,14 +37,7 @@ export default function FavoritesPage() {
             <Heart className="h-8 w-8 text-red-500 fill-current" />
             <h1 className="text-3xl font-bold">我的收藏</h1>
           </div>
-          {/* Only show count after loading is complete */}
-          {!isLoading && (
-            <p className="text-muted-foreground">
-              {cards.length > 0 || opportunities.length > 0
-                ? `您已收藏 ${cards.length + opportunities.length} 个项目`
-                : '还没有收藏任何内容'}
-            </p>
-          )}
+          {/* Don't show count text - just show content */}
           {error && (
             <p className="text-red-500 text-sm mt-2">{error}</p>
           )}
