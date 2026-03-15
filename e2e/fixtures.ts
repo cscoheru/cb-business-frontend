@@ -1,56 +1,98 @@
 /**
  * E2E Test Fixtures - Simplified version
  *
- * Helper functions for E2E testing without using fixtures.extend
+ * Helper functions for E2E testing with API mocking
  */
 
-import { test as base } from '@playwright/test';
+import { test as base, type Page } from '@playwright/test';
 
 // Test user credentials
 export const TEST_USER = {
+  id: 'test-user-id',
   email: 'test@example.com',
   password: 'password123',
-  name: '测试用户'
+  name: '测试用户',
+  plan_tier: 'pro' as const,
+  plan_status: 'active' as const,
+  created_at: new Date().toISOString(),
+  last_login_at: new Date().toISOString(),
+  currency_preference: 'CNY',
+  is_admin: false
 };
 
 export const TEST_PRO_USER = {
+  id: 'pro-user-id',
   email: 'pro@example.com',
   password: 'password123',
-  name: 'Pro用户'
+  name: 'Pro用户',
+  plan_tier: 'pro' as const,
+  plan_status: 'active' as const,
+  created_at: new Date().toISOString(),
+  last_login_at: new Date().toISOString(),
+  currency_preference: 'CNY',
+  is_admin: false
 };
 
-/**
- * Helper function to set mock authentication
- */
-export async function setMockAuth(page: any) {
-  // First navigate to a safe page (home page)
-  await page.goto('/');
+// API base URL
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://api.zenconsult.top';
 
-  // Wait for the page to be ready
-  await page.waitForLoadState('domcontentloaded');
+/**
+ * Setup API mocking for authenticated requests
+ */
+async function setupApiMocking(page: Page, user: typeof TEST_USER) {
+  // Mock GET /api/v1/users/me - return test user
+  await page.route(`${API_BASE}/api/v1/users/me`, async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify(user)
+    });
+  });
+
+  // Mock GET /api/v1/subscriptions/me - return subscription info
+  await page.route(`${API_BASE}/api/v1/subscriptions/me`, async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        plan: user.plan_tier,
+        status: user.plan_status,
+        started_at: user.created_at,
+        expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
+      })
+    });
+  });
+
+  // Mock GET /api/v1/favorites - return empty favorites
+  await page.route(`${API_BASE}/api/v1/favorites*`, async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ favorites: [], total: 0 })
+    });
+  });
+}
+
+/**
+ * Helper function to set mock authentication with API mocking
+ */
+export async function setMockAuth(page: Page, user: typeof TEST_USER = TEST_USER) {
+  // Setup API mocking first
+  await setupApiMocking(page, user);
 
   // Add init script to set localStorage before page loads
   await page.addInitScript(({ user, token }: { user: any; token: string }) => {
     localStorage.setItem('auth_token', token);
     localStorage.setItem('user', JSON.stringify(user));
   }, {
-    user: {
-      id: 'test-user-id',
-      email: TEST_USER.email,
-      name: TEST_USER.name,
-      plan_tier: 'pro' as const,
-      plan_status: 'active' as const,
-      created_at: new Date().toISOString(),
-      last_login_at: new Date().toISOString(),
-      currency_preference: 'CNY',
-      is_admin: false
-    },
+    user: user,
     token: 'mock_test_token_for_e2e'
   });
 
   // Navigate to dashboard - the init script will run automatically
   await page.goto('/dashboard');
-  await page.waitForLoadState('domcontentloaded');
+  // Wait for the page to be hydrated and rendered
+  await page.waitForLoadState('networkidle');
 }
 
 /**
