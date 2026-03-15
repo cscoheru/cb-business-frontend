@@ -66,11 +66,13 @@ export function InfoCard({ card }: InfoCardProps) {
   const [localLikes, setLocalLikes] = useState(card.likes);
   const favorite = isFavorite(card.id);
 
-  // Safety checks for nested properties
-  const summary = card.content?.summary;
-  const marketData = card.content?.market_data;
-  const insights = card.content?.insights;
-  const opportunityScore = summary?.opportunity_score ?? 0;
+  // Safety checks for nested properties - handle both formats:
+  // 1. content.summary.opportunity_score (nested format)
+  // 2. content.opportunity_score (flat format from some API responses)
+  const summary = card.content?.summary || card.content || {};
+  const marketData = card.content?.market_data || card.content?.market || {};
+  const insights = card.content?.insights || {};
+  const opportunityScore = summary?.opportunity_score ?? card.content?.opportunity_score ?? 0;
 
   const categoryName = CATEGORY_NAMES[card.category] || card.category;
   const categoryColor = CATEGORY_COLORS[card.category] || 'bg-gray-100 text-gray-800';

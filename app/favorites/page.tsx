@@ -14,13 +14,19 @@ export default function FavoritesPage() {
 
   // Separate cards and opportunities from favoriteItems
   // Filter out cards that don't have required data structure
+  // Note: API returns content with summary fields directly (not nested under content.summary)
   const cards = favoriteItems
     .map(item => item.card)
     .filter((card): card is NonNullable<typeof card> => {
-      if (!card || !card.id || !card.content || !card.content.summary) {
+      // Basic validation: card must exist with id
+      if (!card || !card.id) {
         return false;
       }
-      return true;
+      // Accept if content exists (with either nested summary or direct fields)
+      if (card.content) {
+        return true;
+      }
+      return false;
     });
 
   const opportunities = favoriteItems
