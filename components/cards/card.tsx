@@ -2,15 +2,43 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { Card as CardType } from '@/lib/api';
-import { cardsApi } from '@/lib/api';
+import { Card as CardType, opportunitiesApi } from '@/lib/api';
 import { Card, CardHeader, CardContent, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Eye, Heart, TrendingUp, DollarSign, Star } from 'lucide-react';
+import { Eye, Heart, TrendingUp, DollarSign, Star, Target } from 'lucide-react';
 import { useFavorites } from '@/lib/contexts/favorites-context';
 import { useAuth } from '@/lib/auth-context';
+import { useToast } from '@/components/ui/toast';
+
+// LocalStorage key for tracking followed cards (anonymous users)
+const LOCAL_FOLLOWED_KEY = 'zen_followed_cards';
+const ANONYMOUS_FOLLOW_LIMIT = 3;
+
+/**
+ * Load followed cards from localStorage
+ */
+function loadFollowedCards(): Set<string> {
+  if (typeof window === 'undefined') return new Set();
+  try {
+    const stored = localStorage.getItem(LOCAL_FOLLOWED_KEY);
+    return stored ? new Set(JSON.parse(stored)) : new Set();
+  } catch {
+    return new Set();
+  }
+}
+
+/**
+ * Save followed cards to localStorage
+ */
+function saveFollowedCards(cards: Set<string>) {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem(LOCAL_FOLLOWED_KEY, JSON.stringify([...cards]));
+  } catch {
+    // Ignore errors
+  }
+}
 
 interface InfoCardProps {
   card: CardType;
@@ -61,14 +89,15 @@ function getSaturationColor(saturation: string): string {
 export function InfoCard({ card }: InfoCardProps) {
   const { isFavorite, toggleFavorite } = useFavorites();
   const { isAuthenticated } = useAuth();
-  const router = useRouter();
+  const toast = useToast();
   const [liking, setLiking] = useState(false);
+  const [following, setFollowing] = useState(false);
   const [localLikes, setLocalLikes] = useState(card.likes);
+  const [followedCards, setFollowedCards] = useState<Set<string>>(loadFollowedCards);
   const favorite = isFavorite(card.id);
+  const followed = followedCards.has(card.id);
 
-  // Safety checks for nested properties - handle both formats:
-  // 1. content.summary.opportunity_score (nested format)
-  // 2. content.opportunity_score (flat format from some API responses)
+  // Safety checks for nested properties
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const summary: any = card.content?.summary || card.content || {};
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -95,6 +124,8 @@ export function InfoCard({ card }: InfoCardProps) {
 
       // Only like the card if authenticated (increments like count)
       if (isAuthenticated) {
+        // Import cardsApi dynamically to avoid circular dependencies
+        const { cardsApi } = await import('@/lib/api');
         await cardsApi.likeCard(card.id);
         setLocalLikes((prev) => prev + 1);
       }
@@ -102,6 +133,62 @@ export function InfoCard({ card }: InfoCardProps) {
       console.error('Failed to like card:', error);
     } finally {
       setLiking(false);
+    }
+  };
+
+  const handleFollow = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (following) return;
+
+    setFollowing(true);
+
+    try {
+      if (followed) {
+        // Unfollow - just remove from local tracking
+        const newSet = new Set(followedCards);
+        newSet.delete(card.id);
+        setFollowedCards(newSet);
+        saveFollowedCards(newSet);
+        toast.showSuccess('已取消关注');
+      } else {
+        // Check limit for anonymous users
+        if (!isAuthenticated && followedCards.size >= ANONYMOUS_FOLLOW_LIMIT) {
+          toast.showError(
+            `匿名用户最多只能关注${ANONYMOUS_FOLLOW_LIMIT}个商机`,
+            '请注册账户以获得更多关注额度'
+          );
+          setFollowing(false);
+          return;
+        }
+
+        // Follow - call API to create opportunity
+        const result = await opportunitiesApi.createFromCard(card.id);
+
+        if (result.success && result.opportunity) {
+          // Update local tracking
+          const newSet = new Set(followedCards);
+          newSet.add(card.id);
+          setFollowedCards(newSet);
+          saveFollowedCards(newSet);
+
+          toast.showSuccess(
+            '🎯 已关注为商机',
+            'AI将持续监控市场变化'
+          );
+        } else if (result.limit_reached) {
+          toast.showError(
+            `匿名用户最多只能关注${ANONYMOUS_FOLLOW_LIMIT}个商机`,
+            '请注册账户以获得更多关注额度'
+          );
+        }
+      }
+    } catch (error: any) {
+      console.error('Failed to follow/unfollow:', error);
+      toast.showError('操作失败', error.message || '请稍后再试');
+    } finally {
+      setFollowing(false);
     }
   };
 
@@ -211,33 +298,34 @@ export function InfoCard({ card }: InfoCardProps) {
             {card.views}
           </span>
 
-          {/* Enhanced favorite button with animation */}
+          {/* Favorite button - simple bookmarking */}
           <button
             onClick={handleLike}
             disabled={liking}
-            title={favorite ? "已收藏，AI正在持续监控" : "收藏此卡片，AI将持续监控市场变化"}
+            title={favorite ? "已收藏" : "收藏此卡片"}
             className={`relative group flex items-center gap-1 transition-all duration-300 ${
               favorite
-                ? 'text-red-500 hover:text-red-600 scale-105'
+                ? 'text-red-500 hover:text-red-600'
                 : 'text-gray-400 hover:text-red-500 hover:scale-110'
             }`}
           >
-            {/* Heart icon with animation */}
-            <span className={`inline-block transition-transform duration-300 ${
-              favorite ? 'scale-110' : ''
-            }`}>
-              <Heart className={`h-5 w-5 ${favorite ? 'fill-current' : ''}`} />
-            </span>
-
-            {/* New user pulse indicator */}
-            {!favorite && (
-              <span className="absolute -top-1 -right-1 flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
-              </span>
-            )}
-
+            <Heart className={`h-4 w-4 ${favorite ? 'fill-current' : ''}`} />
             <span className="text-xs">{localLikes}</span>
+          </button>
+
+          {/* Follow as Opportunity button */}
+          <button
+            onClick={handleFollow}
+            disabled={following}
+            title={followed ? "取消商机跟踪" : "关注为商机 - AI将持续监控市场变化"}
+            className={`relative group flex items-center gap-1 transition-all duration-300 ${
+              followed
+                ? 'text-orange-500 hover:text-orange-600'
+                : 'text-gray-400 hover:text-orange-500 hover:scale-110'
+            }`}
+          >
+            <Target className={`h-4 w-4 ${followed ? 'fill-current' : ''}`} />
+            <span className="text-xs">{followed ? '跟踪中' : '关注'}</span>
           </button>
 
           <span className="text-xs">

@@ -181,13 +181,8 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
         // Update favoriteItems
         setFavoriteItems(prev => prev.filter(item => item.card_id !== cardId));
       } else {
-        // Add to API
+        // Add to API (just bookmarking, no opportunity creation)
         await favoritesApi.addFavorite(cardId);
-        // Show AI monitoring message
-        toast.showAIAnalyzing(
-          '✅ 已加入AI智能监控',
-          '🤖 正在分析市场变化，预计5分钟完成'
-        );
 
         // Fetch all favorites to get the complete item with card data
         const items = await favoritesApi.getFavorites();
