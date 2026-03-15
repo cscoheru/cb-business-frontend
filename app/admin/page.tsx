@@ -176,8 +176,8 @@ export default async function AdminPage() {
           <div className="rounded-lg border bg-card p-6">
             <h3 className="text-lg font-semibold mb-4">热门市场</h3>
             <div className="space-y-4">
-              {analytics?.topMarkets?.length > 0 ? (
-                analytics.topMarkets.map((market, i) => (
+              {(analytics?.topMarkets?.length ?? 0) > 0 ? (
+                analytics!.topMarkets.map((market, i) => (
                   <div key={i} className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
@@ -209,8 +209,8 @@ export default async function AdminPage() {
           <div className="rounded-lg border bg-card p-6">
             <h3 className="text-lg font-semibold mb-4">热门品类</h3>
             <div className="space-y-4">
-              {analytics?.topCategories?.length > 0 ? (
-                analytics.topCategories.slice(0, 4).map((cat, i) => (
+              {(analytics?.topCategories?.length ?? 0) > 0 ? (
+                analytics!.topCategories!.slice(0, 4).map((cat, i) => (
                   <div key={i} className="flex items-start gap-3">
                     <div className={`w-2 h-2 rounded-full mt-2 ${
                       i === 0 ? 'bg-blue-500' :

@@ -19,7 +19,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { UserSearchForm } from './UserSearchForm';
-import { UsersList } from './UsersList';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://api.zenconsult.top';
 
