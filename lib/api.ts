@@ -899,13 +899,7 @@ export const opportunitiesApi = {
   },
 
   /** 从卡片创建商机 (关注为商机) - 匿名用户最多3个 */
-  async createFromCard(cardId: string): Promise<{
-    success: boolean;
-    opportunity: BusinessOpportunity;
-    limit_reached?: boolean;
-    limit?: number;
-    current?: number;
-  }> {
+  async createFromCard(cardId: string): Promise<BusinessOpportunity> {
     return apiClient.post(`/api/v1/opportunities/from-card/${cardId}`, {}, false);
   },
 };

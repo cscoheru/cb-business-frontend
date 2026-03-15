@@ -164,9 +164,9 @@ export function InfoCard({ card }: InfoCardProps) {
         }
 
         // Follow - call API to create opportunity
-        const result = await opportunitiesApi.createFromCard(card.id);
+        const opportunity = await opportunitiesApi.createFromCard(card.id);
 
-        if (result.success && result.opportunity) {
+        if (opportunity && opportunity.id) {
           // Update local tracking
           const newSet = new Set(followedCards);
           newSet.add(card.id);
@@ -176,11 +176,6 @@ export function InfoCard({ card }: InfoCardProps) {
           toast.showSuccess(
             '🎯 已关注为商机',
             'AI将持续监控市场变化'
-          );
-        } else if (result.limit_reached) {
-          toast.showError(
-            `匿名用户最多只能关注${ANONYMOUS_FOLLOW_LIMIT}个商机`,
-            '请注册账户以获得更多关注额度'
           );
         }
       }
