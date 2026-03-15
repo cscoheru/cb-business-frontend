@@ -19,7 +19,9 @@ export default function FavoritesPage() {
 
   const opportunities = favoriteItems
     .map(item => item.opportunity)
-    .filter((opp): opp is NonNullable<typeof opp> => opp !== undefined);
+    .filter((opp): opp is NonNullable<typeof opp> =>
+      opp !== undefined && opp !== null && opp.id
+    );
 
   return (
     <div className="container mx-auto px-4 py-8">

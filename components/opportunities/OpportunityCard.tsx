@@ -9,10 +9,10 @@ import { Brain, TrendingUp, Calendar, ChevronRight } from 'lucide-react';
 interface Opportunity {
   id: string;
   title: string;
-  description: string;
+  description?: string | null;
   status: string;
   opportunity_type: string;
-  confidence_score: number;
+  confidence_score?: number | null;
   created_at: string;
 }
 
@@ -56,7 +56,7 @@ export function OpportunityCard({ opportunity }: OpportunityCardProps) {
           {/* AI可信度 */}
           <div className="flex flex-col items-center">
             <div className="text-2xl font-bold text-purple-600">
-              {(opportunity.confidence_score * 100).toFixed(0)}%
+              {((opportunity.confidence_score ?? 0) * 100).toFixed(0)}%
             </div>
             <div className="text-xs text-gray-500">AI可信度</div>
           </div>

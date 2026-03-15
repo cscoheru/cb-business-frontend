@@ -818,3 +818,109 @@ export const opportunitiesApi = {
     return apiClient.get(`/api/v1/opportunities${queryString ? `?${queryString}` : ''}`, true);
   },
 };
+
+// ============ Admin API ============
+export interface AdminUserStats {
+  total: number;
+  active: number;
+  paid: number;
+  growthRate: number;
+}
+
+export interface AdminUser {
+  id: string;
+  email: string;
+  name: string;
+  subscription: string;
+  status: string;
+  createdAt: string;
+  lastActiveAt: string;
+  apiUsage: {
+    limit: number;
+    used: number;
+  };
+}
+
+export interface AdminUserListResponse {
+  users: AdminUser[];
+  total: number;
+}
+
+export interface AdminUserFilters {
+  status?: string;
+  plan_tier?: string;
+  search?: string;
+}
+
+export interface AdminSubscription {
+  id: string;
+  userId: string;
+  userEmail: string;
+  plan: string;
+  status: string;
+  amount: number;
+  currency: string;
+  period: string;
+  startDate: string;
+  nextBillingDate: string;
+}
+
+export interface AdminSubscriptionListResponse {
+  subscriptions: AdminSubscription[];
+  stats: {
+    total: number;
+    active: number;
+    pro: number;
+    enterprise: number;
+    revenue: number;
+  };
+}
+
+export interface AdminFinanceData {
+  monthlyRevenue: Array<{ month: string; revenue: number }>;
+  subscriptionTrend: Array<{ month: string; count: number }>;
+  paymentMethods: Array<{ method: string; count: number; percentage: number }>;
+  totalRevenue: number;
+  revenueGrowth: number;
+  activeSubscriptions: number;
+  subscriptionGrowth: number;
+}
+
+export interface AdminAnalyticsData {
+  totalUsers: number;
+  userGrowth: number;
+  activeUsers: number;
+  averageApiCalls: number;
+  apiCallsGrowth: number;
+  topMarkets: Array<{ market: string; users: number; growth: number }>;
+  topCategories: Array<{ category: string; views: number; growth: number }>;
+}
+
+export const adminApi = {
+  // User management
+  async getUserStats(): Promise<AdminUserStats> {
+    return apiClient.get('/api/v1/admin/users/stats', true);
+  },
+
+  async getUsers(filters?: AdminUserFilters): Promise<AdminUserListResponse> {
+    return apiClient.post('/api/v1/admin/users', filters || {}, true);
+  },
+
+  // Subscription management
+  async getSubscriptions(filters?: {
+    status?: string;
+    plan_tier?: string;
+  }): Promise<AdminSubscriptionListResponse> {
+    return apiClient.post('/api/v1/admin/subscriptions', filters || {}, true);
+  },
+
+  // Finance data
+  async getFinanceData(period: string = '30d'): Promise<AdminFinanceData> {
+    return apiClient.get(`/api/v1/admin/finance?period=${period}`, true);
+  },
+
+  // Analytics data
+  async getAnalytics(): Promise<AdminAnalyticsData> {
+    return apiClient.get('/api/v1/admin/analytics', true);
+  },
+};

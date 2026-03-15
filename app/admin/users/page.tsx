@@ -2,7 +2,6 @@ import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import {
   Table,
@@ -12,30 +11,105 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Search, Filter, MoreHorizontal } from 'lucide-react';
+import { MoreHorizontal } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { UserSearchForm } from './UserSearchForm';
+import { UsersList } from './UsersList';
 
-// TODO: 从API获取
-const mockUsers = [
-  { id: '1', email: 'user1@example.com', name: 'User 1', plan: 'pro', status: 'active', createdAt: '2026-03-10' },
-  { id: '2', email: 'user2@example.com', name: 'User 2', plan: 'free', status: 'active', createdAt: '2026-03-11' },
-  { id: '3', email: 'user3@example.com', name: 'User 3', plan: 'enterprise', status: 'active', createdAt: '2026-03-12' },
-  { id: '4', email: 'user4@example.com', name: 'User 4', plan: 'free', status: 'canceled', createdAt: '2026-03-08' },
-  { id: '5', email: 'user5@example.com', name: 'User 5', plan: 'pro', status: 'expired', createdAt: '2026-03-05' },
-];
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://api.zenconsult.top';
 
-export default async function AdminUsersPage() {
+interface User {
+  id: string;
+  email: string;
+  name: string;
+  subscription: string;
+  status: string;
+  createdAt: string;
+  lastActiveAt: string;
+  apiUsage?: {
+    limit: number;
+    used: number;
+  };
+}
+
+interface UsersResponse {
+  users: User[];
+  total: number;
+}
+
+async function getUsers(
+  token: string,
+  filters?: {
+    status?: string;
+    plan_tier?: string;
+    search?: string;
+  }
+): Promise<UsersResponse> {
+  try {
+    const res = await fetch(`${API_BASE}/api/v1/admin/users`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(filters || {}),
+      cache: 'no-store',
+    });
+
+    if (!res.ok) {
+      if (res.status === 403) {
+        return { users: [], total: 0 };
+      }
+      throw new Error(`API error: ${res.status}`);
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error('Failed to fetch users:', error);
+    return { users: [], total: 0 };
+  }
+}
+
+export default async function AdminUsersPage({
+  searchParams,
+}: {
+  searchParams?: {
+    status?: string;
+    plan?: string;
+    search?: string;
+  };
+}) {
   const cookieStore = await cookies();
   const token = cookieStore.get('auth_token')?.value;
 
   if (!token) {
     redirect('/login?redirect=/admin/users');
   }
+
+  // Fetch users with filters
+  const { users, total } = await getUsers(token, {
+    status: searchParams?.status,
+    plan_tier: searchParams?.plan,
+    search: searchParams?.search,
+  });
+
+  const planLabels: Record<string, string> = {
+    free: '免费版',
+    trial: '试用',
+    pro: '专业版',
+    enterprise: '企业版',
+  };
+
+  const statusLabels: Record<string, string> = {
+    active: '活跃',
+    canceled: '已取消',
+    expired: '已过期',
+  };
 
   return (
     <div className="space-y-6">
@@ -47,91 +121,89 @@ export default async function AdminUsersPage() {
         <Button>导出数据</Button>
       </div>
 
-      {/* Filters */}
-      <Card className="p-4">
-        <div className="flex flex-wrap gap-4">
-          <div className="relative flex-1 min-w-[200px]">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input placeholder="搜索用户..." className="pl-8" />
-          </div>
-          <select className="border rounded-lg px-3 py-2">
-            <option value="">所有计划</option>
-            <option value="free">免费版</option>
-            <option value="pro">专业版</option>
-            <option value="enterprise">企业版</option>
-          </select>
-          <select className="border rounded-lg px-3 py-2">
-            <option value="">所有状态</option>
-            <option value="active">活跃</option>
-            <option value="canceled">已取消</option>
-            <option value="expired">已过期</option>
-          </select>
-        </div>
-      </Card>
+      {/* Search and Filters */}
+      <UserSearchForm
+        initialStatus={searchParams?.status}
+        initialPlan={searchParams?.plan}
+        initialSearch={searchParams?.search}
+      />
 
       {/* Users Table */}
       <Card>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>用户</TableHead>
-              <TableHead>邮箱</TableHead>
-              <TableHead>计划</TableHead>
-              <TableHead>状态</TableHead>
-              <TableHead>注册时间</TableHead>
-              <TableHead className="text-right">操作</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {mockUsers.map((user) => (
-              <TableRow key={user.id}>
-                <TableCell className="font-medium">{user.name}</TableCell>
-                <TableCell>{user.email}</TableCell>
-                <TableCell>
-                  <Badge variant={user.plan === 'free' ? 'outline' : 'default'}>
-                    {user.plan === 'free' ? '免费版' : user.plan === 'pro' ? '专业版' : '企业版'}
-                  </Badge>
-                </TableCell>
-                <TableCell>
-                  <Badge
-                    variant={
-                      user.status === 'active' ? 'default' :
-                      user.status === 'canceled' ? 'secondary' :
-                      'outline'
-                    }
-                  >
-                    {user.status === 'active' ? '活跃' :
-                     user.status === 'canceled' ? '已取消' : '已过期'}
-                  </Badge>
-                </TableCell>
-                <TableCell>{user.createdAt}</TableCell>
-                <TableCell className="text-right">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger>
-                      <Button variant="ghost" size="icon">
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem>查看详情</DropdownMenuItem>
-                      <DropdownMenuItem>编辑用户</DropdownMenuItem>
-                      <DropdownMenuItem>重置密码</DropdownMenuItem>
-                      <DropdownMenuItem className="text-red-600">
-                        删除用户
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
+        {users.length > 0 ? (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>用户</TableHead>
+                <TableHead>邮箱</TableHead>
+                <TableHead>订阅</TableHead>
+                <TableHead>状态</TableHead>
+                <TableHead>API用量</TableHead>
+                <TableHead>注册时间</TableHead>
+                <TableHead className="text-right">操作</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {users.map((user) => (
+                <TableRow key={user.id}>
+                  <TableCell className="font-medium">{user.name || '-'}</TableCell>
+                  <TableCell>{user.email}</TableCell>
+                  <TableCell>
+                    <Badge variant={user.subscription === 'free' ? 'outline' : 'default'}>
+                      {planLabels[user.subscription] || user.subscription}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <Badge
+                      variant={
+                        user.status === 'active' ? 'default' :
+                        user.status === 'canceled' ? 'secondary' :
+                        'outline'
+                      }
+                    >
+                      {statusLabels[user.status] || user.status}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    {user.apiUsage ? (
+                      <span className="text-sm">
+                        {user.apiUsage.used}/{user.apiUsage.limit === -1 ? '∞' : user.apiUsage.limit}
+                      </span>
+                    ) : '-'}
+                  </TableCell>
+                  <TableCell>{user.createdAt}</TableCell>
+                  <TableCell className="text-right">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger>
+                        <Button variant="ghost" size="icon">
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem>查看详情</DropdownMenuItem>
+                        <DropdownMenuItem>编辑用户</DropdownMenuItem>
+                        <DropdownMenuItem>重置密码</DropdownMenuItem>
+                        <DropdownMenuItem className="text-red-600">
+                          删除用户
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        ) : (
+          <div className="p-8 text-center text-muted-foreground">
+            暂无用户数据
+          </div>
+        )}
       </Card>
 
       {/* Pagination */}
       <div className="flex items-center justify-between">
         <p className="text-sm text-muted-foreground">
-          显示 1-5 条，共 {mockUsers.length} 条
+          显示 {users.length} 条，共 {total} 条
         </p>
         <div className="flex gap-2">
           <Button variant="outline" size="sm" disabled>上一页</Button>
