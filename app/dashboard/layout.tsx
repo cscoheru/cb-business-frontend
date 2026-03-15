@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import { TrialExpiryWarning } from '@/components/upgrade';
 
 const navItems = [
   {
@@ -207,6 +208,11 @@ export default function DashboardLayout({
               <Menu className="h-5 w-5" />
             </Button>
             <span className="font-semibold">ZenConsult</span>
+          </div>
+
+          {/* Trial Warning Banner */}
+          <div className="container mx-auto px-4 py-4">
+            <TrialExpiryWarning />
           </div>
 
           {/* Page Content */}

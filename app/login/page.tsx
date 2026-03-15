@@ -21,6 +21,19 @@ function LoginForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+
+    // Client-side email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setError('请输入有效的邮箱地址');
+      return;
+    }
+
+    if (!password) {
+      setError('请输入密码');
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -92,24 +105,16 @@ function LoginForm() {
             </div>
           </div>
 
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <input
-                id="remember-me"
-                name="remember-me"
-                type="checkbox"
-                className="h-4 w-4 text-primary focus:ring-primary border-border rounded"
-              />
-              <label htmlFor="remember-me" className="ml-2 block text-sm text-muted-foreground">
-                记住我
-              </label>
-            </div>
-
-            <div className="text-sm">
-              <Link href="/forgot-password" className="font-medium text-primary hover:text-primary/80">
-                忘记密码？
-              </Link>
-            </div>
+          <div className="flex items-center">
+            <input
+              id="remember-me"
+              name="remember-me"
+              type="checkbox"
+              className="h-4 w-4 text-primary focus:ring-primary border-border rounded"
+            />
+            <label htmlFor="remember-me" className="ml-2 block text-sm text-muted-foreground">
+              记住我
+            </label>
           </div>
 
           <Button

@@ -7,6 +7,7 @@ import { QuickActionCard } from '@/components/dashboard/QuickActionCard';
 import { OpportunityCard, mockOpportunityCard } from '@/components/dashboard/OpportunityCard';
 import { TrialReminderBanner } from '@/components/trial/trial-reminder-banner';
 import { UpgradePrompt } from '@/components/subscription/upgrade-prompt';
+import { UsageTrendChart, CategoryDistributionChart } from '@/components/charts';
 import { useAuth } from '@/lib/auth-context';
 import { useSubscription } from '@/hooks/useSubscription';
 import Link from 'next/link';
@@ -118,6 +119,39 @@ export default function DashboardPage() {
           <Card className="p-6">
             <div className="text-2xl font-bold mb-1">2</div>
             <div className="text-sm text-muted-foreground">活跃预警</div>
+          </Card>
+        </div>
+      </section>
+
+      {/* Charts Section */}
+      <section className="mt-8">
+        <h2 className="text-2xl font-bold mb-4">使用趋势</h2>
+        <div className="grid md:grid-cols-2 gap-6">
+          <Card className="p-6">
+            <h3 className="font-semibold mb-4">近7天活动</h3>
+            <UsageTrendChart
+              data={[
+                { date: '周一', views: 12, favorites: 3, searches: 5 },
+                { date: '周二', views: 19, favorites: 5, searches: 8 },
+                { date: '周三', views: 15, favorites: 4, searches: 6 },
+                { date: '周四', views: 25, favorites: 8, searches: 10 },
+                { date: '周五', views: 22, favorites: 7, searches: 9 },
+                { date: '周六', views: 30, favorites: 10, searches: 12 },
+                { date: '周日', views: 28, favorites: 9, searches: 11 },
+              ]}
+            />
+          </Card>
+
+          <Card className="p-6">
+            <h3 className="font-semibold mb-4">关注类别分布</h3>
+            <CategoryDistributionChart
+              data={[
+                { category: '电子产品', count: 8, color: '#3b82f6' },
+                { category: '家居用品', count: 6, color: '#ec4899' },
+                { category: '运动户外', count: 4, color: '#f59e0b' },
+                { category: '美容个护', count: 3, color: '#10b981' },
+              ]}
+            />
           </Card>
         </div>
       </section>

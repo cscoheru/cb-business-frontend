@@ -14,6 +14,7 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string, name: string, plan_choice?: 'trial' | 'free') => Promise<void>;
   logout: () => void;
+  refreshUser: () => Promise<User | void>;
   isAuthenticated: boolean;
 }
 
@@ -156,7 +157,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.removeItem('user');
     }
 
-    // 登出后停留在当前页面
+    // Note: Redirect should be handled by the caller (Header, dashboard layout, etc.)
+  };
+
+  const refreshUser = async () => {
+    if (!token) return;
+
+    try {
+      const { authApi } = await import('@/lib/api');
+      const userData = await authApi.getCurrentUser();
+
+      setUser(userData);
+
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('user', JSON.stringify(userData));
+      }
+
+      return userData;
+    } catch (error) {
+      console.error('Failed to refresh user:', error);
+      // If refresh fails (e.g., token expired), logout
+      logout();
+      throw error;
+    }
   };
 
   const value: AuthContextType = {
@@ -166,6 +189,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     login,
     register,
     logout,
+    refreshUser,
     isAuthenticated: !!user && !!token,
   };
 

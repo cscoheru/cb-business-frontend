@@ -15,6 +15,8 @@ export function Header() {
   const handleLogout = () => {
     logout();
     setMobileMenuOpen(false);
+    // Redirect to home page after logout
+    window.location.href = '/';
   };
 
   const navLinks = (
@@ -32,6 +34,27 @@ export function Header() {
         onClick={() => setMobileMenuOpen(false)}
       >
         历史卡片
+      </Link>
+      <Link
+        href="/products"
+        className="hover:text-primary text-sm"
+        onClick={() => setMobileMenuOpen(false)}
+      >
+        产品库
+      </Link>
+      <Link
+        href="/opportunities"
+        className="hover:text-primary text-sm"
+        onClick={() => setMobileMenuOpen(false)}
+      >
+        机会发现
+      </Link>
+      <Link
+        href="/search"
+        className="hover:text-primary text-sm"
+        onClick={() => setMobileMenuOpen(false)}
+      >
+        搜索
       </Link>
       <Link
         href="/favorites"

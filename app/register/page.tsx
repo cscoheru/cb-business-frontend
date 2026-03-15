@@ -74,14 +74,27 @@ export default function RegisterPage() {
       return;
     }
 
-    // 验证密码
-    if (password !== confirmPassword) {
-      setError('两次输入的密码不一致');
+    // 验证姓名
+    if (!name.trim()) {
+      setError('请输入您的姓名');
       return;
     }
 
+    // 验证邮箱格式
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setError('请输入有效的邮箱地址');
+      return;
+    }
+
+    // 验证密码
     if (password.length < 6) {
       setError('密码长度至少为6位');
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError('两次输入的密码不一致');
       return;
     }
 
@@ -270,14 +283,7 @@ export default function RegisterPage() {
             </div>
 
             <div className="text-xs text-gray-500 mb-6">
-              注册即表示您同意我们的{' '}
-              <Link href="/terms" className="text-blue-600 hover:text-blue-800">
-                服务条款
-              </Link>{' '}
-              和{' '}
-              <Link href="/privacy" className="text-blue-600 hover:text-blue-800">
-                隐私政策
-              </Link>
+              注册即表示您同意我们的服务条款和隐私政策
             </div>
 
             <Button
