@@ -110,8 +110,20 @@ async function handleResponse(response: Response, endpoint: string, method: stri
       code: 'UNKNOWN_ERROR'
     }));
 
+    // Extract message from detail (could be string or object with message field)
+    let errorMessage: string;
+    if (typeof error.detail === 'string') {
+      errorMessage = error.detail;
+    } else if (error.detail?.message) {
+      errorMessage = error.detail.message;
+    } else if (error.detail?.detail) {
+      errorMessage = error.detail.detail;
+    } else {
+      errorMessage = JSON.stringify(error.detail);
+    }
+
     throw new APIError(
-      error.detail || `Request failed`,
+      errorMessage || `Request failed`,
       error.code || 'HTTP_ERROR',
       response.status
     );
