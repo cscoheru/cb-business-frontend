@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { JourneyTracker } from '@/components/dashboard/JourneyTracker';
 import { QuickActionCard } from '@/components/dashboard/QuickActionCard';
 import { OpportunityCard, mockOpportunityCard } from '@/components/dashboard/OpportunityCard';
+import { AIAllianceStatus } from '@/components/dashboard/AIAllianceStatus';
 import { TrialReminderBanner } from '@/components/trial/trial-reminder-banner';
 import { UpgradePrompt } from '@/components/subscription/upgrade-prompt';
 import { UsageTrendChart, CategoryDistributionChart } from '@/components/charts';
@@ -98,6 +99,11 @@ export default function DashboardPage() {
           <p>暂无新风险预警</p>
           <p className="text-sm mt-2">我们会持续监控您关注市场的政策变化</p>
         </Card>
+      </section>
+
+      {/* AI + OpenClaw 智能联盟状态 */}
+      <section className="mt-8">
+        <AIAllianceStatus />
       </section>
 
       {/* Quick Stats */}
