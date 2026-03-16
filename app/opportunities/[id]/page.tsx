@@ -3,34 +3,86 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { favoritesApi } from '@/lib/api';
-import { Heart } from 'lucide-react';
+import { favoritesApi, opportunitiesApi } from '@/lib/api';
+import { Heart, TrendingUp, Target, Brain, BarChart3, RefreshCw, ExternalLink, ArrowLeft } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
 import { useFavorites } from '@/lib/contexts/favorites-context';
 import { useToast } from '@/components/ui/toast';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
-interface Opportunity {
-  id: string;
-  title: string;
-  description: string;
-  status: string;
-  opportunity_type: string;
-  confidence_score: number;
-  elements: any;
-  ai_insights: any;
-  created_at: string;
-  data_collection_tasks?: any[];
+interface CPIScore {
+  score: number;
+  weight: number;
+  details: Record<string, any>;
 }
 
-interface DataCollectionTask {
+// Use BusinessOpportunity from API, with local extensions
+type Opportunity = {
   id: string;
-  task_type: string;
-  priority: string;
+  title: string;
+  description: string | null;
   status: string;
-  ai_request: any;
-  result?: any;
+  opportunity_type: string;
+  grade: string | null;
+  confidence_score: number;
+  cpi_total_score: number | null;
+  cpi_competition_score: number | null;
+  cpi_potential_score: number | null;
+  cpi_intelligence_gap_score: number | null;
+  elements: Record<string, any>;
+  ai_insights: {
+    initial_cpi_score?: {
+      competition?: CPIScore;
+      potential?: CPIScore;
+      intelligence_gap?: CPIScore;
+      total_score?: number;
+      opportunity_type?: string;
+      calculated_at?: string;
+    };
+    data_requirements?: string[];
+    verification_needs?: string[];
+    why_opportunity?: string;
+    key_assumptions?: string[];
+  } | null;
   created_at: string;
-  completed_at?: string;
+  last_cpi_recalc_at?: string | null;
+  user_interactions?: Record<string, any>;
+}
+
+const STATUS_LABELS: Record<string, string> = {
+  potential: '发现期',
+  verifying: '验证期',
+  assessing: '评估期',
+  executing: '执行期',
+  archived: '已归档',
+};
+
+const GRADE_COLORS: Record<string, string> = {
+  lead: 'bg-gray-100 text-gray-800',
+  normal: 'bg-blue-100 text-blue-800',
+  priority: 'bg-orange-100 text-orange-800',
+  landable: 'bg-green-100 text-green-800',
+};
+
+const GRADE_LABELS: Record<string, string> = {
+  lead: '线索 (<60分)',
+  normal: '普通 (60-69分)',
+  priority: '重点 (70-84分)',
+  landable: '落地 (≥85分)',
+};
+
+function getScoreColor(score: number): string {
+  if (score >= 70) return 'text-green-600';
+  if (score >= 40) return 'text-yellow-600';
+  return 'text-red-600';
+}
+
+function getScoreBg(score: number): string {
+  if (score >= 70) return 'bg-green-100';
+  if (score >= 40) return 'bg-yellow-100';
+  return 'bg-red-100';
 }
 
 export default function OpportunityDetailPage() {
@@ -43,6 +95,7 @@ export default function OpportunityDetailPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
+  const [activeTab, setActiveTab] = useState('overview');
 
   useEffect(() => {
     if (params.id) {
@@ -52,11 +105,11 @@ export default function OpportunityDetailPage() {
 
   const fetchOpportunity = async (id: string) => {
     try {
-      const response = await fetch(`https://api.zenconsult.top/api/v1/opportunities/${id}`);
-      const data = await response.json();
-      setOpportunity(data.opportunity);
+      // Use API client for proper auth header handling
+      const response = await opportunitiesApi.getOpportunity(id);
+      setOpportunity(response.opportunity);
 
-      // 检查收藏状态
+      // Check favorite status
       const token = localStorage.getItem('auth_token');
       if (token) {
         try {
@@ -80,10 +133,7 @@ export default function OpportunityDetailPage() {
     setSaving(true);
 
     try {
-      // For opportunities, we need to handle differently than cards
-      // Opportunities require authentication as they involve AI monitoring
       if (!isAuthenticated) {
-        // Show registration prompt for anonymous users
         showError('需要注册', '收藏商机需要注册账户，注册后AI将为您持续监控此机会');
         setTimeout(() => {
           router.push(`/register?redirect=${encodeURIComponent(window.location.pathname)}`);
@@ -92,12 +142,10 @@ export default function OpportunityDetailPage() {
       }
 
       if (isFavorite) {
-        // 取消收藏
         await favoritesApi.removeFavoriteByOpportunity(opportunity.id);
         setIsFavorite(false);
         showSuccess('已取消收藏');
       } else {
-        // 添加收藏
         await favoritesApi.addOpportunityFavorite(opportunity.id);
         setIsFavorite(true);
         showSuccess('收藏成功', 'AI将为您持续监控此机会的进展');
@@ -110,25 +158,11 @@ export default function OpportunityDetailPage() {
     }
   };
 
-  const handleArchive = async () => {
-    if (!opportunity) return;
-    if (!confirm('确定要归档此商机吗？')) return;
-
-    try {
-      await fetch(`https://api.zenconsult.top/api/v1/opportunities/${opportunity.id}?reason=用户手动归档`, {
-        method: 'DELETE'
-      });
-      alert('已归档');
-      window.location.href = '/opportunities';
-    } catch (error) {
-      console.error('Failed to archive:', error);
-    }
-  };
-
   if (loading) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-8">
         <div className="text-center py-12">
+          <RefreshCw className="h-8 w-8 animate-spin mx-auto text-gray-400 mb-4" />
           <div className="text-gray-400">加载中...</div>
         </div>
       </div>
@@ -140,7 +174,7 @@ export default function OpportunityDetailPage() {
       <div className="max-w-4xl mx-auto px-4 py-8">
         <div className="text-center py-12">
           <div className="text-gray-400">商机不存在</div>
-          <Link href="/opportunities" className="text-blue-600 hover:underline">
+          <Link href="/dashboard/opportunities" className="text-blue-600 hover:underline">
             返回列表
           </Link>
         </div>
@@ -148,256 +182,388 @@ export default function OpportunityDetailPage() {
     );
   }
 
-  const statusColor = {
-    potential: 'bg-blue-100 text-blue-800',
-    verifying: 'bg-yellow-100 text-yellow-800',
-    assessing: 'bg-purple-100 text-purple-800',
-    executing: 'bg-green-100 text-green-800',
-    archived: 'bg-gray-100 text-gray-800',
-    ignored: 'bg-gray-100 text-gray-800',
-    failed: 'bg-red-100 text-red-800'
-  }[opportunity.status] || 'bg-gray-100 text-gray-800';
+  const cpiData = opportunity.ai_insights?.initial_cpi_score;
+  const competitionScore = cpiData?.competition?.score ?? opportunity.cpi_competition_score ?? 0;
+  const potentialScore = cpiData?.potential?.score ?? opportunity.cpi_potential_score ?? 0;
+  const intelligenceScore = cpiData?.intelligence_gap?.score ?? opportunity.cpi_intelligence_gap_score ?? 0;
+  const totalScore = cpiData?.total_score ?? opportunity.cpi_total_score ?? 0;
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
-      {/* 返回链接 */}
-      <Link href="/opportunities" className="text-blue-600 hover:underline mb-6 inline-block">
-        ← 返回商机列表
+      {/* Back Link */}
+      <Link href="/dashboard/opportunities" className="text-blue-600 hover:underline mb-6 inline-flex items-center gap-2">
+        <ArrowLeft className="h-4 w-4" />
+        返回商机列表
       </Link>
 
-      {/* 标题区域 */}
-      <div className="bg-white rounded-lg shadow p-6 mb-6">
-        <div className="flex items-start justify-between mb-4">
-          <div className="flex-1">
-            <div className="flex items-center gap-2 mb-3">
-              <span className={`px-3 py-1 rounded-full text-sm font-medium ${statusColor}`}>
-                {opportunity.status}
-              </span>
-              <span className="px-3 py-1 rounded-full text-sm bg-gray-100 text-gray-700">
-                {opportunity.opportunity_type}
-              </span>
-            </div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">
-              {opportunity.title}
-            </h1>
-            <p className="text-gray-600">
-              {opportunity.description || '暂无描述'}
-            </p>
-          </div>
-        </div>
-
-        {/* 置信度 */}
-        <div className="border-t pt-4">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-gray-700">AI 可信度</span>
-            <span className="text-lg font-bold text-gray-900">
-              {((opportunity.confidence_score ?? 0) * 100).toFixed(0)}%
-            </span>
-          </div>
-          <div className="w-full bg-gray-200 rounded-full h-3">
-            <div
-              className="bg-blue-600 h-3 rounded-full transition-all"
-              style={{ width: `${(opportunity.confidence_score ?? 0) * 100}%` }}
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* 商机要素 */}
-      {opportunity.elements && Object.keys(opportunity.elements).length > 0 && (
-        <div className="bg-white rounded-lg shadow p-6 mb-6">
-          <h2 className="text-xl font-semibold mb-4">📦 商机要素</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {(Object.entries(opportunity.elements) as [string, any][]).map(([key, value]) => (
-              value && (
-                <div key={key} className="p-4 bg-gray-50 rounded">
-                  <div className="text-sm text-gray-500 mb-1 capitalize">
-                    {key}
-                  </div>
-                  <div className="font-medium text-gray-900">
-                    {value.focus || 'N/A'}
-                  </div>
-                  <div className="text-sm text-gray-600 mt-1">
-                    {value.opportunity_reason}
-                  </div>
-                </div>
-              )
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* AI洞察 */}
-      {opportunity.ai_insights && (
-        <div className="bg-white rounded-lg shadow p-6 mb-6">
-          <h2 className="text-xl font-semibold mb-4">🤖 AI 洞察</h2>
-
-          {opportunity.ai_insights.why_opportunity && (
-            <div className="mb-4">
-              <h3 className="text-sm font-medium text-gray-700 mb-2">为什么是商机</h3>
-              <p className="text-gray-600">{opportunity.ai_insights.why_opportunity}</p>
-            </div>
-          )}
-
-          {opportunity.ai_insights.key_assumptions && opportunity.ai_insights.key_assumptions.length > 0 && (
-            <div className="mb-4">
-              <h3 className="text-sm font-medium text-gray-700 mb-2">关键假设</h3>
-              <ul className="list-disc list-inside text-gray-600">
-                {opportunity.ai_insights.key_assumptions.map((assumption: string, i: number) => (
-                  <li key={i}>{assumption}</li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {opportunity.ai_insights.verification_needs && opportunity.ai_insights.verification_needs.length > 0 && (
-            <div className="mb-4">
-              <h3 className="text-sm font-medium text-gray-700 mb-2">需要验证</h3>
-              <ul className="list-disc list-inside text-gray-600">
-                {opportunity.ai_insights.verification_needs.map((need: string, i: number) => (
-                  <li key={i}>{need}</li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {opportunity.ai_insights.confidence_history && opportunity.ai_insights.confidence_history.length > 0 && (
-            <div>
-              <h3 className="text-sm font-medium text-gray-700 mb-2">置信度历史</h3>
-              <div className="space-y-2">
-                {opportunity.ai_insights.confidence_history.map((history: any, i: number) => (
-                  <div key={i} className="text-sm flex items-center gap-2">
-                    <span className="text-gray-500">
-                      {history.from.toFixed(2)} → {history.to.toFixed(2)}
-                    </span>
-                    <span className="text-green-600">↑{(history.to - history.from).toFixed(2)}</span>
-                    <span className="text-gray-400 truncate max-w-xs">
-                      {history.reasoning}
-                    </span>
-                  </div>
-                ))}
+      {/* Header Card */}
+      <Card className="mb-6">
+        <CardContent className="p-6">
+          <div className="flex items-start justify-between mb-4">
+            <div className="flex-1">
+              <div className="flex items-center gap-2 mb-3">
+                <Badge className={STATUS_LABELS[opportunity.status] ? 'bg-blue-100 text-blue-800' : 'bg-gray-100'}>
+                  {STATUS_LABELS[opportunity.status] || opportunity.status}
+                </Badge>
+                {opportunity.grade && (
+                  <Badge className={GRADE_COLORS[opportunity.grade] || 'bg-gray-100'}>
+                    {GRADE_LABELS[opportunity.grade] || opportunity.grade}
+                  </Badge>
+                )}
+                <Badge variant="outline">
+                  {opportunity.opportunity_type || '产品'}
+                </Badge>
               </div>
+              <h1 className="text-2xl font-bold text-gray-900 mb-2">
+                {opportunity.title}
+              </h1>
+              <p className="text-gray-600">
+                {opportunity.description || '暂无描述'}
+              </p>
             </div>
-          )}
-        </div>
-      )}
+            <div className="text-right">
+              <div className={`text-4xl font-bold ${getScoreColor(totalScore)}`}>
+                {totalScore.toFixed(1)}
+              </div>
+              <div className="text-sm text-gray-500">CPI 总分</div>
+            </div>
+          </div>
 
-      {/* 关联的产品和资讯 - 融合设计 */}
-      {(opportunity as any).card && (
-        <div className="bg-white rounded-lg shadow p-6 mb-6">
-          <h2 className="text-xl font-semibold mb-4">📦 关联产品</h2>
-          <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
-            <div className="flex items-center gap-3 mb-3">
-              <span className="text-2xl">🛒</span>
-              <div>
-                <h3 className="font-semibold text-gray-900">
-                  {(opportunity as any).card.content.summary.title}
-                </h3>
-                <p className="text-sm text-gray-600">
-                  类别: {(opportunity as any).card.category}
-                </p>
+          {/* CPI Score Breakdown */}
+          <div className="grid grid-cols-3 gap-4 mt-6 pt-6 border-t">
+            <div className={`p-4 rounded-lg ${getScoreBg(competitionScore)}`}>
+              <div className="flex items-center gap-2 mb-2">
+                <Target className="h-5 w-5 text-gray-600" />
+                <span className="text-sm font-medium text-gray-700">竞争度 (C)</span>
               </div>
+              <div className={`text-2xl font-bold ${getScoreColor(competitionScore)}`}>
+                {competitionScore.toFixed(1)}
+              </div>
+              <div className="text-xs text-gray-500 mt-1">权重 40%</div>
             </div>
-            {(opportunity as any).card.amazon_data?.products && (
-              <div className="mt-3">
-                <p className="text-sm text-gray-700 mb-2">
-                  参考产品 ({(opportunity as any).card.amazon_data.products.length}个):
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {(opportunity as any).card.amazon_data.products.slice(0, 3).map((product: any, idx: number) => (
-                    <span key={idx} className="px-2 py-1 bg-white rounded text-xs text-gray-700 border">
-                      {product.title?.substring(0, 20)}...
-                    </span>
-                  ))}
-                </div>
+            <div className={`p-4 rounded-lg ${getScoreBg(potentialScore)}`}>
+              <div className="flex items-center gap-2 mb-2">
+                <TrendingUp className="h-5 w-5 text-gray-600" />
+                <span className="text-sm font-medium text-gray-700">潜力 (P)</span>
               </div>
+              <div className={`text-2xl font-bold ${getScoreColor(potentialScore)}`}>
+                {potentialScore.toFixed(1)}
+              </div>
+              <div className="text-xs text-gray-500 mt-1">权重 40%</div>
+            </div>
+            <div className={`p-4 rounded-lg ${getScoreBg(intelligenceScore)}`}>
+              <div className="flex items-center gap-2 mb-2">
+                <Brain className="h-5 w-5 text-gray-600" />
+                <span className="text-sm font-medium text-gray-700">信息差 (I)</span>
+              </div>
+              <div className={`text-2xl font-bold ${getScoreColor(intelligenceScore)}`}>
+                {intelligenceScore.toFixed(1)}
+              </div>
+              <div className="text-xs text-gray-500 mt-1">权重 20%</div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Tabs for detailed information */}
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="overview">概览</TabsTrigger>
+          <TabsTrigger value="competition">竞争分析</TabsTrigger>
+          <TabsTrigger value="potential">市场潜力</TabsTrigger>
+          <TabsTrigger value="intelligence">信息洞察</TabsTrigger>
+        </TabsList>
+
+        {/* Overview Tab */}
+        <TabsContent value="overview">
+          <div className="grid gap-6">
+            {/* Product Info */}
+            {opportunity.elements?.product && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <span>📦</span> 商机要素
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <div className="text-sm text-gray-500">产品类别</div>
+                      <div className="font-medium">{opportunity.elements.product.category}</div>
+                    </div>
+                    <div>
+                      <div className="text-sm text-gray-500">Amazon 产品数</div>
+                      <div className="font-medium">{opportunity.elements.product.amazon_products_count || 0}</div>
+                    </div>
+                    <div>
+                      <div className="text-sm text-gray-500">机会评分</div>
+                      <div className="font-medium">{opportunity.elements.product.opportunity_score?.toFixed(1) || '-'}</div>
+                    </div>
+                    <div>
+                      <div className="text-sm text-gray-500">机会类型</div>
+                      <div className="font-medium">{cpiData?.opportunity_type || '-'}</div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             )}
-            <Link
-              href={`/cards`}
-              className="inline-block mt-3 text-sm text-blue-600 hover:text-blue-800"
-            >
-              查看完整产品分析 →
-            </Link>
-          </div>
-        </div>
-      )}
 
-      {(opportunity as any).article && (
-        <div className="bg-white rounded-lg shadow p-6 mb-6">
-          <h2 className="text-xl font-semibold mb-4">📰 关联资讯</h2>
-          <div className="p-4 bg-green-50 rounded-lg border border-green-200">
-            <div className="flex items-start gap-3">
-              <span className="text-2xl">📄</span>
-              <div className="flex-1">
-                <h3 className="font-semibold text-gray-900 mb-1">
-                  {(opportunity as any).article.title}
-                </h3>
-                <p className="text-sm text-gray-600 mb-2">
-                  {(opportunity as any).article.summary?.substring(0, 150)}...
-                </p>
-                <div className="flex items-center gap-2 text-xs text-gray-500 mb-3">
-                  <span>📍 {(opportunity as any).article.region || '全球'}</span>
-                  <span>🏢 {(opportunity as any).article.platform || '综合'}</span>
-                  <span>🏷️ {(opportunity as any).article.content_theme || '通用'}</span>
-                </div>
-                {(opportunity as any).article.tags && (opportunity as any).article.tags.length > 0 && (
-                  <div className="flex flex-wrap gap-1 mb-3">
-                    {(opportunity as any).article.tags.slice(0, 5).map((tag: string, idx: number) => (
-                      <span key={idx} className="px-2 py-0.5 bg-white rounded text-xs text-gray-600 border">
-                        {tag}
-                      </span>
-                    ))}
+            {/* AI Insights Summary */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <span>🤖</span> AI 综合洞察
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {cpiData?.opportunity_type && (
+                  <div className="mb-4">
+                    <div className="text-sm text-gray-500 mb-1">机会类型</div>
+                    <Badge variant="outline" className="text-base">{cpiData.opportunity_type}</Badge>
                   </div>
                 )}
-                <a
-                  href={(opportunity as any).article.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-block text-sm text-green-600 hover:text-green-800"
-                >
-                  阅读原文 →
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* 数据采集任务 */}
-      {opportunity.data_collection_tasks && opportunity.data_collection_tasks.length > 0 && (
-        <div className="bg-white rounded-lg shadow p-6 mb-6">
-          <h2 className="text-xl font-semibold mb-4">📊 数据采集任务</h2>
-          <div className="space-y-3">
-            {opportunity.data_collection_tasks.map((task: DataCollectionTask) => (
-              <div key={task.id} className="p-4 bg-gray-50 rounded">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-gray-700">{task.task_type}</span>
-                    <span className={`px-2 py-1 rounded text-xs ${
-                      task.status === 'completed' ? 'bg-green-100 text-green-800' :
-                      task.status === 'running' ? 'bg-yellow-100 text-yellow-800' :
-                      'bg-gray-100 text-gray-800'
-                    }`}>
-                      {task.status}
-                    </span>
+                {opportunity.ai_insights?.verification_needs && opportunity.ai_insights.verification_needs.length > 0 && (
+                  <div className="mb-4">
+                    <div className="text-sm text-gray-500 mb-2">需要验证</div>
+                    <ul className="list-disc list-inside text-gray-600 space-y-1">
+                      {opportunity.ai_insights.verification_needs.map((need, i) => (
+                        <li key={i}>{need}</li>
+                      ))}
+                    </ul>
                   </div>
-                  <span className="text-xs text-gray-500">
-                    {new Date(task.created_at).toLocaleString('zh-CN')}
+                )}
+                {opportunity.ai_insights?.data_requirements && opportunity.ai_insights.data_requirements.length > 0 && (
+                  <div>
+                    <div className="text-sm text-gray-500 mb-2">数据需求</div>
+                    <ul className="list-disc list-inside text-gray-600 space-y-1">
+                      {opportunity.ai_insights.data_requirements.map((req, i) => (
+                        <li key={i}>{req}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                {cpiData?.calculated_at && (
+                  <div className="mt-4 pt-4 border-t text-sm text-gray-500">
+                    最后计算时间: {new Date(cpiData.calculated_at).toLocaleString('zh-CN')}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+
+        {/* Competition Tab */}
+        <TabsContent value="competition">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Target className="h-5 w-5" />
+                竞争度分析 (C维度 - 40%权重)
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="mb-6">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-gray-600">竞争度得分</span>
+                  <span className={`text-3xl font-bold ${getScoreColor(competitionScore)}`}>
+                    {competitionScore.toFixed(1)}
                   </span>
                 </div>
-                {task.ai_request && task.ai_request.question && (
-                  <div className="text-sm text-gray-600">
-                    问题: {task.ai_request.question}
-                  </div>
-                )}
+                <div className="w-full bg-gray-200 rounded-full h-4">
+                  <div
+                    className={`h-4 rounded-full transition-all ${
+                      competitionScore >= 70 ? 'bg-green-500' :
+                      competitionScore >= 40 ? 'bg-yellow-500' : 'bg-red-500'
+                    }`}
+                    style={{ width: `${Math.min(competitionScore, 100)}%` }}
+                  />
+                </div>
+                <p className="text-sm text-gray-500 mt-2">
+                  得分越高表示竞争越不激烈，机会越大
+                </p>
               </div>
-            ))}
-          </div>
-        </div>
-      )}
 
-      {/* 操作按钮 */}
-      <div className="flex gap-3">
+              {cpiData?.competition?.details && (
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="p-4 bg-gray-50 rounded-lg">
+                      <div className="text-sm text-gray-500">样本数量</div>
+                      <div className="text-xl font-semibold">{cpiData.competition.details.sample_size || 0}</div>
+                    </div>
+                    <div className="p-4 bg-gray-50 rounded-lg">
+                      <div className="text-sm text-gray-500">品牌集中度</div>
+                      <div className="text-xl font-semibold">
+                        {(cpiData.competition.details.brand_concentration || 0).toFixed(1)}%
+                      </div>
+                    </div>
+                    <div className="p-4 bg-gray-50 rounded-lg">
+                      <div className="text-sm text-gray-500">预估CPC</div>
+                      <div className="text-xl font-semibold">
+                        ${cpiData.competition.details.estimated_cpc?.toFixed(2) || '0.00'}
+                      </div>
+                    </div>
+                    <div className="p-4 bg-gray-50 rounded-lg">
+                      <div className="text-sm text-gray-500">顶级品牌</div>
+                      <div className="text-sm font-medium">
+                        {cpiData.competition.details.top_brands
+                          ? Object.entries(cpiData.competition.details.top_brands).map(([brand, count]) => (
+                              <span key={brand} className="inline-block mr-2">{brand}({count as number})</span>
+                            ))
+                          : 'N/A'}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Potential Tab */}
+        <TabsContent value="potential">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <TrendingUp className="h-5 w-5" />
+                市场潜力分析 (P维度 - 40%权重)
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="mb-6">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-gray-600">潜力得分</span>
+                  <span className={`text-3xl font-bold ${getScoreColor(potentialScore)}`}>
+                    {potentialScore.toFixed(1)}
+                  </span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-4">
+                  <div
+                    className={`h-4 rounded-full transition-all ${
+                      potentialScore >= 70 ? 'bg-green-500' :
+                      potentialScore >= 40 ? 'bg-yellow-500' : 'bg-red-500'
+                    }`}
+                    style={{ width: `${Math.min(potentialScore, 100)}%` }}
+                  />
+                </div>
+                <p className="text-sm text-gray-500 mt-2">
+                  得分越高表示市场潜力越大，增长空间越广
+                </p>
+              </div>
+
+              {cpiData?.potential?.details && (
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="p-4 bg-gray-50 rounded-lg">
+                      <div className="text-sm text-gray-500">样本数量</div>
+                      <div className="text-xl font-semibold">{cpiData.potential.details.sample_size || 0}</div>
+                    </div>
+                    <div className="p-4 bg-gray-50 rounded-lg">
+                      <div className="text-sm text-gray-500">平均评论数</div>
+                      <div className="text-xl font-semibold">
+                        {((cpiData.potential.details.avg_reviews || 0) / 1000).toFixed(1)}K
+                      </div>
+                    </div>
+                    <div className="p-4 bg-gray-50 rounded-lg">
+                      <div className="text-sm text-gray-500">增长率</div>
+                      <div className="text-xl font-semibold">
+                        {((cpiData.potential.details.growth_rate || 0) * 100).toFixed(1)}%
+                      </div>
+                    </div>
+                    <div className="p-4 bg-gray-50 rounded-lg">
+                      <div className="text-sm text-gray-500">文章趋势</div>
+                      <div className="text-sm font-medium text-green-600">
+                        {cpiData.potential.details.article_trend || '数据收集中'}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Intelligence Tab */}
+        <TabsContent value="intelligence">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Brain className="h-5 w-5" />
+                信息差分析 (I维度 - 20%权重)
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="mb-6">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-gray-600">信息差得分</span>
+                  <span className={`text-3xl font-bold ${getScoreColor(intelligenceScore)}`}>
+                    {intelligenceScore.toFixed(1)}
+                  </span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-4">
+                  <div
+                    className={`h-4 rounded-full transition-all ${
+                      intelligenceScore >= 70 ? 'bg-green-500' :
+                      intelligenceScore >= 40 ? 'bg-yellow-500' : 'bg-red-500'
+                    }`}
+                    style={{ width: `${Math.min(intelligenceScore, 100)}%` }}
+                  />
+                </div>
+                <p className="text-sm text-gray-500 mt-2">
+                  得分越高表示信息差越大，先发优势越明显
+                </p>
+              </div>
+
+              {cpiData?.intelligence_gap?.details && (
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="p-4 bg-gray-50 rounded-lg">
+                      <div className="text-sm text-gray-500">数据来源</div>
+                      <div className="text-xl font-semibold capitalize">
+                        {cpiData.intelligence_gap.details.data_source || 'N/A'}
+                      </div>
+                    </div>
+                    <div className="p-4 bg-gray-50 rounded-lg">
+                      <div className="text-sm text-gray-500">文章数量</div>
+                      <div className="text-xl font-semibold">
+                        {cpiData.intelligence_gap.details.article_count || 0}
+                      </div>
+                    </div>
+                    <div className="p-4 bg-gray-50 rounded-lg">
+                      <div className="text-sm text-gray-500">主要主题</div>
+                      <div className="text-xl font-semibold capitalize">
+                        {cpiData.intelligence_gap.details.dominant_theme || 'N/A'}
+                      </div>
+                    </div>
+                    <div className="p-4 bg-gray-50 rounded-lg">
+                      <div className="text-sm text-gray-500">集中度</div>
+                      <div className="text-xl font-semibold">
+                        {((cpiData.intelligence_gap.details.concentration_ratio || 0) * 100).toFixed(0)}%
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Theme Distribution */}
+                  {cpiData.intelligence_gap.details.theme_distribution && (
+                    <div className="mt-4">
+                      <div className="text-sm text-gray-500 mb-2">主题分布</div>
+                      <div className="flex gap-2">
+                        {Object.entries(cpiData.intelligence_gap.details.theme_distribution).map(([theme, count]) => (
+                          <Badge key={theme} variant="outline">
+                            {theme}: {count as number}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
+
+      {/* Action Buttons */}
+      <div className="flex gap-3 mt-6">
         <button
           onClick={handleSave}
           disabled={saving}
@@ -410,12 +576,11 @@ export default function OpportunityDetailPage() {
           <Heart className={`h-4 w-4 ${isFavorite ? 'fill-current' : ''}`} />
           {saving ? '保存中...' : isFavorite ? '已收藏' : '收藏'}
         </button>
-        <button
-          onClick={handleArchive}
-          className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
-        >
-          归档
-        </button>
+        <Link href="/dashboard/opportunities">
+          <button className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50">
+            返回列表
+          </button>
+        </Link>
       </div>
     </div>
   );
