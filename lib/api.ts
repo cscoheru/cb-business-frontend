@@ -852,7 +852,15 @@ export interface OpportunityFunnelResponse {
 
 export const opportunitiesApi = {
   async getFunnel(): Promise<OpportunityFunnelResponse> {
-    return apiClient.get('/api/v1/opportunities/funnel', false);
+    return apiClient.get('/api/v1/opportunities/funnel', true);
+  },
+
+  async getGrades(): Promise<{
+    success: boolean;
+    grades: Record<string, { count: number; avg_score: number; label: string }>;
+    total: number;
+  }> {
+    return apiClient.get('/api/v1/opportunities/grades', true);
   },
 
   async generateFromCards(cardIds?: string[], limit: number = 10): Promise<{

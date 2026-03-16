@@ -52,12 +52,12 @@ export default function OpportunitiesPage() {
         setLoading(true);
         setError(null);
 
-        // 获取商机列表
+        // 获取商机列表 (使用 API client，自动发送 auth token)
         const response = await opportunitiesApi.listOpportunities({ limit: 50 });
         setOpportunities(response.opportunities || []);
 
-        // 获取统计数据
-        const funnelResponse = await fetch('/api/v1/opportunities/funnel').then(r => r.json());
+        // 获取漏斗统计数据 (使用 API client)
+        const funnelResponse = await opportunitiesApi.getFunnel();
         if (funnelResponse.success) {
           const byStatus: Record<string, number> = {};
           Object.entries(funnelResponse.funnel).forEach(([key, value]: [string, any]) => {
@@ -70,7 +70,8 @@ export default function OpportunitiesPage() {
           }));
         }
 
-        const gradesResponse = await fetch('/api/v1/opportunities/grades').then(r => r.json());
+        // 获取等级统计 (使用 API client)
+        const gradesResponse = await opportunitiesApi.getGrades();
         if (gradesResponse.success) {
           const byGrade: Record<string, number> = {};
           Object.entries(gradesResponse.grades).forEach(([key, value]: [string, any]) => {
