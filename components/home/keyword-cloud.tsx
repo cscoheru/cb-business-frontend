@@ -71,26 +71,52 @@ export function KeywordCloud({ region }: KeywordCloudProps) {
                            region === 'north_america' ? 'north_america' :
                            region === 'latin_america' ? 'latin_america' : null;
 
-        const url = 'https://api.zenconsult.top/api/v1/products/categories';
+        // 从 products API 获取真实分类数据
+        const url = `https://api.zenconsult.top/api/v1/products/categories?region=${regionParam || ''}`;
 
         const response = await fetch(url);
 
         if (response.ok) {
           const data = await response.json();
-          // 使用从文章中提取的真实关键词数据
-          setCategories(data.categories || DEFAULT_CATEGORIES);
+          // 过滤出有数量的分类，并按区域排序
+          const categoriesWithCount = (data.categories || [])
+            .filter((cat: any) => cat.count > 0)
+            .sort((a: any, b: any) => b.count - a.count)
+            .slice(0, 8);  // 只显示前8个热门分类
+
+          if (categoriesWithCount.length > 0) {
+            setCategories(categoriesWithCount);
+          } else {
+            setCategories(DEFAULT_CATEGORIES);
+          }
         } else {
           console.warn('Keywords API failed, using fallback');
           setCategories(DEFAULT_CATEGORIES);
         }
 
-        // 平台数据暂时保留使用静态数据（待后续从文章中提取）
-        setPlatforms([
-          { id: 'amazon', name: 'Amazon', emoji: '🛒', countries: ['us', 'th', 'vn', 'sg'] },
-          { id: 'shopee', name: 'Shopee', emoji: '🛍️', countries: ['th', 'vn', 'my', 'sg', 'id', 'ph'] },
-          { id: 'lazada', name: 'Lazada', emoji: '🛒', countries: ['th', 'vn', 'my', 'sg', 'id', 'ph'] },
-          { id: 'tiktok', name: 'TikTok Shop', emoji: '🎵', countries: ['th', 'vn', 'my', 'sg', 'id', 'ph'] },
-        ]);
+        // 平台数据 - 按区域配置
+        const regionPlatforms: Record<string, Platform[]> = {
+          southeast_asia: [
+            { id: 'shopee', name: 'Shopee', emoji: '🛍️', countries: ['th', 'vn', 'my', 'sg', 'id', 'ph'] },
+            { id: 'lazada', name: 'Lazada', emoji: '🛒', countries: ['th', 'vn', 'my', 'sg', 'id', 'ph'] },
+            { id: 'tiktok', name: 'TikTok Shop', emoji: '🎵', countries: ['th', 'vn', 'my', 'sg', 'id', 'ph'] },
+            { id: 'amazon', name: 'Amazon SG', emoji: '📦', countries: ['sg', 'my'] },
+          ],
+          north_america: [
+            { id: 'amazon', name: 'Amazon', emoji: '🛒', countries: ['us', 'ca'] },
+            { id: 'walmart', name: 'Walmart', emoji: '🏪', countries: ['us'] },
+            { id: 'ebay', name: 'eBay', emoji: '📦', countries: ['us', 'ca'] },
+            { id: 'tiktok', name: 'TikTok Shop', emoji: '🎵', countries: ['us'] },
+          ],
+          latin_america: [
+            { id: 'mercadolibre', name: 'MercadoLibre', emoji: '🛒', countries: ['br', 'mx', 'co'] },
+            { id: 'shopee', name: 'Shopee', emoji: '🛍️', countries: ['br'] },
+            { id: 'amazon', name: 'Amazon', emoji: '📦', countries: ['br', 'mx'] },
+            { id: 'magazineluiza', name: 'Magazine Luiza', emoji: '🏪', countries: ['br'] },
+          ],
+        };
+
+        setPlatforms(regionPlatforms[region] || regionPlatforms.southeast_asia);
       } catch (error) {
         console.error('Failed to fetch keyword data:', error);
         setCategories(DEFAULT_CATEGORIES);
