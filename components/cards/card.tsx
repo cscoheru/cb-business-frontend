@@ -6,10 +6,14 @@ import { Card as CardType, opportunitiesApi } from '@/lib/api';
 import { Card, CardHeader, CardContent, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Eye, Heart, TrendingUp, DollarSign, Star, Target } from 'lucide-react';
+import { Eye, Heart, TrendingUp, DollarSign, Star, Target, ChevronDown, ChevronUp, Loader2 } from 'lucide-react';
 import { useFavorites } from '@/lib/contexts/favorites-context';
 import { useAuth } from '@/lib/auth-context';
 import { useToast } from '@/components/ui/toast';
+import { expandCardApi } from '@/lib/api';
+import { SupplierRecommendations } from './supplier-recommendations';
+import { ProfitEstimator } from './profit-estimator';
+import { UpgradePrompt } from '@/components/subscription/upgrade-prompt';
 
 // LocalStorage key for tracking followed cards (anonymous users)
 const LOCAL_FOLLOWED_KEY = 'zen_followed_cards';
@@ -88,12 +92,16 @@ function getSaturationColor(saturation: string): string {
 
 export function InfoCard({ card }: InfoCardProps) {
   const { isFavorite, toggleFavorite } = useFavorites();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const toast = useToast();
   const [liking, setLiking] = useState(false);
   const [following, setFollowing] = useState(false);
   const [localLikes, setLocalLikes] = useState(card.likes);
   const [followedCards, setFollowedCards] = useState<Set<string>>(loadFollowedCards);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [expandedData, setExpandedData] = useState<any>(null);
+  const [expandedLoading, setExpandedLoading] = useState(false);
+  const [hasExpanded, setHasExpanded] = useState(false);
   const favorite = isFavorite(card.id);
   const followed = followedCards.has(card.id);
 
@@ -184,6 +192,47 @@ export function InfoCard({ card }: InfoCardProps) {
       toast.showError('操作失败', error.message || '请稍后再试');
     } finally {
       setFollowing(false);
+    }
+  };
+
+  const handleExpand = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (isExpanded) {
+      setIsExpanded(false);
+      return;
+    }
+
+    // Check auth - free users need to upgrade
+    if (!isAuthenticated) {
+      toast.showError('请先登录', '登录后即可查看货源推荐和利润计算');
+      return;
+    }
+
+    // Check plan tier
+    const userPlan = user?.plan_tier;
+    if (userPlan === 'free') {
+      // Show upgrade prompt inside expanded area
+      setIsExpanded(true);
+      return;
+    }
+
+    setIsExpanded(true);
+
+    // Fetch expanded data only on first expand
+    if (!hasExpanded) {
+      setExpandedLoading(true);
+      try {
+        const res = await expandCardApi.expand(card.id, {});
+        setExpandedData(res);
+        setHasExpanded(true);
+      } catch (error: any) {
+        console.error('Failed to expand card:', error);
+        toast.showError('加载失败', '无法获取扩展数据，请稍后再试');
+      } finally {
+        setExpandedLoading(false);
+      }
     }
   };
 
@@ -284,6 +333,39 @@ export function InfoCard({ card }: InfoCardProps) {
             ))}
           </div>
         )}
+
+        {/* Expanded Section */}
+        {isExpanded && (
+          <div className="border-t pt-4 mt-2 space-y-4">
+            {user?.plan_tier === 'free' ? (
+              <UpgradePrompt feature="ai_analysis" variant="banner" />
+            ) : expandedLoading ? (
+              <div className="flex items-center justify-center py-8 text-muted-foreground">
+                <Loader2 className="h-5 w-5 animate-spin mr-2" />
+                <span className="text-sm">加载货源与利润数据...</span>
+              </div>
+            ) : expandedData ? (
+              <>
+                {/* Supplier Recommendations */}
+                {expandedData.suppliers?.products && (
+                  <SupplierRecommendations
+                    products={expandedData.suppliers.products}
+                  />
+                )}
+
+                {/* Profit Estimator */}
+                <ProfitEstimator
+                  compact
+                  initialData={expandedData.profit}
+                />
+              </>
+            ) : hasExpanded ? (
+              <p className="text-sm text-muted-foreground text-center py-4">
+                暂无扩展数据
+              </p>
+            ) : null}
+          </div>
+        )}
       </CardContent>
 
       <CardFooter className="flex items-center justify-between text-sm text-muted-foreground">
@@ -327,11 +409,28 @@ export function InfoCard({ card }: InfoCardProps) {
             {new Date(card.created_at).toLocaleDateString('zh-CN')}
           </span>
         </div>
-        <Link href={`/cards/${card.id}`}>
-          <Button size="sm" variant="ghost">
-            查看详情 →
-          </Button>
-        </Link>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleExpand}
+            disabled={expandedLoading}
+            title={isExpanded ? '收起详情' : '展开货源与利润分析'}
+            className="flex items-center gap-1 px-2 py-1 rounded-full text-xs transition-all duration-200 text-muted-foreground hover:text-blue-600 hover:bg-blue-50 border border-transparent hover:border-blue-200"
+          >
+            {expandedLoading ? (
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            ) : isExpanded ? (
+              <ChevronUp className="h-3.5 w-3.5" />
+            ) : (
+              <ChevronDown className="h-3.5 w-3.5" />
+            )}
+            <span>{isExpanded ? '收起' : '货源分析'}</span>
+          </button>
+          <Link href={`/cards/${card.id}`}>
+            <Button size="sm" variant="ghost">
+              查看详情 →
+            </Button>
+          </Link>
+        </div>
       </CardFooter>
     </Card>
   );

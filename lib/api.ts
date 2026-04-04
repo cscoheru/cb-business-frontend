@@ -1019,3 +1019,137 @@ export const adminApi = {
     return apiClient.get('/api/v1/admin/analytics', true);
   },
 };
+
+// ============ API Keys API ============
+
+/** API Key tier */
+export type APITier = 'developer' | 'business' | 'enterprise';
+
+/** API Key response from server */
+export interface APIKeyData {
+  id: string;
+  key_prefix: string;
+  name: string;
+  tier: APITier;
+  is_active: boolean;
+  last_used_at: string | null;
+  expires_at: string | null;
+  rate_limit_per_minute: number;
+  rate_limit_per_day: number;
+  created_at: string;
+  usage_today: number;
+  usage_this_month: number;
+}
+
+/** API Key with full key (only shown once on creation) */
+export interface APIKeyCreateResponse extends APIKeyData {
+  full_key: string;
+}
+
+/** API usage statistics */
+export interface APIKeyUsageStats {
+  total_requests: number;
+  successful_requests: number;
+  failed_requests: number;
+  avg_response_time_ms: number;
+  by_endpoint: Record<string, number>;
+  by_day: Array<{ date: string; count: number }>;
+}
+
+/** Tier information */
+export interface TierInfo {
+  name: string;
+  price: number;
+  currency: string;
+  period: string;
+  rate_limit_per_minute: number;
+  rate_limit_per_day: number;
+  features: string[];
+}
+
+export const apiKeysApi = {
+  /** List all API keys for current user */
+  async listKeys(): Promise<APIKeyData[]> {
+    return apiClient.get('/api/v1/api-keys', true);
+  },
+
+  /** Create a new API key */
+  async createKey(name: string, tier: APITier = 'developer'): Promise<APIKeyCreateResponse> {
+    return apiClient.post('/api/v1/api-keys', { name, tier }, true);
+  },
+
+  /** Get a specific API key */
+  async getKey(keyId: string): Promise<APIKeyData> {
+    return apiClient.get(`/api/v1/api-keys/${keyId}`, true);
+  },
+
+  /** Revoke (deactivate) an API key */
+  async revokeKey(keyId: string): Promise<void> {
+    return apiClient.delete(`/api/v1/api-keys/${keyId}`, true);
+  },
+
+  /** Reactivate a revoked API key */
+  async reactivateKey(keyId: string): Promise<APIKeyData> {
+    return apiClient.post(`/api/v1/api-keys/${keyId}/reactivate`, {}, true);
+  },
+
+  /** Get usage statistics for an API key */
+  async getUsage(keyId: string, days: number = 7): Promise<APIKeyUsageStats> {
+    return apiClient.get(`/api/v1/api-keys/${keyId}/usage?days=${days}`, true);
+  },
+
+  /** Get available tier information */
+  async getTierInfo(): Promise<{ tiers: TierInfo[] }> {
+    return apiClient.get('/api/v1/api-keys/tiers/info', false);
+  },
+};
+
+// ============ Logistics API ============
+export const logisticsApi = {
+  getCountries: () => apiClient.get('/api/v1/logistics/countries', false),
+  getRoutes: (params: { destination?: string; shipping_method?: string; weight?: number }) =>
+    apiClient.get('/api/v1/logistics/routes?' + new URLSearchParams(params as any).toString(), false),
+  calculateCost: (params: { destination: string; weight: number; shipping_method?: string }) =>
+    apiClient.get('/api/v1/logistics/calculate?' + new URLSearchParams(params as any).toString(), false),
+};
+
+// ============ Tariffs API ============
+export const tariffsApi = {
+  getCategories: () => apiClient.get('/api/v1/tariffs/categories', false),
+  getRates: (params: { country_code: string; category?: string }) =>
+    apiClient.get('/api/v1/tariffs/rates?' + new URLSearchParams(params as any).toString(), false),
+  calculate: (params: { country_code: string; category: string; declared_value: number }) =>
+    apiClient.get('/api/v1/tariffs/calculate?' + new URLSearchParams(params as any).toString(), false),
+};
+
+// ============ Profit API ============
+export const profitApi = {
+  calculate: (data: {
+    selling_price_usd: number;
+    purchase_price_cny: number;
+    weight_kg: number;
+    destination: string;
+    category: string;
+    platform: string;
+    exchange_rate?: number;
+  }) => apiClient.post('/api/v1/profit/calculate', data, false),
+};
+
+// ============ Suppliers API ============
+export const suppliersApi = {
+  search: (params: { keyword: string; page?: number; limit?: number }) =>
+    apiClient.get('/api/v1/suppliers/search?' + new URLSearchParams(params as any).toString(), true),
+  getByCard: (cardId: string) =>
+    apiClient.get(`/api/v1/suppliers/card/${cardId}`, true),
+};
+
+// ============ Card Expand API ============
+export const expandCardApi = {
+  expand: (cardId: string, params: {
+    destination?: string;
+    category?: string;
+    platform?: string;
+    purchase_price_cny?: number;
+    weight_kg?: number;
+  }) => apiClient.post(`/api/v1/cards/${cardId}/expand?` + new URLSearchParams(params as any).toString(), {}, true),
+};

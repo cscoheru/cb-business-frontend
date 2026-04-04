@@ -18,6 +18,8 @@ import {
   LogOut,
   Menu,
   X,
+  Key,
+  Package,
 } from 'lucide-react';
 import { useState } from 'react';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
@@ -53,6 +55,11 @@ const navItems = [
     title: '工具箱',
     href: '/dashboard/tools/cost-calculator',
     icon: Calculator,
+  },
+  {
+    title: '货源搜索',
+    href: '/dashboard/suppliers',
+    icon: Package,
   },
 ];
 
