@@ -6,6 +6,7 @@ import { JourneyTracker } from '@/components/dashboard/JourneyTracker';
 import { QuickActionCard } from '@/components/dashboard/QuickActionCard';
 import { OpportunityCard, mockOpportunityCard } from '@/components/dashboard/OpportunityCard';
 import { AIAllianceStatus } from '@/components/dashboard/AIAllianceStatus';
+import { ProfessionalInfoSection } from '@/components/dashboard/professional-info-section';
 import { TrialReminderBanner } from '@/components/trial/trial-reminder-banner';
 import { UpgradePrompt } from '@/components/subscription/upgrade-prompt';
 import { UsageTrendChart, CategoryDistributionChart } from '@/components/charts';
@@ -105,6 +106,9 @@ export default function DashboardPage() {
       <section className="mt-8">
         <AIAllianceStatus />
       </section>
+
+      {/* 专业信息 - 基于区域市场的政策、风险与实操资讯 */}
+      <ProfessionalInfoSection />
 
       {/* Quick Stats */}
       <section className="mt-8">

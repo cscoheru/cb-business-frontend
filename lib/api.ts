@@ -571,6 +571,8 @@ export interface Card {
   views: number;
   likes: number;
   is_published: boolean;
+  target_regions?: string[];
+  target_countries?: string[];
 }
 
 export interface DailyCardsResponse {
@@ -679,6 +681,20 @@ export const cardsApi = {
 
   async getCardStats(): Promise<CardStatsResponse> {
     return apiClient.get('/api/v1/cards/stats/overview', false);
+  },
+
+  /** 按区域/国家获取卡片（用于首页区域浏览模式） */
+  async getCardsByRegion(params?: {
+    region?: string;
+    country?: string;
+    limit?: number;
+  }): Promise<{ success: boolean; grouped_by_country: Record<string, Card[]>; total: number }> {
+    const searchParams = new URLSearchParams();
+    if (params?.region) searchParams.set('region', params.region);
+    if (params?.country) searchParams.set('country', params.country);
+    if (params?.limit) searchParams.set('limit', params.limit.toString());
+    const qs = searchParams.toString();
+    return apiClient.get(`/api/v1/cards/by-region${qs ? `?${qs}` : ''}`, false);
   },
 
   /** 获取卡片相关资讯 (仅展示，不进入AI分析) */

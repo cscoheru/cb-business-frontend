@@ -1,6 +1,6 @@
 import Link from 'next/link';
-import { DailyCardsHero } from '@/components/home/daily-cards-hero';
-import { HomeContent } from '@/components/home/home-content';
+import { BrowseTabs } from '@/components/home/browse-tabs';
+import { FunModules } from '@/components/home/fun-modules';
 import { SEOBanner } from '@/components/home/seo-banner';
 import { OpportunityFunnelLoader } from '@/components/home/opportunity-funnel-loader';
 
@@ -35,8 +35,8 @@ export default function HomePage() {
         </div>
       </nav>
 
-      {/* 今日线索精选 - Hero Section */}
-      <DailyCardsHero />
+      {/* 双模式浏览：商机排名 / 区域国家 */}
+      <BrowseTabs />
 
       {/* AI智能商机跟踪 - 分阶段管理 */}
       <section className="bg-gradient-to-r from-blue-50 to-purple-50 border-b py-10">
@@ -65,45 +65,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 深度数据探索区域 */}
-      <section className="bg-white border-b py-8">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">
-              深度数据探索
-            </h2>
-            <p className="text-gray-600">
-              按地区、主题浏览完整的市场资讯库
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-6">
-            <Link href="/th" className="group p-6 border rounded-lg hover:border-blue-500 hover:shadow-md transition-all">
-              <div className="text-4xl mb-3">🌏</div>
-              <h3 className="font-semibold text-gray-900 mb-2">东南亚市场</h3>
-              <p className="text-sm text-gray-600">泰国、越南、马来西亚...</p>
-              <div className="mt-3 text-sm text-blue-600 opacity-0 group-hover:opacity-100">查看 →</div>
-            </Link>
-
-            <Link href="/us" className="group p-6 border rounded-lg hover:border-blue-500 hover:shadow-md transition-all">
-              <div className="text-4xl mb-3">🇺🇸</div>
-              <h3 className="font-semibold text-gray-900 mb-2">欧美市场</h3>
-              <p className="text-sm text-gray-600">美国、加拿大、欧洲...</p>
-              <div className="mt-3 text-sm text-blue-600 opacity-0 group-hover:opacity-100">查看 →</div>
-            </Link>
-
-            <Link href="/br" className="group p-6 border rounded-lg hover:border-blue-500 hover:shadow-md transition-all">
-              <div className="text-4xl mb-3">🇧🇷</div>
-              <h3 className="font-semibold text-gray-900 mb-2">拉美市场</h3>
-              <p className="text-sm text-gray-600">巴西、墨西哥、哥伦比亚...</p>
-              <div className="mt-3 text-sm text-blue-600 opacity-0 group-hover:opacity-100">查看 →</div>
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* 文章流（保持现有功能作为辅助数据源） */}
-      <HomeContent />
+      {/* 趣味功能模块 */}
+      <FunModules />
 
       {/* CTA */}
       <section className="max-w-7xl mx-auto px-4 py-8">
@@ -129,7 +92,7 @@ export default function HomePage() {
       <footer className="bg-white border-t border-gray-200 py-8">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-500">
-            <p>© 2024 ZenConsult. 跨境电商智能信息平台</p>
+            <p>&copy; 2024 ZenConsult. 跨境电商智能信息平台</p>
             <div className="flex gap-4">
               <Link href="#" className="hover:text-gray-900">关于</Link>
               <Link href="#" className="hover:text-gray-900">隐私</Link>
