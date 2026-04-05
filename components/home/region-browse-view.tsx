@@ -107,52 +107,79 @@ export function RegionBrowseView() {
   const [groups, setGroups] = useState<RegionGroup[]>([]);
   const [expandedRegion, setExpandedRegion] = useState<string | null>('southeast_asia');
   const [loading, setLoading] = useState(true);
+  const [loadingRegions, setLoadingRegions] = useState<Set<string>>(new Set());
 
+  // Initial load: get all daily cards (no region supplement, fast)
   useEffect(() => {
-    async function fetchData() {
+    async function fetchInitial() {
       try {
         const response = await cardsApi.getCardsByRegion({ limit: 20 });
         const grouped = response.grouped_by_country;
 
-        // Build region groups
         const regionGroups: RegionGroup[] = REGIONS.map(region => {
           const countries: CountryCards[] = [];
-
           for (const code of region.countryCodes) {
             const countryConfig = getCountryByCode(code);
             const cards = (grouped[code] || []).map(c => {
-              // Ensure target_countries is set for proper display
               if (!c.target_countries) c.target_countries = [];
               return c;
             });
-
             if (countryConfig) {
-              countries.push({
-                code,
-                name: countryConfig.name,
-                flag: countryConfig.flag,
-                slug: countryConfig.slug,
-                cards,
-              });
+              countries.push({ code, name: countryConfig.name, flag: countryConfig.flag, slug: countryConfig.slug, cards });
             }
-          }
-
-          return {
-            region,
-            countries: countries.filter(c => c.cards.length > 0),
-            totalCards: countries.reduce((sum, c) => sum + c.cards.length, 0),
-          };
+          });
+          return { region, countries: countries.filter(c => c.cards.length > 0), totalCards: countries.reduce((sum, c) => sum + c.cards.length, 0) };
         });
 
         setGroups(regionGroups);
       } catch (error) {
-        console.error('Failed to fetch region cards:', error);
+        console.error('Failed to fetch initial cards:', error);
       } finally {
         setLoading(false);
       }
     }
-    fetchData();
+    fetchInitial();
   }, []);
+
+  // Lazy load: when a region is expanded, fetch its supplements
+  useEffect(() => {
+    if (!expandedRegion || loadingRegions.has(expandedRegion)) return;
+
+    async function fetchRegionSupplement() {
+      setLoadingRegions(prev => new Set(prev).add(expandedRegion));
+      try {
+        const response = await cardsApi.getCardsByRegion({ region: expandedRegion, limit: 20 });
+        const grouped = response.grouped_by_country;
+
+        // Merge new cards into existing groups
+        setGroups(prev => prev.map(g => {
+          if (g.region.key !== expandedRegion) return g;
+
+          const newCountries = g.countries.map(c => {
+            const newCards = grouped[c.code] || [];
+            const existingIds = new Set(c.cards.map(card => card.id));
+            const uniqueNew = newCards.filter(card => !existingIds.has(card.id));
+            return { ...c, cards: [...c.cards, ...uniqueNew] };
+          });
+
+          return {
+            ...g,
+            countries: newCountries.filter(c => c.cards.length > 0),
+            totalCards: newCountries.reduce((sum, c) => sum + c.cards.length, 0),
+          };
+        }));
+      } catch (error) {
+        console.error(`Failed to fetch ${expandedRegion} supplements:`, error);
+      } finally {
+        setLoadingRegions(prev => {
+          const next = new Set(prev);
+          next.delete(expandedRegion);
+          return next;
+        });
+      }
+    }
+    fetchRegionSupplement();
+  }, [expandedRegion]);
 
   if (loading) {
     return (
@@ -208,7 +235,12 @@ export function RegionBrowseView() {
             {/* Expanded content */}
             {expandedRegion === region.key && (
               <div className="border-t border-gray-100">
-                {countries.length === 0 ? (
+                {loadingRegions.has(region.key) ? (
+                  <div className="py-8 text-center text-gray-400 text-sm">
+                    <div className="animate-pulse">正在生成{region.name}区域商机数据...</div>
+                    <p className="text-xs mt-1">首次加载需要约30秒</p>
+                  </div>
+                ) : countries.length === 0 ? (
                   <div className="py-8 text-center text-gray-400 text-sm">
                     该区域暂无商机数据
                   </div>
